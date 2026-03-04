@@ -1,0 +1,612 @@
+[
+  {
+    "_comment": "Add entries here for Pokemon you have customized.",
+    "_comment2": "Only include fields you want to OVERRIDE from the base data.",
+    "name": "rattata",
+    "changed": true,
+    "moves": {
+      "levelup": [
+        {
+          "level": 1,
+          "move": "Tackle"
+        },
+        {
+          "level": 1,
+          "move": "Tail Whip"
+        },
+        {
+          "level": 4,
+          "move": "Quick Attack"
+        },
+        {
+          "level": 7,
+          "move": "Focus Energy"
+        },
+        {
+          "level": 10,
+          "move": "Bite"
+        },
+        {
+          "level": 13,
+          "move": "Super Fang"
+        },
+        {
+          "level": 16,
+          "move": "Sucker Punch"
+        },
+        {
+          "level": 20,
+          "move": "Body Slam"
+        },
+        {
+          "level": 24,
+          "move": "Crunch"
+        },
+        {
+          "level": 28,
+          "move": "Double-Edge"
+        }
+      ],
+      "egg": [
+        "Thunder Wave",
+        "Counter",
+        "Flame Wheel"
+      ],
+      "tm": [],
+      "tutor": []
+    },
+    "notes": "Rattata has been rebalanced for the early game."
+  },
+
+  {
+    "_comment": "Blaziken strategy example for the Companion page UI",
+    "name": "blaziken",
+    "strategy": {
+      "showdown": "Blaziken @ Leftovers\nAbility: Blaze\nTera Type: Fire\nAdamant Nature\n- Protect\n- Flare Blitz\n- Close Combat\n- Swords Dance",
+      "bullets": [
+        "Blaze turns a chipped Blaziken into a real late-fight threat, especially once Flare Blitz starts landing at boosted damage.",
+        "Protect helps scout hostile coverage, squeeze extra Leftovers recovery, and buy a safe read before committing to recoil damage.",
+        "Swords Dance lets Blaziken punish passive turns immediately; after one boost, Flare Blitz and Close Combat pressure most neutral targets hard.",
+        "Watch for recoil, entry hazards, and Close Combat's defensive drops. Once Blaziken starts trading HP, priority and faster revenge killers become much more dangerous."
+      ]
+    }
+  },
+
+  {
+    "_comment": "Applin chain fix — add Dipplin/Hydrapple branch (Syrupy Apple, Gen IX)",
+    "name": "applin",
+    "evolutions": [
+      {"from": "applin", "to": "flapple",   "method": {"type": "item",  "value": "Tart Apple"}},
+      {"from": "applin", "to": "appletun",  "method": {"type": "item",  "value": "Sweet Apple"}},
+      {"from": "applin", "to": "dipplin",   "method": {"type": "item",  "value": "Syrupy Apple"}},
+      {"from": "dipplin","to": "hydrapple", "method": {"type": "level", "value": 54}}
+    ]
+  },
+  {
+    "name": "flapple",
+    "evolutions": [
+      {"from": "applin", "to": "flapple",   "method": {"type": "item",  "value": "Tart Apple"}},
+      {"from": "applin", "to": "appletun",  "method": {"type": "item",  "value": "Sweet Apple"}},
+      {"from": "applin", "to": "dipplin",   "method": {"type": "item",  "value": "Syrupy Apple"}},
+      {"from": "dipplin","to": "hydrapple", "method": {"type": "level", "value": 54}}
+    ]
+  },
+  {
+    "name": "appletun",
+    "evolutions": [
+      {"from": "applin", "to": "flapple",   "method": {"type": "item",  "value": "Tart Apple"}},
+      {"from": "applin", "to": "appletun",  "method": {"type": "item",  "value": "Sweet Apple"}},
+      {"from": "applin", "to": "dipplin",   "method": {"type": "item",  "value": "Syrupy Apple"}},
+      {"from": "dipplin","to": "hydrapple", "method": {"type": "level", "value": 54}}
+    ]
+  },
+  {
+    "name": "dipplin",
+    "evolutions": [
+      {"from": "applin", "to": "flapple",   "method": {"type": "item",  "value": "Tart Apple"}},
+      {"from": "applin", "to": "appletun",  "method": {"type": "item",  "value": "Sweet Apple"}},
+      {"from": "applin", "to": "dipplin",   "method": {"type": "item",  "value": "Syrupy Apple"}},
+      {"from": "dipplin","to": "hydrapple", "method": {"type": "level", "value": 54}}
+    ]
+  },
+  {
+    "name": "hydrapple",
+    "evolutions": [
+      {"from": "applin", "to": "flapple",   "method": {"type": "item",  "value": "Tart Apple"}},
+      {"from": "applin", "to": "appletun",  "method": {"type": "item",  "value": "Sweet Apple"}},
+      {"from": "applin", "to": "dipplin",   "method": {"type": "item",  "value": "Syrupy Apple"}},
+      {"from": "dipplin","to": "hydrapple", "method": {"type": "level", "value": 54}}
+    ]
+  },
+
+  {
+    "_comment": "Tandemaus chain — fix 'maushold' target to correct family-of-four/three names",
+    "name": "tandemaus",
+    "evolutions": [
+      {"from": "tandemaus", "to": "maushold-family-of-four",   "method": {"type": "other", "value": ""}},
+      {"from": "tandemaus", "to": "maushold-family-of-three",  "method": {"type": "other", "value": ""}}
+    ]
+  },
+  {
+    "name": "maushold-family-of-four",
+    "evolutions": [
+      {"from": "tandemaus", "to": "maushold-family-of-four",   "method": {"type": "other", "value": ""}},
+      {"from": "tandemaus", "to": "maushold-family-of-three",  "method": {"type": "other", "value": ""}}
+    ]
+  },
+  {
+    "name": "maushold-family-of-three",
+    "evolutions": [
+      {"from": "tandemaus", "to": "maushold-family-of-four",   "method": {"type": "other", "value": ""}},
+      {"from": "tandemaus", "to": "maushold-family-of-three",  "method": {"type": "other", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Dunsparce chain — fix 'dudunsparce' target to two-segment / three-segment names",
+    "name": "dunsparce",
+    "evolutions": [
+      {"from": "dunsparce", "to": "dudunsparce-two-segment",   "method": {"type": "level", "value": "?"}},
+      {"from": "dunsparce", "to": "dudunsparce-three-segment", "method": {"type": "level", "value": "?"}}
+    ]
+  },
+  {
+    "name": "dudunsparce-two-segment",
+    "evolutions": [
+      {"from": "dunsparce", "to": "dudunsparce-two-segment",   "method": {"type": "level", "value": "?"}},
+      {"from": "dunsparce", "to": "dudunsparce-three-segment", "method": {"type": "level", "value": "?"}}
+    ]
+  },
+  {
+    "name": "dudunsparce-three-segment",
+    "evolutions": [
+      {"from": "dunsparce", "to": "dudunsparce-two-segment",   "method": {"type": "level", "value": "?"}},
+      {"from": "dunsparce", "to": "dudunsparce-three-segment", "method": {"type": "level", "value": "?"}}
+    ]
+  },
+
+  {"_comment": "═══ ALOLAN REGIONAL FORMS ═══════════════════════════════════════════════"},
+
+  {
+    "_comment": "Rattata-Alola line",
+    "name": "rattata-alola",
+    "evolutions": [
+      {"from": "rattata-alola", "to": "raticate-alola", "method": {"type": "level", "value": 20}}
+    ]
+  },
+  {
+    "name": "raticate-alola",
+    "evolutions": [
+      {"from": "rattata-alola", "to": "raticate-alola", "method": {"type": "level", "value": 20}}
+    ]
+  },
+
+  {
+    "_comment": "Sandshrew-Alola line",
+    "name": "sandshrew-alola",
+    "evolutions": [
+      {"from": "sandshrew-alola", "to": "sandslash-alola", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+  {
+    "name": "sandslash-alola",
+    "evolutions": [
+      {"from": "sandshrew-alola", "to": "sandslash-alola", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Vulpix-Alola line",
+    "name": "vulpix-alola",
+    "evolutions": [
+      {"from": "vulpix-alola", "to": "ninetales-alola", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+  {
+    "name": "ninetales-alola",
+    "evolutions": [
+      {"from": "vulpix-alola", "to": "ninetales-alola", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Raichu-Alola — pichu → pikachu → raichu-alola",
+    "name": "raichu-alola",
+    "evolutions": [
+      {"from": "pichu",    "to": "pikachu",      "method": {"type": "other",  "value": ""}},
+      {"from": "pikachu",  "to": "raichu-alola", "method": {"type": "item",   "value": "Thunder Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Diglett-Alola line",
+    "name": "diglett-alola",
+    "evolutions": [
+      {"from": "diglett-alola", "to": "dugtrio-alola", "method": {"type": "level", "value": 26}}
+    ]
+  },
+  {
+    "name": "dugtrio-alola",
+    "evolutions": [
+      {"from": "diglett-alola", "to": "dugtrio-alola", "method": {"type": "level", "value": 26}}
+    ]
+  },
+
+  {
+    "_comment": "Meowth-Alola line",
+    "name": "meowth-alola",
+    "evolutions": [
+      {"from": "meowth-alola", "to": "persian-alola", "method": {"type": "other", "value": ""}}
+    ]
+  },
+  {
+    "name": "persian-alola",
+    "evolutions": [
+      {"from": "meowth-alola", "to": "persian-alola", "method": {"type": "other", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Geodude-Alola line",
+    "name": "geodude-alola",
+    "evolutions": [
+      {"from": "geodude-alola",  "to": "graveler-alola", "method": {"type": "level", "value": 25}},
+      {"from": "graveler-alola", "to": "golem-alola",    "method": {"type": "trade", "value": ""}}
+    ]
+  },
+  {
+    "name": "graveler-alola",
+    "evolutions": [
+      {"from": "geodude-alola",  "to": "graveler-alola", "method": {"type": "level", "value": 25}},
+      {"from": "graveler-alola", "to": "golem-alola",    "method": {"type": "trade", "value": ""}}
+    ]
+  },
+  {
+    "name": "golem-alola",
+    "evolutions": [
+      {"from": "geodude-alola",  "to": "graveler-alola", "method": {"type": "level", "value": 25}},
+      {"from": "graveler-alola", "to": "golem-alola",    "method": {"type": "trade", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Grimer-Alola line",
+    "name": "grimer-alola",
+    "evolutions": [
+      {"from": "grimer-alola", "to": "muk-alola", "method": {"type": "level", "value": 38}}
+    ]
+  },
+  {
+    "name": "muk-alola",
+    "evolutions": [
+      {"from": "grimer-alola", "to": "muk-alola", "method": {"type": "level", "value": 38}}
+    ]
+  },
+
+  {
+    "_comment": "Exeggutor-Alola — exeggcute → exeggutor-alola (Leaf Stone in Alola)",
+    "name": "exeggutor-alola",
+    "evolutions": [
+      {"from": "exeggcute", "to": "exeggutor-alola", "method": {"type": "item", "value": "Leaf Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Marowak-Alola — cubone → marowak-alola (Lv 28, Night)",
+    "name": "marowak-alola",
+    "evolutions": [
+      {"from": "cubone", "to": "marowak-alola", "method": {"type": "level", "value": 28}}
+    ]
+  },
+
+  {"_comment": "═══ GALARIAN REGIONAL FORMS ══════════════════════════════════════════════"},
+
+  {
+    "_comment": "Meowth-Galar line",
+    "name": "meowth-galar",
+    "evolutions": [
+      {"from": "meowth-galar", "to": "perrserker", "method": {"type": "level", "value": 28}}
+    ]
+  },
+  {
+    "name": "perrserker",
+    "evolutions": [
+      {"from": "meowth-galar", "to": "perrserker", "method": {"type": "level", "value": 28}}
+    ]
+  },
+
+  {
+    "_comment": "Ponyta-Galar line",
+    "name": "ponyta-galar",
+    "evolutions": [
+      {"from": "ponyta-galar", "to": "rapidash-galar", "method": {"type": "level", "value": 40}}
+    ]
+  },
+  {
+    "name": "rapidash-galar",
+    "evolutions": [
+      {"from": "ponyta-galar", "to": "rapidash-galar", "method": {"type": "level", "value": 40}}
+    ]
+  },
+
+  {
+    "_comment": "Slowpoke-Galar line (branches: Galarica Cuff → slowbro-galar, Galarica Wreath → slowking-galar)",
+    "name": "slowpoke-galar",
+    "evolutions": [
+      {"from": "slowpoke-galar", "to": "slowbro-galar",  "method": {"type": "item", "value": "Galarica Cuff"}},
+      {"from": "slowpoke-galar", "to": "slowking-galar", "method": {"type": "item", "value": "Galarica Wreath"}}
+    ]
+  },
+  {
+    "name": "slowbro-galar",
+    "evolutions": [
+      {"from": "slowpoke-galar", "to": "slowbro-galar",  "method": {"type": "item", "value": "Galarica Cuff"}},
+      {"from": "slowpoke-galar", "to": "slowking-galar", "method": {"type": "item", "value": "Galarica Wreath"}}
+    ]
+  },
+  {
+    "name": "slowking-galar",
+    "evolutions": [
+      {"from": "slowpoke-galar", "to": "slowbro-galar",  "method": {"type": "item", "value": "Galarica Cuff"}},
+      {"from": "slowpoke-galar", "to": "slowking-galar", "method": {"type": "item", "value": "Galarica Wreath"}}
+    ]
+  },
+
+  {
+    "_comment": "Farfetchd-Galar line (3 critical hits in one battle)",
+    "name": "farfetchd-galar",
+    "evolutions": [
+      {"from": "farfetchd-galar", "to": "sirfetchd", "method": {"type": "three-critical-hits", "value": ""}}
+    ]
+  },
+  {
+    "name": "sirfetchd",
+    "evolutions": [
+      {"from": "farfetchd-galar", "to": "sirfetchd", "method": {"type": "three-critical-hits", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Weezing-Galar — koffing → weezing-galar at Lv 35",
+    "name": "weezing-galar",
+    "evolutions": [
+      {"from": "koffing", "to": "weezing-galar", "method": {"type": "level", "value": 35}}
+    ]
+  },
+
+  {
+    "_comment": "Mr-Mime-Galar line — mime-jr → mr-mime-galar (Lv up + Mimic) → mr-rime (Lv 42)",
+    "name": "mr-mime-galar",
+    "evolutions": [
+      {"from": "mime-jr",       "to": "mr-mime-galar", "method": {"type": "other", "value": ""}},
+      {"from": "mr-mime-galar", "to": "mr-rime",        "method": {"type": "level", "value": 42}}
+    ]
+  },
+  {
+    "name": "mr-rime",
+    "evolutions": [
+      {"from": "mime-jr",       "to": "mr-mime-galar", "method": {"type": "other", "value": ""}},
+      {"from": "mr-mime-galar", "to": "mr-rime",        "method": {"type": "level", "value": 42}}
+    ]
+  },
+
+  {
+    "_comment": "Corsola-Galar line",
+    "name": "corsola-galar",
+    "evolutions": [
+      {"from": "corsola-galar", "to": "cursola", "method": {"type": "level", "value": 38}}
+    ]
+  },
+  {
+    "name": "cursola",
+    "evolutions": [
+      {"from": "corsola-galar", "to": "cursola", "method": {"type": "level", "value": 38}}
+    ]
+  },
+
+  {
+    "_comment": "Zigzagoon-Galar line (Lv 20, then Lv 35 Night for obstagoon)",
+    "name": "zigzagoon-galar",
+    "evolutions": [
+      {"from": "zigzagoon-galar", "to": "linoone-galar", "method": {"type": "level", "value": 20}},
+      {"from": "linoone-galar",   "to": "obstagoon",     "method": {"type": "level", "value": 35}}
+    ]
+  },
+  {
+    "name": "linoone-galar",
+    "evolutions": [
+      {"from": "zigzagoon-galar", "to": "linoone-galar", "method": {"type": "level", "value": 20}},
+      {"from": "linoone-galar",   "to": "obstagoon",     "method": {"type": "level", "value": 35}}
+    ]
+  },
+  {
+    "name": "obstagoon",
+    "evolutions": [
+      {"from": "zigzagoon-galar", "to": "linoone-galar", "method": {"type": "level", "value": 20}},
+      {"from": "linoone-galar",   "to": "obstagoon",     "method": {"type": "level", "value": 35}}
+    ]
+  },
+
+  {
+    "_comment": "Darumaka-Galar line (Ice Stone)",
+    "name": "darumaka-galar",
+    "evolutions": [
+      {"from": "darumaka-galar", "to": "darmanitan-galar-standard", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+  {
+    "name": "darmanitan-galar-standard",
+    "evolutions": [
+      {"from": "darumaka-galar", "to": "darmanitan-galar-standard", "method": {"type": "item", "value": "Ice Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Yamask-Galar line (49 damage taken)",
+    "name": "yamask-galar",
+    "evolutions": [
+      {"from": "yamask-galar", "to": "runerigus", "method": {"type": "take-damage", "value": ""}}
+    ]
+  },
+  {
+    "name": "runerigus",
+    "evolutions": [
+      {"from": "yamask-galar", "to": "runerigus", "method": {"type": "take-damage", "value": ""}}
+    ]
+  },
+
+  {"_comment": "═══ HISUIAN REGIONAL FORMS ═══════════════════════════════════════════════"},
+
+  {
+    "_comment": "Growlithe-Hisui line (Fire Stone)",
+    "name": "growlithe-hisui",
+    "evolutions": [
+      {"from": "growlithe-hisui", "to": "arcanine-hisui", "method": {"type": "item", "value": "Fire Stone"}}
+    ]
+  },
+  {
+    "name": "arcanine-hisui",
+    "evolutions": [
+      {"from": "growlithe-hisui", "to": "arcanine-hisui", "method": {"type": "item", "value": "Fire Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Voltorb-Hisui line (Leaf Stone)",
+    "name": "voltorb-hisui",
+    "evolutions": [
+      {"from": "voltorb-hisui", "to": "electrode-hisui", "method": {"type": "item", "value": "Leaf Stone"}}
+    ]
+  },
+  {
+    "name": "electrode-hisui",
+    "evolutions": [
+      {"from": "voltorb-hisui", "to": "electrode-hisui", "method": {"type": "item", "value": "Leaf Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Sneasel-Hisui line (Lv up + Razor Claw, Day)",
+    "name": "sneasel-hisui",
+    "evolutions": [
+      {"from": "sneasel-hisui", "to": "sneasler", "method": {"type": "other", "value": ""}}
+    ]
+  },
+  {
+    "name": "sneasler",
+    "evolutions": [
+      {"from": "sneasel-hisui", "to": "sneasler", "method": {"type": "other", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Qwilfish-Hisui line (Strong Style Barb Barrage)",
+    "name": "qwilfish-hisui",
+    "evolutions": [
+      {"from": "qwilfish-hisui", "to": "overqwil", "method": {"type": "strong-style-move", "value": ""}}
+    ]
+  },
+  {
+    "name": "overqwil",
+    "evolutions": [
+      {"from": "qwilfish-hisui", "to": "overqwil", "method": {"type": "strong-style-move", "value": ""}}
+    ]
+  },
+
+  {
+    "_comment": "Typhlosion-Hisui — cyndaquil → quilava → typhlosion-hisui",
+    "name": "typhlosion-hisui",
+    "evolutions": [
+      {"from": "cyndaquil", "to": "quilava",          "method": {"type": "level", "value": 17}},
+      {"from": "quilava",   "to": "typhlosion-hisui", "method": {"type": "level", "value": 36}}
+    ]
+  },
+
+  {
+    "_comment": "Samurott-Hisui — oshawott → dewott → samurott-hisui",
+    "name": "samurott-hisui",
+    "evolutions": [
+      {"from": "oshawott", "to": "dewott",         "method": {"type": "level", "value": 17}},
+      {"from": "dewott",   "to": "samurott-hisui", "method": {"type": "level", "value": 36}}
+    ]
+  },
+
+  {
+    "_comment": "Decidueye-Hisui — rowlet → dartrix → decidueye-hisui",
+    "name": "decidueye-hisui",
+    "evolutions": [
+      {"from": "rowlet",  "to": "dartrix",         "method": {"type": "level", "value": 17}},
+      {"from": "dartrix", "to": "decidueye-hisui", "method": {"type": "level", "value": 34}}
+    ]
+  },
+
+  {
+    "_comment": "Braviary-Hisui — rufflet → braviary-hisui (Lv 54)",
+    "name": "braviary-hisui",
+    "evolutions": [
+      {"from": "rufflet", "to": "braviary-hisui", "method": {"type": "level", "value": 54}}
+    ]
+  },
+
+  {
+    "_comment": "Lilligant-Hisui — petilil → lilligant-hisui (Sun Stone)",
+    "name": "lilligant-hisui",
+    "evolutions": [
+      {"from": "petilil", "to": "lilligant-hisui", "method": {"type": "item", "value": "Sun Stone"}}
+    ]
+  },
+
+  {
+    "_comment": "Zorua-Hisui line",
+    "name": "zorua-hisui",
+    "evolutions": [
+      {"from": "zorua-hisui", "to": "zoroark-hisui", "method": {"type": "level", "value": 30}}
+    ]
+  },
+  {
+    "name": "zoroark-hisui",
+    "evolutions": [
+      {"from": "zorua-hisui", "to": "zoroark-hisui", "method": {"type": "level", "value": 30}}
+    ]
+  },
+
+  {
+    "_comment": "Sliggoo-Hisui / Goodra-Hisui line — goomy → sliggoo-hisui → goodra-hisui",
+    "name": "sliggoo-hisui",
+    "evolutions": [
+      {"from": "goomy",       "to": "sliggoo-hisui", "method": {"type": "level", "value": 40}},
+      {"from": "sliggoo-hisui", "to": "goodra-hisui",  "method": {"type": "level", "value": 50}}
+    ]
+  },
+  {
+    "name": "goodra-hisui",
+    "evolutions": [
+      {"from": "goomy",         "to": "sliggoo-hisui", "method": {"type": "level", "value": 40}},
+      {"from": "sliggoo-hisui", "to": "goodra-hisui",  "method": {"type": "level", "value": 50}}
+    ]
+  },
+
+  {
+    "_comment": "Avalugg-Hisui — bergmite → avalugg-hisui (Lv 37)",
+    "name": "avalugg-hisui",
+    "evolutions": [
+      {"from": "bergmite", "to": "avalugg-hisui", "method": {"type": "level", "value": 37}}
+    ]
+  },
+
+  {"_comment": "═══ PALDEAN REGIONAL FORMS ═══════════════════════════════════════════════"},
+
+  {
+    "_comment": "Wooper-Paldea line",
+    "name": "wooper-paldea",
+    "evolutions": [
+      {"from": "wooper-paldea", "to": "clodsire", "method": {"type": "level", "value": 20}}
+    ]
+  },
+  {
+    "name": "clodsire",
+    "evolutions": [
+      {"from": "wooper-paldea", "to": "clodsire", "method": {"type": "level", "value": 20}}
+    ]
+  }
+]

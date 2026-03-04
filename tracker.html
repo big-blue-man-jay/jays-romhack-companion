@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuzlocke Tracker — Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* ── MENU OVERLAY ── */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── PAGE CONTENT ── */
+  .page-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 56px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* ── MANAGER HERO ── */
+  .manager-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .manager-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+
+  .manager-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── ACTION BUTTONS ── */
+  .action-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .action-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 10px 20px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .action-btn:hover { background: var(--surface2); border-color: var(--main); color: var(--main); }
+
+  .action-btn-primary {
+    background: rgba(174,184,194,0.1);
+    border-color: rgba(174,184,194,0.3);
+    color: var(--main);
+  }
+  .action-btn-primary:hover {
+    background: rgba(174,184,194,0.18);
+    border-color: var(--main);
+    color: var(--highlight);
+  }
+
+  .action-btn-danger {
+    color: var(--text-muted);
+  }
+  .action-btn-danger:hover {
+    border-color: rgba(180,80,80,0.5);
+    color: #c87878;
+    background: rgba(180,80,80,0.08);
+  }
+  .action-btn-danger:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── RUNS LIST ── */
+  .runs-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .runs-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .runs-heading-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .runs-heading-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .runs-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── RUN CARD ── */
+  .runs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .run-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .run-card:first-child { border-radius: 8px 8px 0 0; }
+  .run-card:last-child { border-radius: 0 0 8px 8px; }
+  .run-card:only-child { border-radius: 8px; }
+  .run-card + .run-card { border-top: none; }
+  .run-card:hover { background: var(--surface2); border-color: var(--main); z-index: 1; position: relative; }
+  .run-card.selected { border-color: var(--main); background: var(--surface2); z-index: 1; position: relative; }
+
+  .run-card-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .run-card.selected .run-card-indicator { background: var(--main); box-shadow: 0 0 8px rgba(174,184,194,0.4); }
+
+  .run-card-info { flex: 1; }
+
+  .run-card-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--highlight);
+    margin-bottom: 3px;
+  }
+  .run-card.selected .run-card-name { color: var(--highlight); }
+
+  .run-card-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .run-card-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .run-card-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.18);
+    color: var(--text-muted);
+  }
+
+  .run-card-badge.active {
+    background: rgba(106,171,120,0.1);
+    border-color: rgba(106,171,120,0.3);
+    color: #6aab78;
+  }
+
+  .run-card-badge.dead {
+    background: rgba(180,80,80,0.08);
+    border-color: rgba(180,80,80,0.25);
+    color: #c87878;
+  }
+
+  .run-card-arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--border);
+    transition: color 0.15s;
+  }
+  .run-card:hover .run-card-arrow { color: var(--main); }
+
+  /* ── EMPTY STATE ── */
+  .runs-empty {
+    padding: 48px 24px;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    border-style: dashed;
+  }
+
+  .runs-empty-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .runs-empty-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  /* ── NEW RUN MODAL ── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; animation: fadeIn 0.15s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    animation: slideUp 0.15s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--main);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .modal-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .modal-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .modal-input:focus { border-color: var(--main); }
+  .modal-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  .modal-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 9px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-btn:hover { color: var(--text); border-color: var(--main); }
+
+  .modal-btn-confirm {
+    background: rgba(174,184,194,0.1);
+    border-color: rgba(174,184,194,0.3);
+    color: var(--main);
+  }
+  .modal-btn-confirm:hover {
+    background: rgba(174,184,194,0.18);
+    border-color: var(--main);
+    color: var(--highlight);
+  }
+
+  /* ── DELETE CONFIRM MODAL ── */
+  .modal-warning {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    line-height: 1.6;
+  }
+
+  .modal-warning strong {
+    color: #c87878;
+    font-weight: 600;
+  }
+
+  .modal-btn-delete {
+    background: rgba(180,80,80,0.1);
+    border-color: rgba(180,80,80,0.3);
+    color: #c87878;
+  }
+  .modal-btn-delete:hover {
+    background: rgba(180,80,80,0.18);
+    border-color: #c87878;
+  }
+
+  /* ── LIGHT MODE ── */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #A07030;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .run-card { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .run-card:hover { background: #EDE0CC; border-color: #C9A86A; }
+  body.light .run-card.selected { background: #EDE0CC; border-color: #C9A86A; }
+  body.light .run-card-name { color: #7a5020; }
+  body.light .runs-empty { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .modal { background: #F5EBDD; border-color: #E7D8C1; box-shadow: 0 16px 48px rgba(74,64,50,0.2); }
+  body.light .modal-input { background: #FCF8F1; border-color: #E7D8C1; color: #4A4032; }
+  body.light .modal-input:focus { border-color: #C9A86A; }
+  body.light .modal-btn { background: #EDE0CC; border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .modal-btn:hover { border-color: #C9A86A; color: #4A4032; }
+  body.light .modal-btn-confirm { background: rgba(201,168,106,0.15); border-color: rgba(201,168,106,0.4); color: #8a6830; }
+  body.light .action-btn { background: #F5EBDD; border-color: #E7D8C1; color: #4A4032; }
+  body.light .action-btn:hover { background: #EDE0CC; border-color: #C9A86A; color: #8a6830; }
+  body.light .action-btn-primary { background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.35); color: #8a6830; }
+  body.light .action-btn-primary:hover { background: rgba(201,168,106,0.2); }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="page-content">
+
+  <!-- ── HERO ── -->
+  <div class="manager-hero">
+    <div class="manager-title">Nuzlocke Tracker</div>
+    <div class="manager-subtitle">Manage your runs — all data saved locally in your browser</div>
+  </div>
+
+  <!-- ── ACTIONS ── -->
+  <div class="action-row">
+    <button class="action-btn action-btn-primary" onclick="openNewRunModal()">New Run</button>
+    <button class="action-btn" onclick="continueSelected()" id="btnContinue">Continue Run</button>
+    <button class="action-btn action-btn-danger" onclick="openDeleteModal()" id="btnDelete" disabled>Delete Run</button>
+  </div>
+
+  <!-- ── RUNS LIST ── -->
+  <div class="runs-section">
+    <div class="runs-heading">
+      <span class="runs-heading-title">Saved Runs</span>
+      <div class="runs-heading-line"></div>
+      <span class="runs-count" id="runsCount">0 runs</span>
+    </div>
+    <div id="runsList"></div>
+  </div>
+
+</div>
+
+<!-- ── NEW RUN MODAL ── -->
+<div class="modal-backdrop" id="newRunModal">
+  <div class="modal">
+    <div class="modal-title">New Run</div>
+    <div class="modal-field">
+      <label class="modal-label" for="runNameInput">Run Name</label>
+      <input class="modal-input" id="runNameInput" type="text" placeholder="e.g. First Nuzlocke, Hardcore Run...">
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeNewRunModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="createRun()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div class="modal-backdrop" id="deleteModal">
+  <div class="modal">
+    <div class="modal-title">Delete Run</div>
+    <p class="modal-warning">Are you sure you want to delete <strong id="deleteRunName"></strong>? This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeDeleteModal()">Cancel</button>
+      <button class="modal-btn modal-btn-delete" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── THEME ──
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu  = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+  function toggleMenu() { menu.classList.toggle('open'); }
+  function closeMenu()  { menu.classList.remove('open'); }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) menu.classList.remove('open');
+  });
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+
+  // ── RUNS STORAGE ──
+  function getRuns() {
+    try { return JSON.parse(localStorage.getItem('nuzlocke_runs') || '[]'); }
+    catch { return []; }
+  }
+
+  function saveRuns(runs) {
+    localStorage.setItem('nuzlocke_runs', JSON.stringify(runs));
+  }
+
+  function formatDate(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  // ── RENDER RUNS ──
+  let selectedRunId = null;
+
+  function renderRuns() {
+    const runs     = getRuns();
+    const list     = document.getElementById('runsList');
+    const count    = document.getElementById('runsCount');
+    const btnDel   = document.getElementById('btnDelete');
+
+    count.textContent = `${runs.length} run${runs.length !== 1 ? 's' : ''}`;
+    btnDel.disabled   = selectedRunId === null;
+
+    if (runs.length === 0) {
+      list.innerHTML = `
+        <div class="runs-empty">
+          <div class="runs-empty-title">No runs yet</div>
+          <div class="runs-empty-sub">Click New Run to start tracking</div>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = runs.map(run => `
+      <div class="run-card ${run.id === selectedRunId ? 'selected' : ''}"
+           onclick="selectRun('${run.id}')"
+           ondblclick="continueRun('${run.id}')">
+        <div class="run-card-indicator"></div>
+        <div class="run-card-info">
+          <div class="run-card-name">${run.name}</div>
+          <div class="run-card-meta">
+            <span class="run-card-date">Started ${formatDate(run.created)}</span>
+            <span class="run-card-badge ${run.status === 'active' ? 'active' : run.status === 'dead' ? 'dead' : ''}">
+              ${run.status === 'active' ? 'Active' : run.status === 'dead' ? 'Game Over' : 'Completed'}
+            </span>
+            <span class="run-card-badge">${run.badges ?? 0} badges</span>
+          </div>
+        </div>
+        <span class="run-card-arrow">›</span>
+      </div>
+    `).join('');
+  }
+
+  function selectRun(id) {
+    selectedRunId = selectedRunId === id ? null : id;
+    renderRuns();
+  }
+
+  // ── NEW RUN ──
+  function openNewRunModal() {
+    document.getElementById('newRunModal').classList.add('open');
+    setTimeout(() => document.getElementById('runNameInput').focus(), 50);
+  }
+
+  function closeNewRunModal() {
+    document.getElementById('newRunModal').classList.remove('open');
+    document.getElementById('runNameInput').value = '';
+  }
+
+  function createRun() {
+    const name = document.getElementById('runNameInput').value.trim();
+    if (!name) {
+      document.getElementById('runNameInput').focus();
+      return;
+    }
+    const runs  = getRuns();
+    const newRun = {
+      id:      `run_${Date.now()}`,
+      name,
+      created: Date.now(),
+      updated: Date.now(),
+      status:  'active',
+      badges:  0,
+      party:   [],
+      box:     [],
+      dead:    [],
+    };
+    runs.unshift(newRun);
+    saveRuns(runs);
+    closeNewRunModal();
+    renderRuns();
+    // Go straight into the run
+    continueRun(newRun.id);
+  }
+
+  // Enter on input creates run
+  document.getElementById('runNameInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') createRun();
+    if (e.key === 'Escape') closeNewRunModal();
+  });
+
+  // ── CONTINUE RUN ──
+  function continueSelected() {
+    if (!selectedRunId) return;
+    continueRun(selectedRunId);
+  }
+
+  function continueRun(id) {
+    // Store active run ID and navigate to run view
+    localStorage.setItem('nuzlocke_active_run', id);
+    window.location.href = `tracker-run.html?run=${id}`;
+  }
+
+  // ── DELETE RUN ──
+  function openDeleteModal() {
+    if (!selectedRunId) return;
+    const runs = getRuns();
+    const run  = runs.find(r => r.id === selectedRunId);
+    if (!run) return;
+    document.getElementById('deleteRunName').textContent = run.name;
+    document.getElementById('deleteModal').classList.add('open');
+  }
+
+  function closeDeleteModal() {
+    document.getElementById('deleteModal').classList.remove('open');
+  }
+
+  function confirmDelete() {
+    const runs    = getRuns().filter(r => r.id !== selectedRunId);
+    selectedRunId = null;
+    saveRuns(runs);
+    closeDeleteModal();
+    renderRuns();
+  }
+
+  // Close modals on backdrop click
+  document.getElementById('newRunModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeNewRunModal();
+  });
+  document.getElementById('deleteModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDeleteModal();
+  });
+
+  // ── INIT ──
+  renderRuns();
+</script>
+</body>
+</html>

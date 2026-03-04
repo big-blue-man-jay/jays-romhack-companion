@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aromatisse — Pokédex — Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#161A1F;--surface:#20262D;--surface2:#272E37;--border:#313943;--text:#E9EDF1;--text-muted:#AAB2BA;--accent:#8E9CAA;--main:#AEB8C2;--highlight:#C8D2DB;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+
+  /* HEADER */
+  .page-header{background:var(--surface);border-bottom:2px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;}
+  .romhack-title{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--accent);letter-spacing:1px;text-shadow:0 0 20px rgba(142,156,170,0.3);white-space:nowrap;flex-shrink:0;}
+  .header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .menu-btn{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;user-select:none;}
+  .menu-btn:hover{border-color:var(--main);color:var(--main);}
+  .menu-icon{display:flex;flex-direction:column;gap:3px;}
+  .menu-icon span{display:block;width:14px;height:1.5px;background:currentColor;border-radius:1px;}
+  .theme-toggle{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s;user-select:none;}
+  .theme-toggle:hover{border-color:var(--accent);}
+  .toggle-track{width:32px;height:18px;background:var(--border);border-radius:9px;position:relative;transition:background 0.2s;}
+  .toggle-track.active{background:var(--main);}
+  .toggle-thumb{width:12px;height:12px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+  .toggle-track.active .toggle-thumb{transform:translateX(14px);}
+  .theme-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .menu-overlay{position:fixed;top:72px;right:32px;width:220px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;z-index:200;display:none;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+  .menu-overlay.open{display:block;animation:menuIn .15s ease;}
+  @keyframes menuIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .menu-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;padding:0 8px;margin-bottom:4px;margin-top:12px;}
+  .menu-section-title:first-child{margin-top:0;}
+  .menu-link{display:flex;align-items:center;padding:8px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);text-decoration:none;transition:all .15s;}
+  .menu-link:hover{background:rgba(255,255,255,.06);color:var(--main);}
+  .menu-divider{height:1px;background:var(--border);margin:8px 0;}
+
+  /* LAYOUT */
+  .back-bar{max-width:1000px;margin:0 auto;padding:20px 32px 0;}
+  .back-link{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--main);}
+  .page-body{max-width:1000px;margin:0 auto;padding:20px 32px 80px;display:flex;flex-direction:column;gap:24px;}
+
+  /* POKEMON HEADER */
+  .poke-header{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;}
+
+  /* Shiny button — hover reveal */
+  .shiny-btn{position:absolute;top:10px;left:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 9px;font-size:15px;line-height:1;cursor:pointer;opacity:0;transition:opacity .2s,background .2s,border-color .2s;z-index:2;color:var(--text);}
+  .poke-header:hover .shiny-btn{opacity:1;}
+  .shiny-btn.active{opacity:1!important;background:rgba(248,208,48,.12);border-color:rgba(248,208,48,.45);}
+  .shiny-btn.active::after{content:'';}
+
+  /* Sprite */
+  .sprite-wrap{flex-shrink:0;text-align:center;}
+  .sprite-img{width:128px;height:128px;image-rendering:pixelated;object-fit:contain;transition:transform .15s;}
+  .sprite-img.shiny{}
+
+  /* Info */
+  .poke-info{display:flex;flex-direction:column;gap:8px;min-width:160px;}
+  .poke-dex{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;}
+  .poke-name{font-family:'Press Start 2P',monospace;font-size:18px;color:var(--text);letter-spacing:1px;line-height:1.4;}
+  .poke-genus{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .poke-types-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .type-badge{font-family:'DM Mono',monospace;font-weight:500;padding:3px 10px;border-radius:4px;letter-spacing:.3px;}
+  .poke-flags{display:flex;gap:6px;flex-wrap:wrap;}
+  .page-flag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;}
+  .flag-mod{background:rgba(201,168,106,.15);color:#C9A86A;border:1px solid rgba(201,168,106,.35);}
+  .flag-meta{background:rgba(120,170,220,.15);color:#78AADC;border:1px solid rgba(120,170,220,.35);}
+
+  /* EVO CHAIN in header — larger */
+  .evo-combined{display:flex;flex-direction:column;gap:8px;justify-content:center;}
+  .evo-chain-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px;justify-content:flex-end;}
+  .evo-c-node{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:var(--text-muted);transition:color .15s;padding:5px;border-radius:8px;}
+  .evo-c-node:hover{color:var(--main);background:rgba(255,255,255,.04);}
+  .evo-c-cur{color:var(--highlight)!important;}
+  .evo-c-cur .evo-c-spr{border-color:var(--main);}
+  .evo-c-spr{width:68px;height:68px;image-rendering:pixelated;object-fit:contain;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px;}
+  .evo-c-lbl{font-family:'DM Mono',monospace;font-size:10px;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .evo-c-arr{display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--text-muted);padding:0 3px;}
+  .evo-c-mth{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);text-align:center;white-space:nowrap;}
+  .evo-c-arw{font-size:16px;line-height:1;}
+  .evo-c-wide-arr{font-size:20px;align-self:center;padding:0 2px;flex-shrink:0;}
+  .evo-c-branches{display:flex;flex-direction:column;gap:6px;}
+  .evo-c-branches-wide{display:grid;grid-template-columns:repeat(3,auto);gap:8px 6px;align-items:start;}
+  .evo-c-wide-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .evo-c-wide-item .evo-c-mth{margin-bottom:2px;}
+  .evo-c-branch{display:flex;align-items:center;}
+  .family-web{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;padding-top:8px;border-top:1px solid var(--border);}
+
+  /* SECONDARY ROW */
+  .poke-secondary{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .poke-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:12px;}
+  .section-head{display:flex;align-items:center;gap:14px;}
+  .section-lbl{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  /* Stats */
+  .stat-row{display:grid;grid-template-columns:36px 36px 1fr;align-items:center;gap:10px;}
+  .stat-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-align:right;}
+  .stat-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;text-align:right;}
+  .stat-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+  .stat-fill{height:100%;border-radius:4px;}
+  .stat-total{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
+  .stat-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .stat-total-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--highlight);}
+
+  /* Abilities — sized for max 3 items */
+  .abilities-list{display:flex;flex-direction:column;gap:8px;flex:1;}
+  .ability-item{padding:10px 14px;background:var(--surface2);border-radius:8px;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;}
+  .ability-name-row{display:flex;align-items:center;gap:8px;}
+  .ability-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);font-weight:500;}
+  .ability-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+  .ability-ha{border:1px dashed var(--border);background:transparent;}
+  .ability-ha .ability-name{color:var(--text-muted);}
+  .ha-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);padding:1px 5px;border:1px solid var(--border);border-radius:3px;letter-spacing:.5px;flex-shrink:0;}
+
+  /* LEARNSET */
+  .learnset-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px;}
+  .mv-filters{display:flex;flex-direction:column;gap:8px;}
+  .mv-frow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .mv-fbtn{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text-muted);cursor:pointer;transition:all .15s;user-select:none;}
+  .mv-fbtn:hover{color:var(--text);border-color:var(--main);}
+  .mv-fbtn.active{color:var(--main);border-color:var(--main);background:rgba(174,184,194,.08);}
+  .mv-search{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:160px;transition:border-color .2s;}
+  .mv-search::placeholder{color:var(--text-muted);}
+  .mv-search:focus{border-color:var(--main);}
+  .mv-tp{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;cursor:pointer;opacity:.35;transition:opacity .15s,transform .1s;user-select:none;}
+  .mv-tp:hover{opacity:.6;}
+  .mv-tp.active{opacity:1;transform:scale(1.06);}
+  .mv-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-left:auto;flex-shrink:0;}
+  .mv-sep{width:1px;background:var(--border);height:18px;flex-shrink:0;}
+
+  .mv-table-wrap{overflow-x:auto;}
+  .mv-table{width:100%;border-collapse:collapse;min-width:640px;}
+  .mv-table th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--text);padding:10px 10px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;user-select:none;}
+  .mv-table th.num{text-align:right;}
+  .mv-row td{padding:7px 10px;border-bottom:1px solid rgba(49,57,67,.4);vertical-align:middle;font-size:13px;}
+  .mv-row:hover td{background:rgba(255,255,255,.025);}
+  .mv-row:last-child td{border-bottom:none;}
+  .mv-td-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);white-space:nowrap;}
+  .mv-td-num{font-family:'DM Mono',monospace;font-size:11px;text-align:right;color:var(--text-muted);}
+  .mv-td-desc{font-size:12px;color:var(--text-muted);max-width:280px;}
+  .mv-src{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+  .mv-tbadge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+  .mv-cat{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
+  .mv-cat-img{height:16px;image-rendering:pixelated;vertical-align:middle;display:block;}
+  .mv-empty-row{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);text-align:center;padding:24px !important;}
+
+  /* DEX ENTRY + STRATEGY + RELATED ITEMS */
+  .dex-items-row{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .dex-top-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  .dex-entry-section,.strategy-section{padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0;}
+  .strategy-section{border-left:1px solid var(--border);}
+  .row-divider{height:1px;background:var(--border);flex-shrink:0;}
+  .items-section{padding:20px 22px;display:flex;flex-direction:column;gap:10px;}
+  .dex-entry-text{font-size:13px;color:var(--text-muted);line-height:1.75;font-style:italic;}
+  .dex-entry-empty{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);opacity:.5;}
+  .strategy-text{font-size:13px;color:var(--text-muted);line-height:1.75;}
+  .strategy-empty{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);opacity:.5;}
+  .strategy-set-box{display:flex;flex-direction:column;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .strategy-set-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .strategy-set-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .strategy-export-btn{padding:5px 10px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;}
+  .strategy-export-btn:hover,.strategy-export-btn.copied{border-color:var(--main);color:var(--main);}
+  .strategy-set-code{margin:0;padding:10px 12px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.05);border-radius:8px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--highlight);white-space:pre-wrap;word-break:break-word;user-select:text;}
+  .strategy-set-code.is-selected{border-color:var(--main);box-shadow:0 0 0 1px rgba(174,184,194,.18) inset;}
+  .strategy-notes-wrap{display:flex;flex-direction:column;gap:8px;}
+  .strategy-notes-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .strategy-bullets{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--text-muted);font-size:13px;line-height:1.65;}
+  .strategy-bullets li::marker{color:var(--main);}
+  .items-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .item-entry{display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--surface2);border-radius:7px;text-decoration:none;}
+  .item-entry-link{cursor:pointer;transition:border-color .15s,background .15s;border:1px solid transparent;}
+  .item-entry-link:hover{border-color:var(--main);background:rgba(255,255,255,.04);}
+  .item-icon{width:24px;height:24px;image-rendering:pixelated;object-fit:contain;flex-shrink:0;}
+  .item-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);}
+  body.light .dex-items-row{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .strategy-section{border-color:#D4C4A8;}
+  body.light .strategy-set-box{background:#EDE0CC;border-color:#D4C4A8;}
+  body.light .strategy-set-code{background:rgba(255,255,255,.35);border-color:rgba(122,107,85,.12);}
+  body.light .row-divider{background:#D4C4A8;}
+  body.light .item-entry{background:#EDE0CC;}
+
+  /* LIGHT */
+  body.light{--bg:#FCF8F1;--surface:#F5EBDD;--surface2:#EDE0CC;--border:#D4C4A8;--text:#2C2416;--text-muted:#7A6B55;--accent:#C9A86A;--main:#B8944E;--highlight:#7a5020;}
+  body.light .page-header{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .romhack-title{color:#C9A86A;text-shadow:none;}
+  body.light .menu-overlay{background:#F5EBDD;box-shadow:0 8px 32px rgba(74,64,50,.15);}
+  body.light .menu-link{color:#4A4032;} body.light .menu-link:hover{background:rgba(0,0,0,.05);color:#C9A86A;}
+  body.light .menu-btn{background:#EDE0CC;border-color:#D4C4A8;color:#4A4032;} body.light .menu-btn:hover{border-color:#C9A86A;color:#C9A86A;}
+  body.light .theme-toggle{background:#EDE0CC;border-color:#D4C4A8;}
+  body.light .poke-header{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .evo-c-spr{background:#EDE0CC;border-color:#D4C4A8;} body.light .evo-c-cur .evo-c-spr{border-color:#C9A86A;}
+  body.light .poke-section, body.light .learnset-wrap{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .ability-item{background:#EDE0CC;} body.light .ability-ha{background:transparent;border-color:#D4C4A8;}
+  body.light .stat-track{background:#EDE0CC;}
+  body.light .mv-fbtn{background:#EDE0CC;border-color:#D4C4A8;} body.light .mv-fbtn.active{background:rgba(201,168,106,.1);border-color:#C9A86A;color:#B8944E;}
+  body.light .mv-search{background:#EDE0CC;border-color:#D4C4A8;color:#2C2416;} body.light .mv-search:focus{border-color:#C9A86A;}
+  body.light .mv-row:hover td{background:rgba(0,0,0,.02);} body.light .mv-row td{border-color:rgba(212,196,168,.5);}
+  body.light .mv-table th{border-color:#D4C4A8;}
+  @media(max-width:720px){
+    .poke-header{grid-template-columns:1fr;}
+    .poke-secondary{grid-template-columns:1fr;}
+    .evo-chain-h{justify-content:flex-start;}
+    .dex-top-grid{grid-template-columns:1fr;}
+    .strategy-section{border-left:none;border-top:1px solid var(--border);}
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="../index.html" class="menu-link">Home</a>
+  <a href="../areadex.html" class="menu-link">Area Sheets</a>
+  <a href="../pokedex.html" class="menu-link">Pokedex</a>
+  <a href="../trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="../itemdex.html" class="menu-link">ItemDex</a>
+  <a href="../progression.html" class="menu-link">Progression</a>
+  <a href="../mechanics.html" class="menu-link">Mechanics</a>
+  <a href="../calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="../tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="back-bar"><a href="../pokedex.html" class="back-link">← Back to Pokédex</a></div>
+
+<div class="page-body">
+
+  <div class="poke-header">
+    <button class="shiny-btn" id="shinyBtn" onclick="toggleShiny()" title="Toggle Shiny">✨</button>
+    <div class="sprite-wrap">
+      <img class="sprite-img" id="mainSprite" src="https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png" alt="Aromatisse"
+           data-fallback="https://play.pokemonshowdown.com/sprites/dex/aromatisse.png"
+           onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src=this.dataset.fallback}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}">
+    </div>
+    <div class="poke-info">
+      <span class="poke-dex">#0683 · Gen VI · Fragrance Pokémon</span>
+      <h1 class="poke-name">Aromatisse</h1>
+      <div class="poke-types-row"><span class="type-badge" style="background:#EE99AC;color:#fff;font-size:12px">Fairy</span></div>
+      
+    </div>
+    <div><div class="evo-combined"><div class="evo-chain-h"><a href="spritzee.html" class="evo-c-node"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/spritzee.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/spritzee.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/spritzee.png" alt="Spritzee" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/spritzee.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Spritzee</span></a><div class="evo-c-arr"><span class="evo-c-mth">Trade&nbsp;(Sachet)</span><span class="evo-c-arw">→</span></div><a href="aromatisse.html" class="evo-c-node evo-c-cur"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/aromatisse.png" alt="Aromatisse" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/aromatisse.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Aromatisse</span></a></div><div class="family-web"><a href="spritzee.html" class="evo-c-node"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/spritzee.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/spritzee.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/spritzee.png" alt="Spritzee" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/spritzee.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Spritzee</span></a><a href="aromatisse.html" class="evo-c-node evo-c-cur"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/aromatisse.png" alt="Aromatisse" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/aromatisse.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Aromatisse</span></a></div></div></div>
+  </div>
+
+  <div class="dex-items-row">
+    <div class="dex-top-grid">
+      <div class="dex-entry-section">
+        <div class="section-head"><span class="section-lbl">Pokédex Entry</span><div class="section-line"></div></div>
+        <p class="dex-entry-text">It devises various scents, pleasant and unpleasant, and emits scents that its enemies dislike in order to gain an edge in battle.</p>
+      </div>
+      <div class="strategy-section">
+        <div class="section-head"><span class="section-lbl">Strategy</span><div class="section-line"></div></div>
+        <p class="strategy-empty">No strategy notes yet.</p>
+      </div>
+    </div>
+    <div class="row-divider"></div>
+    <div class="items-section">
+      <div class="section-head"><span class="section-lbl">Related Items</span><div class="section-line"></div></div>
+      <div class="items-list"><div class="item-entry"><img class="item-icon" src="../sprites/items/linking-cord.png" alt="Linking Cord" onerror="this.onerror=null;this.style.display='none'"><span class="item-name">Linking Cord</span></div><div class="item-entry"><img class="item-icon" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/sachet.png" alt="Sachet" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/itemicons/sachet.png'}else{this.onerror=null;this.style.display='none'}"><span class="item-name">Sachet</span></div></div>
+    </div>
+  </div>
+
+  <div class="poke-secondary">
+    <div class="poke-section">
+      <div class="section-head"><span class="section-lbl">Base Stats</span><div class="section-line"></div></div>
+      <div class="stat-row"><span class="stat-lbl">HP</span><span class="stat-val" style="color:#FC6C6D">101</span><div class="stat-track"><div class="stat-fill" style="width:39.6%;background:#FC6C6D"></div></div></div><div class="stat-row"><span class="stat-lbl">Atk</span><span class="stat-val" style="color:#F5A073">72</span><div class="stat-track"><div class="stat-fill" style="width:28.2%;background:#F5A073"></div></div></div><div class="stat-row"><span class="stat-lbl">Def</span><span class="stat-val" style="color:#F5D782">72</span><div class="stat-track"><div class="stat-fill" style="width:28.2%;background:#F5D782"></div></div></div><div class="stat-row"><span class="stat-lbl">SpA</span><span class="stat-val" style="color:#86BFFF">99</span><div class="stat-track"><div class="stat-fill" style="width:38.8%;background:#86BFFF"></div></div></div><div class="stat-row"><span class="stat-lbl">SpD</span><span class="stat-val" style="color:#96D9D6">89</span><div class="stat-track"><div class="stat-fill" style="width:34.9%;background:#96D9D6"></div></div></div><div class="stat-row"><span class="stat-lbl">Spe</span><span class="stat-val" style="color:#F85888">29</span><div class="stat-track"><div class="stat-fill" style="width:11.4%;background:#F85888"></div></div></div><div class="stat-total"><span class="stat-total-lbl">Total</span><span class="stat-total-val">462</span></div>
+    </div>
+    <div class="poke-section">
+      <div class="section-head"><span class="section-lbl">Abilities</span><div class="section-line"></div></div>
+      <div class="abilities-list"><div class="ability-item" data-slug="healer"><span class="ability-name">Healer</span><span class="ability-desc" id="ab-healer">May cure the status condition of an ally with each turn.</span></div>
+<div class="ability-item ability-ha" data-slug="aroma-veil"><div class="ability-name-row"><span class="ability-name">Aroma Veil</span><span class="ha-tag">HA</span></div><span class="ability-desc" id="ab-aroma-veil">Protects the Pokémon and its allies from stat-lowering moves.</span></div></div>
+    </div>
+  </div>
+
+  <div class="learnset-wrap">
+    <div class="section-head"><span class="section-lbl">Learnset</span><div class="section-line"></div></div>
+    <div class="mv-filters">
+      <div class="mv-frow">
+        <button class="mv-fbtn active" data-group="source" data-val="all" onclick="toggleSrc(this)">All</button>
+        <button class="mv-fbtn" data-group="source" data-val="levelup" onclick="toggleSrc(this)">Level Up</button>
+        <button class="mv-fbtn" data-group="source" data-val="tm" onclick="toggleSrc(this)">TM / HM</button>
+        <button class="mv-fbtn" data-group="source" data-val="egg" onclick="toggleSrc(this)">Egg</button>
+        <button class="mv-fbtn" data-group="source" data-val="tutor" onclick="toggleSrc(this)">Tutor</button>
+        <div class="mv-sep"></div>
+        <button class="mv-fbtn active" data-group="cat" data-val="all" onclick="toggleCat(this)">All</button>
+        <button class="mv-fbtn" data-group="cat" data-val="physical" onclick="toggleCat(this)" style="color:#F5A073">Phys</button>
+        <button class="mv-fbtn" data-group="cat" data-val="special" onclick="toggleCat(this)" style="color:#86BFFF">Spec</button>
+        <button class="mv-fbtn" data-group="cat" data-val="status" onclick="toggleCat(this)" style="color:#96D9D6">Stat</button>
+        <input class="mv-search" id="mvSearch" type="text" placeholder="Search moves…" oninput="renderTable()">
+        <span class="mv-count" id="mvCount"></span>
+      </div>
+      <div class="mv-frow"><span class="mv-tp" data-type="Normal" style="background:#A8A878;color:#fff" onclick="toggleMvType('Normal',this)">Normal</span><span class="mv-tp" data-type="Fire" style="background:#F08030;color:#fff" onclick="toggleMvType('Fire',this)">Fire</span><span class="mv-tp" data-type="Water" style="background:#6890F0;color:#fff" onclick="toggleMvType('Water',this)">Water</span><span class="mv-tp" data-type="Electric" style="background:#F8D030;color:#333" onclick="toggleMvType('Electric',this)">Electric</span><span class="mv-tp" data-type="Grass" style="background:#78C850;color:#fff" onclick="toggleMvType('Grass',this)">Grass</span><span class="mv-tp" data-type="Ice" style="background:#98D8D8;color:#333" onclick="toggleMvType('Ice',this)">Ice</span><span class="mv-tp" data-type="Fighting" style="background:#C03028;color:#fff" onclick="toggleMvType('Fighting',this)">Fighting</span><span class="mv-tp" data-type="Poison" style="background:#A040A0;color:#fff" onclick="toggleMvType('Poison',this)">Poison</span><span class="mv-tp" data-type="Ground" style="background:#E0C068;color:#333" onclick="toggleMvType('Ground',this)">Ground</span><span class="mv-tp" data-type="Flying" style="background:#A890F0;color:#fff" onclick="toggleMvType('Flying',this)">Flying</span><span class="mv-tp" data-type="Psychic" style="background:#F85888;color:#fff" onclick="toggleMvType('Psychic',this)">Psychic</span><span class="mv-tp" data-type="Bug" style="background:#A8B820;color:#fff" onclick="toggleMvType('Bug',this)">Bug</span><span class="mv-tp" data-type="Rock" style="background:#B8A038;color:#fff" onclick="toggleMvType('Rock',this)">Rock</span><span class="mv-tp" data-type="Ghost" style="background:#705898;color:#fff" onclick="toggleMvType('Ghost',this)">Ghost</span><span class="mv-tp" data-type="Dragon" style="background:#7038F8;color:#fff" onclick="toggleMvType('Dragon',this)">Dragon</span><span class="mv-tp" data-type="Dark" style="background:#705848;color:#fff" onclick="toggleMvType('Dark',this)">Dark</span><span class="mv-tp" data-type="Steel" style="background:#B8B8D0;color:#333" onclick="toggleMvType('Steel',this)">Steel</span><span class="mv-tp" data-type="Fairy" style="background:#EE99AC;color:#fff" onclick="toggleMvType('Fairy',this)">Fairy</span></div>
+    </div>
+    <div class="mv-table-wrap">
+      <table class="mv-table">
+        <thead><tr>
+          <th>Src</th><th>Move</th><th>Type</th><th>Cat</th>
+          <th class="num">Pwr</th><th class="num">Acc</th><th class="num">PP</th><th>Description</th>
+        </tr></thead>
+        <tbody id="mvTableBody"><tr><td colspan="8" class="mv-empty-row">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const MOVE_DATA = {"levelup":[],"egg":[],"tm":[],"tutor":[]};
+// Move details baked in at generation time — works on file:// without a server.
+// If moves.json loads successfully at runtime it will override (more complete data).
+const BAKED_MOVE_DB = {};
+const SPRITE_N = "https://play.pokemonshowdown.com/sprites/gen5/aromatisse.png";
+const SPRITE_S = "https://play.pokemonshowdown.com/sprites/gen5-shiny/aromatisse.png";
+let shiny = false;
+let moveDb = BAKED_MOVE_DB, abilityDb = {};
+let tableRows = [];
+let activeSources = new Set();   // empty = all
+let activeCats    = new Set();
+let activeTypes   = new Set();
+
+const TC = {Normal:'#A8A878',Fire:'#F08030',Water:'#6890F0',Electric:'#F8D030',Grass:'#78C850',Ice:'#98D8D8',Fighting:'#C03028',Poison:'#A040A0',Ground:'#E0C068',Flying:'#A890F0',Psychic:'#F85888',Bug:'#A8B820',Rock:'#B8A038',Ghost:'#705898',Dragon:'#7038F8',Dark:'#705848',Steel:'#B8B8D0',Fairy:'#EE99AC'};
+const TT = {Electric:'#333',Ice:'#333',Ground:'#333',Steel:'#333'};
+const CS = {physical:{c:'#F5A073',l:'Phys'},special:{c:'#86BFFF',l:'Spec'},status:{c:'#96D9D6',l:'Stat'}};
+const SS = {levelup:{c:'#86BFFF',b:'rgba(134,191,255,.12)',l:'LV'},tm:{c:'#A878FA',b:'rgba(168,120,250,.12)',l:'TM'},egg:{c:'#F5A073',b:'rgba(245,160,115,.12)',l:'EGG'},tutor:{c:'#78C850',b:'rgba(120,200,80,.12)',l:'TUT'}};
+
+function exportStrategySet(btn) {
+  if (!btn) return;
+  const wrap = btn.closest('.strategy-set-box');
+  const code = wrap ? wrap.querySelector('.strategy-set-code') : null;
+  if (!code) return;
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(code);
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  code.classList.add('is-selected');
+  if (code._clearSelectionTimer) clearTimeout(code._clearSelectionTimer);
+  code._clearSelectionTimer = setTimeout(() => code.classList.remove('is-selected'), 1400);
+
+  const resetBtn = (copied) => {
+    btn.textContent = copied ? 'Copied' : 'Export';
+    btn.classList.toggle('copied', copied);
+    setTimeout(() => {
+      btn.textContent = 'Export';
+      btn.classList.remove('copied');
+    }, 1200);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(code.textContent).then(() => resetBtn(true)).catch(() => resetBtn(false));
+  } else {
+    resetBtn(false);
+  }
+}
+
+// ── SHINY ──
+const spriteEl = document.getElementById('mainSprite');
+function toggleShiny() {
+  shiny = !shiny;
+  // Main sprite
+  spriteEl.src = shiny ? SPRITE_S : SPRITE_N;
+  spriteEl.classList.toggle('shiny', shiny);
+  // Evo chain sprites (includes family-web nodes, which also use .evo-c-spr)
+  document.querySelectorAll('.evo-c-spr').forEach(img => {
+    img.src = shiny ? img.dataset.shiny : img.dataset.normal;
+  });
+  // Button state
+  document.getElementById('shinyBtn').classList.toggle('active', shiny);
+}
+
+function esc(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+function srcBadge(s, lv) {
+  const x = SS[s]||{c:'#aaa',b:'rgba(0,0,0,.1)',l:s};
+  const label = (s==='levelup'&&lv) ? `Lv.${lv}` : x.l;
+  return `<span class="mv-src" style="color:${x.c};background:${x.b}">${label}</span>`;
+}
+function typeBadge(t) { if(!t||t==='?') return '<span class="mv-tbadge" style="background:#444;color:#aaa">?</span>'; return `<span class="mv-tbadge" style="background:${TC[t]||'#888'};color:${TT[t]||'#fff'}">${t}</span>`; }
+const CAT_IMGS = {
+  physical: 'https://play.pokemonshowdown.com/sprites/categories/Physical.png',
+  special:  'https://play.pokemonshowdown.com/sprites/categories/Special.png',
+  status:   'https://play.pokemonshowdown.com/sprites/categories/Status.png',
+};
+function catBadge(c) {
+  const src = CAT_IMGS[c];
+  if (src) return `<img class="mv-cat-img" src="${src}" alt="${c}" title="${c[0].toUpperCase()+c.slice(1)}">`;
+  return `<span class="mv-cat" style="color:#aaa">?</span>`;
+}
+
+// ── DATA LOADING ──
+// moveDb is pre-initialised from BAKED_MOVE_DB so the table renders immediately.
+// The fetches below succeed only when served via a local server (not file://) and
+// give us the full move database; they are silent no-ops on file://.
+async function init() {
+  try {
+    const fetched = await fetch('../data/moves.json').then(r=>r.json());
+    if (fetched && Object.keys(fetched).length > 0) moveDb = fetched;
+  } catch(e) {}
+  try {
+    abilityDb = await fetch('../data/abilities.json').then(r=>r.json());
+    document.querySelectorAll('.ability-item').forEach(el => {
+      const slug = el.dataset.slug;
+      const info = abilityDb[slug];
+      if (info) {
+        const desc = typeof info === 'string' ? info : (info.desc || info.short_effect || '');
+        const descEl = el.querySelector('.ability-desc');
+        if (descEl && desc) descEl.textContent = desc;
+      }
+    });
+  } catch(e) {}
+  buildRows();
+  renderTable();
+}
+
+function buildRows() {
+  tableRows = [];
+  function add(list, src) {
+    list.forEach(m => {
+      const db = moveDb[m.slug] || {};
+      tableRows.push({src, level: src==='levelup'?m.level:null, name: db.name||m.name, slug: m.slug,
+        type: db.type||'?', cat: db.category||'status', power: db.power??null,
+        acc: db.accuracy??null, pp: db.pp??null, desc: db.desc||''});
+    });
+  }
+  add(MOVE_DATA.levelup,'levelup'); add(MOVE_DATA.egg,'egg'); add(MOVE_DATA.tm,'tm'); add(MOVE_DATA.tutor,'tutor');
+  const ord={levelup:0,egg:1,tm:2,tutor:3};
+  tableRows.sort((a,b) => {
+    if(a.src!==b.src) return (ord[a.src]||9)-(ord[b.src]||9);
+    if(a.src==='levelup') return (a.level||0)-(b.level||0);
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function getFiltered() {
+  const q = document.getElementById('mvSearch').value.toLowerCase().trim();
+  return tableRows.filter(r => {
+    if (activeSources.size > 0 && !activeSources.has(r.src)) return false;
+    if (activeCats.size > 0 && !activeCats.has(r.cat)) return false;
+    if (activeTypes.size > 0 && !activeTypes.has(r.type)) return false;
+    if (q && !r.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderTable() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('mvTableBody');
+  document.getElementById('mvCount').textContent = rows.length + ' move' + (rows.length!==1?'s':'');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="mv-empty-row">No moves match filters.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `<tr class="mv-row">
+    <td>${srcBadge(r.src, r.level)}</td>
+    <td class="mv-td-name">${esc(r.name)}</td>
+    <td>${typeBadge(r.type)}</td>
+    <td>${catBadge(r.cat)}</td>
+    <td class="mv-td-num">${r.power??'—'}</td>
+    <td class="mv-td-num">${r.acc!=null?r.acc+'%':'—'}</td>
+    <td class="mv-td-num">${r.pp??'—'}</td>
+    <td class="mv-td-desc">${esc(r.desc)}</td>
+  </tr>`).join('');
+}
+
+// ── MULTI-SELECT FILTERS (union) ──
+function toggleSrc(el) {
+  const val = el.dataset.val;
+  if (val === 'all') {
+    activeSources.clear();
+    document.querySelectorAll('[data-group="source"]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    // Remove "All" active
+    document.querySelector('[data-group="source"][data-val="all"]').classList.remove('active');
+    if (activeSources.has(val)) {
+      activeSources.delete(val);
+      el.classList.remove('active');
+    } else {
+      activeSources.add(val);
+      el.classList.add('active');
+    }
+    // If none left, re-activate All
+    if (activeSources.size === 0) {
+      document.querySelector('[data-group="source"][data-val="all"]').classList.add('active');
+    }
+  }
+  renderTable();
+}
+
+function toggleCat(el) {
+  const val = el.dataset.val;
+  if (val === 'all') {
+    activeCats.clear();
+    document.querySelectorAll('[data-group="cat"]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    document.querySelector('[data-group="cat"][data-val="all"]').classList.remove('active');
+    if (activeCats.has(val)) {
+      activeCats.delete(val);
+      el.classList.remove('active');
+    } else {
+      activeCats.add(val);
+      el.classList.add('active');
+    }
+    if (activeCats.size === 0) {
+      document.querySelector('[data-group="cat"][data-val="all"]').classList.add('active');
+    }
+  }
+  renderTable();
+}
+
+function toggleMvType(type, el) {
+  if (activeTypes.has(type)) {
+    activeTypes.delete(type);
+    el.classList.remove('active');
+  } else {
+    activeTypes.add(type);
+    el.classList.add('active');
+  }
+  renderTable();
+}
+
+// ── THEME ──
+const toggleTrack=document.getElementById('toggleTrack');
+const themeLabel=document.getElementById('themeLabel');
+const menu=document.getElementById('menuOverlay');
+function toggleTheme(){ document.body.classList.toggle('light'); const l=document.body.classList.contains('light'); toggleTrack.classList.toggle('active',l); themeLabel.textContent=l?'Light':'Dark'; localStorage.setItem('theme',l?'light':'dark'); }
+function toggleMenu(){ menu.classList.toggle('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.menu-overlay')&&!e.target.closest('.menu-btn')) menu.classList.remove('open'); });
+if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); toggleTrack.classList.add('active'); themeLabel.textContent='Light'; }
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* ── MENU OVERLAY ── */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── PAGE CONTENT ── */
+  .page-content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 64px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+    padding-bottom: 56px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .hero-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 28px;
+    color: var(--text);
+    letter-spacing: 2px;
+    line-height: 1.5;
+  }
+
+  .hero-tagline {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 480px;
+    line-height: 1.7;
+  }
+
+  .hero-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 4px;
+  }
+
+  .hero-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.2);
+    color: var(--text-muted);
+  }
+
+  /* ── SECTION SHARED ── */
+  .section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-heading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-heading-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .section-heading-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── CHANGELOG ── */
+  .changelog-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .changelog-entry {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+  }
+
+  .changelog-entry:first-child { border-radius: 8px 8px 0 0; }
+  .changelog-entry:last-child { border-radius: 0 0 8px 8px; border-top: none; }
+  .changelog-entry:only-child { border-radius: 8px; }
+  .changelog-entry + .changelog-entry { border-top: none; }
+
+  .changelog-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--main);
+    padding: 14px 18px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    min-width: 90px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .changelog-date {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .changelog-body {
+    padding: 14px 20px;
+    background: var(--surface);
+    flex: 1;
+  }
+
+  .changelog-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+    margin-bottom: 6px;
+  }
+
+  .changelog-notes {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .changelog-tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    background: rgba(174,184,194,0.1);
+    border: 1px solid rgba(174,184,194,0.2);
+    color: var(--text-muted);
+  }
+
+  /* ── DOWNLOAD ── */
+  .download-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .download-card-inner {
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+  }
+
+  .download-info { flex: 1; }
+
+  .download-version {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .download-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--text);
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+
+  .download-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .download-meta-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.18);
+    color: var(--text-muted);
+  }
+
+  .download-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    background: rgba(174,184,194,0.1);
+    border: 1px solid rgba(174,184,194,0.3);
+    color: var(--main);
+    text-decoration: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .download-btn.available {
+    cursor: pointer;
+    opacity: 1;
+  }
+  .download-btn.available:hover {
+    background: rgba(174,184,194,0.18);
+    border-color: var(--main);
+  }
+
+  .download-notice {
+    padding: 12px 28px;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.01);
+  }
+
+  /* ── QUICK LINKS ── */
+  .quicklinks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .quicklink-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .quicklink-card:hover { border-color: var(--accent); background: var(--surface2); }
+
+  .quicklink-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--highlight);
+  }
+
+  .quicklink-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .quicklink-card-group {
+    gap: 12px;
+  }
+
+  .quicklink-subgrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .quicklink-subcard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+    text-align: center;
+    transition: all 0.15s;
+  }
+
+  .quicklink-subcard:hover {
+    border-color: var(--accent);
+    background: rgba(255,255,255,0.06);
+    color: var(--highlight);
+  }
+
+  /* ── CREDITS ── */
+  .credits-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .credit-entry {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 12px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+
+  .credit-entry:first-child { border-radius: 8px 8px 0 0; }
+  .credit-entry:last-child { border-radius: 0 0 8px 8px; }
+  .credit-entry + .credit-entry { border-top: none; }
+
+  .credit-role {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    min-width: 140px;
+    flex-shrink: 0;
+    letter-spacing: 0.3px;
+  }
+
+  .credit-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--main);
+  }
+
+  .credit-note {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-left: auto;
+    font-style: italic;
+  }
+
+  /* ── LIGHT MODE ── */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #A07030;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .hero-title { color: #4A4032; }
+  body.light .download-card { background: #ffffff; border-color: #E7D8C1; }
+  body.light .download-btn { background: rgba(201,168,106,0.1); border-color: rgba(201,168,106,0.3); color: #9a7830; }
+  body.light .download-btn.available:hover { background: rgba(201,168,106,0.18); border-color: #C9A86A; }
+  body.light .download-notice { background: rgba(0,0,0,0.01); border-color: #E7D8C1; }
+  body.light .changelog-entry { border-color: #E7D8C1; }
+  body.light .changelog-version { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .changelog-body { background: #ffffff; }
+  body.light .changelog-title { color: #7a5020; }
+  body.light .quicklink-card { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .quicklink-card:hover { background: #EDE0CC; border-color: #C9A86A; }
+  body.light .quicklink-name { color: #7a5020; }
+  body.light .quicklink-subcard {
+    background: rgba(255,255,255,0.65);
+    border-color: #E7D8C1;
+    color: #4A4032;
+  }
+  body.light .quicklink-subcard:hover {
+    background: #ffffff;
+    border-color: #C9A86A;
+    color: #7a5020;
+  }
+  body.light .credit-entry { background: #F5EBDD; border-color: #E7D8C1; }
+
+  @media (max-width: 860px) {
+    .quicklinks-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 620px) {
+    .page-header { padding: 0 16px; }
+    .page-content { padding: 44px 16px 64px; gap: 40px; }
+    .quicklinks-grid { grid-template-columns: 1fr; }
+    .quicklink-subgrid { grid-template-columns: 1fr; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Page</div>
+  <a href="#download" class="menu-link" onclick="closeMenu()">Download</a>
+  <a href="#changelog" class="menu-link" onclick="closeMenu()">Changelog</a>
+  <a href="#credits" class="menu-link" onclick="closeMenu()">Credits</a>
+</div>
+
+<div class="page-content">
+
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <span class="hero-label">Pokemon HeartGold Romhack</span>
+    <div class="hero-title">[GAME NAME]</div>
+    <p class="hero-tagline">[A hard Pokémon HeartGold ROM hack with the full Gen 1–9 Pokédex and major rebalancing. Built for tough, modern-style battles with full documentation on a companion site.]</p>
+    <div class="hero-badges">
+      <span class="hero-badge">HeartGold Base</span>
+      <span class="hero-badge">Generation 1 - 9</span>
+      <span class="hero-badge">Nuzlocke Friendly</span>
+      <span class="hero-badge">QoL Add-ons</span>
+    </div>
+  </div>
+
+  <!-- ── DOWNLOAD ── -->
+  <div class="section" id="download">
+    <div class="section-heading">
+      <span class="section-heading-title">Download</span>
+      <div class="section-heading-line"></div>
+    </div>
+
+    <div class="download-card">
+      <div class="download-card-inner">
+        <div class="download-info">
+          <div class="download-version">Latest Release</div>
+          <div class="download-name">[GAME NAME] — v[X.X]</div>
+          <div class="download-meta">
+            <span class="download-meta-tag">BPS Patch</span>
+            <span class="download-meta-tag">HeartGold (US)</span>
+            <span class="download-meta-tag">Released [DATE]</span>
+          </div>
+        </div>
+        <!-- Change class to "download-btn available" and add href when ready -->
+        <a class="download-btn">Not yet available</a>
+      </div>
+      <div class="download-notice">
+        Apply the BPS patch to a clean Pokemon HeartGold (US) ROM using a tool like Floating IPS or UniPatcher.
+        Do not use a pre-patched ROM.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHANGELOG ── -->
+  <div class="section" id="changelog">
+    <div class="section-heading">
+      <span class="section-heading-title">Changelog</span>
+      <div class="section-heading-line"></div>
+    </div>
+
+    <div class="changelog-list">
+
+      <!-- Most recent entry first. Duplicate this block for each update. -->
+      <div class="changelog-entry">
+        <div class="changelog-version">
+          v[X.X]
+          <span class="changelog-date">[DD MMM YYYY]</span>
+        </div>
+        <div class="changelog-body">
+          <div class="changelog-title">[Update Title] <span class="changelog-tag">[Tag e.g. Balance]</span></div>
+          <div class="changelog-notes">
+            [Describe what changed in this version. List key additions, fixes, and removals. Keep it concise.]
+          </div>
+        </div>
+      </div>
+
+      <div class="changelog-entry">
+        <div class="changelog-version">
+          v0.1
+          <span class="changelog-date">4 May 2026</span>
+        </div>
+        <div class="changelog-body">
+          <div class="changelog-title">Initial Release <span class="changelog-tag">Launch</span></div>
+          <div class="changelog-notes">
+            First public Companion build. Chapter 1 complete through Falkner. Custom encounters, trainer teams.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── QUICK LINKS ── -->
+  <div class="section">
+    <div class="section-heading">
+      <span class="section-heading-title">Companion</span>
+      <div class="section-heading-line"></div>
+    </div>
+
+    <div class="quicklinks-grid">
+      <div class="quicklink-card quicklink-card-group">
+        <span class="quicklink-name">Game Documentation</span>
+        <span class="quicklink-desc">Reference pages for encounters, Pokemon, trainers, and item locations.</span>
+        <div class="quicklink-subgrid">
+          <a href="areadex.html" class="quicklink-subcard">Area Sheets</a>
+          <a href="pokedex.html" class="quicklink-subcard">Pokedex</a>
+          <a href="trainerdex.html" class="quicklink-subcard">TrainerDex</a>
+          <a href="itemdex.html" class="quicklink-subcard">ItemDex</a>
+        </div>
+      </div>
+      <div class="quicklink-card quicklink-card-group">
+        <span class="quicklink-name">Tools</span>
+        <span class="quicklink-desc">Planning and utility pages for run tracking, prep, mechanics, and route flow.</span>
+        <div class="quicklink-subgrid">
+          <a href="tracker.html" class="quicklink-subcard">Nuzlocke Tracker</a>
+          <a href="calculator.html" class="quicklink-subcard">Battle Calculator</a>
+          <a href="mechanics.html" class="quicklink-subcard">Mechanics</a>
+          <a href="progression.html" class="quicklink-subcard">Progression</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CREDITS ── -->
+  <div class="section" id="credits">
+    <div class="section-heading">
+      <span class="section-heading-title">Credits</span>
+      <div class="section-heading-line"></div>
+    </div>
+
+    <div class="credits-list">
+      <div class="credit-entry">
+        <span class="credit-role">Rom Hack Design</span>
+        <span class="credit-name">Jay</span>
+      </div>
+      <div class="credit-entry">
+        <span class="credit-role">Base Engine</span>
+        <span class="credit-name">HG-Engine</span>
+        <span class="credit-note">BluRosé & contributors</span>
+      </div>
+      <div class="credit-entry">
+        <span class="credit-role">Editing Tool</span>
+        <span class="credit-name">DSPRE</span>
+        <span class="credit-note">PlatinumMaster</span>
+      </div>
+      <div class="credit-entry">
+        <span class="credit-role">Sprites</span>
+        <span class="credit-name">Pokemon Showdown</span>
+        <span class="credit-note">Smogon & contributors</span>
+      </div>
+      <div class="credit-entry">
+        <span class="credit-role">Pokemon Data</span>
+        <span class="credit-name">PokeAPI</span>
+        <span class="credit-note">pokeapi.co</span>
+      </div>
+      <!-- Add more credit entries as needed -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu  = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() { menu.classList.toggle('open'); }
+  function closeMenu()  { menu.classList.remove('open'); }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+</script>
+</body>
+</html>

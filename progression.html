@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progression Guide — Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* ── MENU OVERLAY ── */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── PAGE HERO ── */
+  .page-hero {
+    padding: 32px 32px 0;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+
+  .page-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── GUIDE BODY ── */
+  .guide-body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  /* ── CHAPTER ── */
+  .chapter {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .chapter-number {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .chapter-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--main);
+    letter-spacing: 1px;
+  }
+
+  .chapter-divider {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .chapter-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.1);
+    border: 1px solid rgba(174,184,194,0.2);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── AREA BLOCK ── */
+  .area-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 8px;
+  }
+
+  .area-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .area-header:hover { background: var(--surface2); }
+
+  .area-header.collapsed { border-radius: 8px; }
+
+  .area-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--highlight);
+    flex: 1;
+  }
+
+  .area-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .area-link:hover { color: var(--main); border-color: var(--main); }
+
+  .area-chevron {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .area-header.collapsed .area-chevron { transform: rotate(-90deg); }
+
+  .area-content {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 8px 8px;
+    padding: 4px 0;
+    overflow: hidden;
+  }
+
+  .area-content.hidden { display: none; }
+
+  /* ── ENTRY TYPES ── */
+  .entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 20px 9px 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    transition: background 0.1s;
+  }
+  .entry:last-child { border-bottom: none; }
+  .entry:hover { background: rgba(255,255,255,0.02); }
+
+  .entry-text {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  /* Main Objective */
+  .entry-main {
+    padding: 12px 20px 12px 20px;
+    background: rgba(174,184,194,0.06);
+    border-bottom: 1px solid rgba(174,184,194,0.1) !important;
+    border-left: 3px solid var(--main);
+    gap: 14px;
+  }
+  .entry-main:hover { background: rgba(174,184,194,0.09); }
+
+  .entry-main .entry-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--highlight);
+    letter-spacing: 0.3px;
+  }
+
+  .entry-main .entry-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--main);
+    background: rgba(174,184,194,0.12);
+    border: 1px solid rgba(174,184,194,0.25);
+    border-radius: 3px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* Optional Objective */
+  .entry-optional {
+    padding: 10px 20px 10px 20px;
+    background: rgba(142,156,170,0.04);
+    border-bottom: 1px solid rgba(142,156,170,0.08) !important;
+    border-left: 3px solid var(--accent);
+    gap: 14px;
+  }
+  .entry-optional:hover { background: rgba(142,156,170,0.07); }
+
+  .entry-optional .entry-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .entry-optional .entry-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(142,156,170,0.1);
+    border: 1px solid rgba(142,156,170,0.2);
+    border-radius: 3px;
+    padding: 2px 7px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  /* Sub-point (default) */
+  .entry-sub .entry-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  /* Trainer link entry */
+  .entry-trainer {
+    padding: 9px 20px 9px 48px;
+  }
+
+  .trainer-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .trainer-link:hover { color: var(--main); border-color: var(--main); background: rgba(174,184,194,0.05); }
+
+  /* ── LIGHT MODE ── */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #F3DEC2;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .chapter-title { color: #9a7830; }
+  body.light .area-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .area-header:hover { background: #EDE0CC; }
+  body.light .area-name { color: #7a5a30; }
+  body.light .area-content { border-color: #E7D8C1; }
+  body.light .area-link { border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .area-link:hover { color: #C9A86A; border-color: #C9A86A; }
+  body.light .entry { border-color: rgba(0,0,0,0.04); }
+  body.light .entry:hover { background: rgba(0,0,0,0.02); }
+  body.light .entry-text { color: #4A4032; }
+  body.light .entry-sub .entry-dot { background: #D8BE8A; }
+  body.light .entry-main { background: rgba(216,190,138,0.1); border-color: rgba(216,190,138,0.2) !important; border-left-color: #C9A86A; }
+  body.light .entry-main:hover { background: rgba(216,190,138,0.15); }
+  body.light .entry-main .entry-text { color: #7a5a30; }
+  body.light .entry-main .entry-label { color: #8a6a30; background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.3); }
+  body.light .entry-optional { background: rgba(201,168,106,0.06); border-left-color: #C9A86A; border-color: rgba(201,168,106,0.12) !important; }
+  body.light .entry-optional:hover { background: rgba(201,168,106,0.1); }
+  body.light .entry-optional .entry-text { color: #9a7830; }
+  body.light .entry-optional .entry-label { color: #9a7830; background: rgba(201,168,106,0.1); border-color: rgba(201,168,106,0.25); }
+  body.light .trainer-link { color: #7A6D5C; border-color: #E7D8C1; }
+  body.light .trainer-link:hover { color: #C9A86A; border-color: #C9A86A; }
+  body.light .chapter-badge { background: rgba(201,168,106,0.1); border-color: rgba(201,168,106,0.25); color: #9a7830; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Jump To Chapter</div>
+  <a href="#chapter-1" class="menu-link" onclick="closeMenu()">Chapter 1 — Falkner</a>
+  <a href="#chapter-2" class="menu-link" onclick="closeMenu()">Chapter 2 — [Gym Leader]</a>
+  <!-- Duplicate the line above for each new chapter -->
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-title">Progression Guide</div>
+    <div class="page-subtitle">Linear walkthrough — Johto & Kanto</div>
+  </div>
+</div>
+
+<div class="guide-body">
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CHAPTER 1                                   -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="chapter" id="chapter-1">
+    <div class="chapter-header">
+      <span class="chapter-number">Chapter 1</span>
+      <span class="chapter-title">The First Gym</span>
+      <div class="chapter-divider"></div>
+      <span class="chapter-badge">Level Cap: 15</span>
+    </div>
+
+    <!-- New Bark Town -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">New Bark Town</span>
+        <a href="areas/newbarktown.html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Choose your Starter from Prof. Elm</span>
+        </div>
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Collect Key Items from Elm's Lab</span>
+        </div>
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">Travel to Mr. Pokemon on Route 30 to retrieve the Mystery Egg</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cherrygrove City -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">Cherrygrove City</span>
+        <a href="areas/cherrygrove.html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Pick up the Turbo Boots from the guide's house</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Route 30 -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">Route 30</span>
+        <a href="areas/route30.html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Collect the Apricorn Box from the hiker's house</span>
+        </div>
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Visit Mr. Pokemon and receive the Mystery Egg</span>
+        </div>
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Receive the Pokedex from Prof. Oak</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Route 29 -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">Route 29</span>
+        <a href="areas/route29.html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">Rush back to Elm's Lab — something is wrong</span>
+        </div>
+        <div class="entry entry-trainer">
+          <a href="areas/route29.html#section-trainer" class="trainer-link">vs. Silver — Rival Battle ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Elm's Lab -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">Elm's Lab — New Bark Town</span>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Name your Rival after the incident</span>
+        </div>
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Say goodbye to Mom</span>
+        </div>
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">Head to Violet City via Routes 29 and 46</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Violet City -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">Violet City</span>
+        <a href="areas/violetcity.html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">Locate and enter Sprout Tower</span>
+        </div>
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">Defeat Elder Li at the top of Sprout Tower</span>
+        </div>
+        <div class="entry entry-optional">
+          <span class="entry-label">Optional</span>
+          <span class="entry-text">Defeat Kelsie outside Dark Cave entrance</span>
+        </div>
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">Defeat Falkner at the Violet City Gym</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- END CHAPTER 1 -->
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- CHAPTER 2 — copy block below, fill in data  -->
+  <!-- ═══════════════════════════════════════════ -->
+
+  <!-- CHAPTER 2 START — paste after END CHAPTER 1 -->
+  <div class="chapter" id="chapter-2">
+    <div class="chapter-header">
+      <span class="chapter-number">Chapter 2</span>
+      <span class="chapter-title">[GYM LEADER NAME]</span>
+      <div class="chapter-divider"></div>
+      <span class="chapter-badge">Level Cap: [X]</span>
+    </div>
+
+    <!-- Copy area-block for each new area. Remove area-link if no area sheet yet -->
+    <div class="area-block">
+      <div class="area-header" onclick="toggleArea(this)">
+        <span class="area-name">[AREA NAME]</span>
+        <a href="areas/[filename].html" class="area-link" onclick="event.stopPropagation()">Area Sheet ↗</a>
+        <span class="area-chevron">▾</span>
+      </div>
+      <div class="area-content">
+
+        <!-- Sub-point: small task, collectible, NPC interaction -->
+        <div class="entry entry-sub">
+          <div class="entry-dot"></div>
+          <span class="entry-text">[Task description]</span>
+        </div>
+
+        <!-- Main Objective: story-critical beat -->
+        <div class="entry entry-main">
+          <span class="entry-label">Objective</span>
+          <span class="entry-text">[What the player must do]</span>
+        </div>
+
+        <!-- Optional Objective: skippable content -->
+        <div class="entry entry-optional">
+          <span class="entry-label">Optional</span>
+          <span class="entry-text">[Optional content description]</span>
+        </div>
+
+        <!-- Trainer link: links to trainer card on area sheet -->
+        <div class="entry entry-trainer">
+          <a href="areas/[filename].html#section-trainer" class="trainer-link">vs. [Trainer Name] — [Context] ↗</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <!-- CHAPTER 2 END -->
+
+</div>
+
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu  = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() { menu.classList.toggle('open'); }
+  function closeMenu()  { menu.classList.remove('open'); }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  function toggleArea(header) {
+    header.classList.toggle('collapsed');
+    const content = header.nextElementSibling;
+    content.classList.toggle('hidden');
+  }
+
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+</script>
+</body>
+</html>

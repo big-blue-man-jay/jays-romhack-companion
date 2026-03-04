@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Run — Nuzlocke Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* ── MENU OVERLAY ── */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+    cursor: pointer;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── PAGE CONTENT ── */
+  .page-content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+
+  /* ── RUN HERO ── */
+  .run-hero {
+    text-align: center;
+    width: 100%;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .run-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .run-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .run-meta {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .run-meta-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.18);
+    color: var(--text-muted);
+  }
+
+  /* ── PARTY SECTION ── */
+  .party-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .party-slots {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .party-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 96px;
+    cursor: pointer;
+  }
+
+  .party-sprite-wrap {
+    width: 80px;
+    height: 80px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .party-slot:hover .party-sprite-wrap {
+    border-color: var(--main);
+    background: var(--surface2);
+  }
+
+  .party-slot.filled .party-sprite-wrap {
+    border-color: rgba(174,184,194,0.3);
+  }
+
+  .party-slot.filled:hover .party-sprite-wrap {
+    border-color: var(--main);
+  }
+
+  .party-sprite {
+    width: 64px;
+    height: 64px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  .party-slot-empty-icon {
+    font-family: 'DM Mono', monospace;
+    font-size: 20px;
+    color: var(--border);
+    line-height: 1;
+  }
+
+  .party-slot-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    text-align: center;
+  }
+
+  .party-slot.filled .party-slot-name {
+    color: var(--main);
+  }
+
+  /* ── DIVIDER ── */
+  .full-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── BOXES GRID ── */
+  .boxes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .box-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .box-card:hover { border-color: var(--accent); background: var(--surface2); }
+
+  .box-card-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--highlight);
+  }
+
+  .box-card-dead .box-card-name { color: #c87878; }
+  .box-card-dead { border-color: rgba(180,80,80,0.2); }
+  .box-card-dead:hover { border-color: rgba(180,80,80,0.5); background: var(--surface2); }
+
+  .box-card-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .box-card-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .box-card-dead .box-card-count { color: rgba(200,120,120,0.7); }
+
+  .box-card-preview {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 40px;
+    padding: 6px 0 2px;
+  }
+
+  .box-card-preview-sprite {
+    width: 36px;
+    height: 36px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    opacity: 0.85;
+  }
+
+  .box-card-preview-more {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    align-self: center;
+    padding-left: 2px;
+  }
+
+  /* ── LIGHT MODE ── */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #A07030;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .party-sprite-wrap { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .party-slot:hover .party-sprite-wrap { border-color: #C9A86A; background: #EDE0CC; }
+  body.light .box-card { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .box-card:hover { background: #EDE0CC; border-color: #C9A86A; }
+  body.light .box-card-name { color: #7a5020; }
+  body.light .box-card-dead .box-card-name { color: #a04040; }
+  body.light .box-card-dead { border-color: rgba(160,64,64,0.2); }
+  body.light .box-card-dead:hover { border-color: rgba(160,64,64,0.4); }
+
+  /* ── ENCOUNTER LIST ── */
+  .encounters-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .encounters-search-wrap {
+    position: relative;
+  }
+
+  .encounters-search {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px 10px 38px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .encounters-search:focus { border-color: var(--main); }
+  .encounters-search::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+  .search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  /* ── CHAPTER HEADER ── */
+  .chapter-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .chapter-row-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .chapter-row-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .chapter-row-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.18);
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  /* ── ENTRY ROW ── */
+  .entry-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.15s;
+  }
+
+  .entry-row:hover { background: var(--surface2); }
+  .entry-row.completed { opacity: 0.55; }
+  .entry-row.completed .entry-row-action { pointer-events: auto !important; opacity: 1 !important; }
+  .entry-row.completed .entry-row-area { text-decoration: line-through; color: var(--text-muted); }
+  .entry-row.completed .entry-row-action { pointer-events: none; opacity: 0.4; }
+
+  /* completed indicator dot */
+  .entry-row.completed::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--main);
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .entry-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .badge-encounter {
+    background: rgba(106,171,120,0.12);
+    border: 1px solid rgba(106,171,120,0.25);
+    color: #6aab78;
+  }
+
+  .badge-battle {
+    background: rgba(174,184,194,0.1);
+    border: 1px solid rgba(174,184,194,0.2);
+    color: var(--main);
+  }
+
+  .badge-boss {
+    background: rgba(184,168,96,0.12);
+    border: 1px solid rgba(184,168,96,0.25);
+    color: #b8a860;
+  }
+
+  .badge-optional {
+    background: rgba(142,156,170,0.08);
+    border: 1px solid rgba(142,156,170,0.18);
+    color: var(--accent);
+  }
+
+  .entry-row-area {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .entry-row-caught {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .caught-sprite {
+    width: 28px;
+    height: 28px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  .caught-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--main);
+  }
+
+  .entry-row-action {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.06);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .entry-row-action:hover { border-color: var(--main); color: var(--main); }
+
+  /* Kelsie conditional row */
+  .entry-row-kelsie-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* Hidden by search */
+  .entry-row.hidden { display: none; }
+  .chapter-row.hidden { display: none; }
+
+  /* Light mode additions */
+  body.light .encounters-search { background: #F5EBDD; border-color: #E7D8C1; color: #4A4032; }
+  body.light .encounters-search:focus { border-color: #C9A86A; }
+  body.light .entry-row { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .entry-row:hover { background: #EDE0CC; }
+  body.light .entry-row-area { color: #4A4032; }
+  body.light .entry-row.completed::before { background: #C9A86A; }
+  body.light .entry-row-action { background: rgba(0,0,0,0.03); border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .entry-row-action:hover { border-color: #C9A86A; color: #8a6830; }
+
+  /* ── MODALS ── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; animation: fadeIn 0.15s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    animation: slideUp 0.15s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .modal-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--main);
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+    line-height: 1.6;
+  }
+
+  .modal-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .modal-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .modal-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 13px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+  .modal-input:focus { border-color: var(--main); }
+  .modal-input::placeholder { color: var(--text-muted); opacity: 0.45; }
+
+  .modal-sprite-preview {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    display: none;
+    margin: 4px auto 0;
+  }
+
+  .suggestions-list {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0; right: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    z-index: 400;
+    overflow-y: auto;
+    max-height: 220px;
+  }
+
+  .suggestion-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 6px 13px;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .suggestion-item:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .modal-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .modal-btn:hover { color: var(--text); border-color: var(--main); }
+
+  .modal-btn-confirm {
+    background: rgba(174,184,194,0.1);
+    border-color: rgba(174,184,194,0.3);
+    color: var(--main);
+  }
+  .modal-btn-confirm:hover { background: rgba(174,184,194,0.18); border-color: var(--main); }
+
+  .modal-btn-fail {
+    background: rgba(180,80,80,0.08);
+    border-color: rgba(180,80,80,0.25);
+    color: #c87878;
+  }
+  .modal-btn-fail:hover { background: rgba(180,80,80,0.15); border-color: #c87878; }
+
+  .modal-btn-win {
+    background: rgba(106,171,120,0.1);
+    border-color: rgba(106,171,120,0.25);
+    color: #6aab78;
+  }
+  .modal-btn-win:hover { background: rgba(106,171,120,0.18); border-color: #6aab78; }
+
+  .modal-divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  body.light .modal { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .modal-input { background: #FCF8F1; border-color: #E7D8C1; color: #4A4032; }
+  body.light .modal-input:focus { border-color: #C9A86A; }
+  body.light .modal-btn { background: #EDE0CC; border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .suggestions-list { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .suggestion-item { color: #4A4032; }
+  body.light .suggestion-item:hover { background: rgba(0,0,0,0.04); color: #C9A86A; }
+
+  /* ── BOX POPUP ── */
+  .box-popup-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 350;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .box-popup-backdrop.open { display: flex; animation: fadeIn 0.15s ease; }
+
+  .box-popup {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    animation: slideUp 0.15s ease;
+    overflow: hidden;
+  }
+
+  .box-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .box-popup-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--main);
+    letter-spacing: 1px;
+  }
+  .box-popup-title-dead { color: #c87878; }
+
+  .box-popup-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .box-popup-export {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    border-radius: 4px;
+    background: rgba(174,184,194,0.08);
+    border: 1px solid rgba(174,184,194,0.2);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .box-popup-close {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .box-popup-close:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  .box-popup-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .box-empty {
+    text-align: center;
+    padding: 32px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .sprite-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+    gap: 8px;
+  }
+
+  .sprite-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .sprite-grid-item:hover { border-color: var(--main); background: rgba(174,184,194,0.08); }
+  .sprite-grid-item.menu-open { border-color: var(--main); }
+
+  .sprite-grid-img {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  .sprite-grid-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .sprite-action-menu {
+    position: fixed;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px;
+    z-index: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    min-width: 136px;
+    display: none;
+  }
+  .sprite-action-menu.open { display: block; animation: menuIn 0.1s ease; }
+
+  .sprite-action-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.1s;
+  }
+  .sprite-action-item:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .sprite-action-item.danger { color: #c87878; }
+  .sprite-action-item.danger:hover { background: rgba(180,80,80,0.1); }
+
+  body.light .box-popup { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .box-popup-header { border-color: #E7D8C1; }
+  body.light .sprite-grid-item { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .sprite-grid-item:hover { border-color: #C9A86A; }
+  body.light .sprite-action-menu { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .sprite-action-item { color: #4A4032; }
+  body.light .sprite-action-item:hover { background: rgba(0,0,0,0.04); color: #C9A86A; }
+
+  .party-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .party-picker-item:hover { border-color: var(--main); background: rgba(174,184,194,0.08); }
+  body.light .party-picker-item { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .party-picker-item:hover { border-color: #C9A86A; }
+  .evolve-option {
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: var(--text);
+  }
+  .evolve-option.active {
+    border-color: var(--main);
+    background: rgba(174,184,194,0.1);
+    box-shadow: 0 0 0 1px rgba(174,184,194,0.18) inset;
+  }
+  .evolve-option-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .evolve-option-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+  .evolve-option-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .evolve-options-empty {
+    padding: 10px 12px;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+  body.light .evolve-option.active {
+    border-color: #C9A86A;
+    background: rgba(201,168,106,0.12);
+    box-shadow: 0 0 0 1px rgba(201,168,106,0.16) inset;
+  }
+  body.light .evolve-options-empty {
+    border-color: #D8C6AC;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">This Run</div>
+  <a class="menu-link" onclick="closeMenu()">Party</a>
+  <a class="menu-link" onclick="closeMenu()">Pokemon Bench</a>
+  <a class="menu-link" onclick="closeMenu()">Pokemon Dead</a>
+</div>
+
+<div class="page-content">
+
+  <!-- ── RUN HERO ── -->
+  <div class="run-hero">
+    <div class="run-label">Nuzlocke Run</div>
+    <div class="run-title" id="runTitle">Loading...</div>
+    <div class="run-meta">
+      <span class="run-meta-badge" id="metaStarted"></span>
+      <span class="run-meta-badge" id="metaBadges"></span>
+      <span class="run-meta-badge" id="metaParty"></span>
+      <span class="run-meta-badge" id="metaDead"></span>
+    </div>
+  </div>
+
+  <!-- ── CURRENT PARTY ── -->
+  <div class="party-section">
+    <span class="section-label">Current Party</span>
+    <div class="party-slots" id="partySlots"></div>
+  </div>
+
+  <!-- ── DIVIDER ── -->
+  <div class="full-divider"></div>
+
+  <!-- ── BOXES ── -->
+  <div class="boxes-grid">
+    <div class="box-card" onclick="openBox('bench')">
+      <span class="box-card-name">Pokemon Bench</span>
+      <div class="box-card-preview" id="benchPreview"></div>
+      <span class="box-card-count" id="benchCount">0 Pokemon</span>
+    </div>
+    <div class="box-card box-card-dead" onclick="openBox('dead')">
+      <span class="box-card-name">Pokemon Dead</span>
+      <div class="box-card-preview" id="deadPreview"></div>
+      <span class="box-card-count" id="deadCount">0 Pokemon</span>
+    </div>
+  </div>
+
+  <!-- ── DIVIDER ── -->
+  <div class="full-divider"></div>
+
+  <!-- ── ENCOUNTER & BOSS LIST ── -->
+  <div class="encounters-section">
+
+    <div class="encounters-search-wrap">
+      <span class="search-icon">⌕</span>
+      <input class="encounters-search" id="encounterSearch" type="text"
+        placeholder="Search area or battle..." oninput="filterEntries()">
+    </div>
+
+    <!-- CHAPTER 1 -->
+    <div class="chapter-row" data-chapter="1">
+      <span class="chapter-row-title">Chapter 1</span>
+      <div class="chapter-row-line"></div>
+      <span class="chapter-row-badge">Falkner — Lv. Cap 15</span>
+    </div>
+
+    <div class="entry-row" data-id="starter" data-chapter="1" data-text="starter new bark town">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Starter — New Bark Town</span>
+      <div class="entry-row-caught" id="caught-starter"></div>
+      <span class="entry-row-action" onclick="openLog('starter', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-newbark" data-chapter="1" data-text="new bark town encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">New Bark Town</span>
+      <div class="entry-row-caught" id="caught-enc-newbark"></div>
+      <span class="entry-row-action" onclick="openLog('enc-newbark', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-route29" data-chapter="1" data-text="route 29 encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Route 29</span>
+      <div class="entry-row-caught" id="caught-enc-route29"></div>
+      <span class="entry-row-action" onclick="openLog('enc-route29', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="battle-rival-29" data-chapter="1" data-text="rival battle route 29 silver">
+      <span class="entry-type-badge badge-battle">Battle</span>
+      <span class="entry-row-area">Rival — Route 29</span>
+      <span class="entry-row-action" onclick="openLog('battle-rival-29', 'battle')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-cherrygrove" data-chapter="1" data-text="cherrygrove city encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Cherrygrove City</span>
+      <div class="entry-row-caught" id="caught-enc-cherrygrove"></div>
+      <span class="entry-row-action" onclick="openLog('enc-cherrygrove', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-route30" data-chapter="1" data-text="route 30 encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Route 30</span>
+      <div class="entry-row-caught" id="caught-enc-route30"></div>
+      <span class="entry-row-action" onclick="openLog('enc-route30', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-route46" data-chapter="1" data-text="route 46 encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Route 46</span>
+      <div class="entry-row-caught" id="caught-enc-route46"></div>
+      <span class="entry-row-action" onclick="openLog('enc-route46', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-route31" data-chapter="1" data-text="route 31 encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Route 31</span>
+      <div class="entry-row-caught" id="caught-enc-route31"></div>
+      <span class="entry-row-action" onclick="openLog('enc-route31', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-violetcity" data-chapter="1" data-text="violet city encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Violet City</span>
+      <div class="entry-row-caught" id="caught-enc-violetcity"></div>
+      <span class="entry-row-action" onclick="openLog('enc-violetcity', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="battle-elderli" data-chapter="1" data-text="elder li sprout tower battle">
+      <span class="entry-type-badge badge-battle">Battle</span>
+      <span class="entry-row-area">Elder Li — Sprout Tower</span>
+      <span class="entry-row-action" onclick="openLog('battle-elderli', 'battle')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="battle-kelsie" data-chapter="1" data-text="kelsie battle optional dark cave">
+      <span class="entry-type-badge badge-optional">Optional</span>
+      <span class="entry-row-area">Kelsie — Dark Cave entrance</span>
+      <span class="entry-row-kelsie-note" id="kelsieNote">affects Dark Cave order</span>
+      <span class="entry-row-action" onclick="openLog('battle-kelsie', 'battle')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-darkcave" data-chapter="1" data-text="dark cave encounter">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">Dark Cave</span>
+      <div class="entry-row-caught" id="caught-enc-darkcave"></div>
+      <span class="entry-row-action" onclick="openLog('enc-darkcave', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="boss-falkner" data-chapter="1" data-text="falkner gym boss battle violet city">
+      <span class="entry-type-badge badge-boss">Boss Battle</span>
+      <span class="entry-row-area">Falkner — Violet City Gym</span>
+      <span class="entry-row-action" onclick="openLog('boss-falkner', 'battle')">Log</span>
+    </div>
+
+    <!-- CHAPTER 2 TEMPLATE — fill in when ready -->
+    <div class="chapter-row" data-chapter="2">
+      <span class="chapter-row-title">Chapter 2</span>
+      <div class="chapter-row-line"></div>
+      <span class="chapter-row-badge">[Gym Leader] — Lv. Cap [X]</span>
+    </div>
+
+    <div class="entry-row" data-id="enc-ch2-area1" data-chapter="2" data-text="chapter 2 area 1">
+      <span class="entry-type-badge badge-encounter">Encounter</span>
+      <span class="entry-row-area">[Area Name]</span>
+      <div class="entry-row-caught" id="caught-enc-ch2-area1"></div>
+      <span class="entry-row-action" onclick="openLog('enc-ch2-area1', 'encounter')">Log</span>
+    </div>
+
+    <div class="entry-row" data-id="boss-ch2" data-chapter="2" data-text="chapter 2 boss gym leader">
+      <span class="entry-type-badge badge-boss">Boss Battle</span>
+      <span class="entry-row-area">[Gym Leader] — [City] Gym</span>
+      <span class="entry-row-action" onclick="openLog('boss-ch2', 'battle')">Log</span>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── ENCOUNTER MODAL ── -->
+<div class="modal-backdrop" id="encounterModal">
+  <div class="modal">
+    <div class="modal-title" id="encModalTitle">Encounter</div>
+    <div class="modal-subtitle">Log your encounter result</div>
+    <input type="hidden" id="encEntryId">
+
+    <div class="modal-field">
+      <label class="modal-label">Pokemon</label>
+      <input class="modal-input" id="encPokemonInput" type="text"
+        placeholder="e.g. Rattata, Pidgey..." autocomplete="off"
+        oninput="onPokemonInput()">
+      <div class="suggestions-list" id="encSuggestions"></div>
+    </div>
+
+    <div style="text-align:center">
+      <img class="modal-sprite-preview" id="encSpritePreview" alt="">
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Nickname <span style="opacity:0.5">(optional)</span></label>
+      <input class="modal-input" id="encNicknameInput" type="text" placeholder="Leave blank to use species name">
+    </div>
+
+    <div class="modal-divider"></div>
+
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeEncounterModal()">Cancel</button>
+      <button class="modal-btn modal-btn-fail" id="encRevertBtn" onclick="revertEncounter()" style="display:none">Revert</button>
+      <button class="modal-btn modal-btn-fail" onclick="logEncounter(true)">Failed Catch</button>
+      <button class="modal-btn modal-btn-confirm" onclick="logEncounter(false)">Caught</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── BATTLE MODAL ── -->
+<div class="modal-backdrop" id="battleModal">
+  <div class="modal">
+    <div class="modal-title" id="battleModalTitle">Battle</div>
+    <div class="modal-subtitle">How did the battle go?</div>
+    <input type="hidden" id="battleEntryId">
+    <div class="modal-actions" style="justify-content:center; gap:16px; margin-top:8px">
+      <button class="modal-btn modal-btn-win" onclick="logBattle('win')">Victory</button>
+      <button class="modal-btn modal-btn-fail" onclick="logBattle('loss')">Defeat</button>
+    </div>
+    <div style="margin-top:16px; text-align:center; display:flex; gap:10px; justify-content:center;">
+      <button class="modal-btn" onclick="closeBattleModal()">Cancel</button>
+      <button class="modal-btn modal-btn-fail" id="battleRevertBtn" onclick="revertBattle()" style="display:none">Revert</button>
+    </div>
+  </div>
+</div>
+
+<script src="data/evolution-index.js"></script>
+<script>
+  // ── THEME ──
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu  = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+  function toggleMenu() { menu.classList.toggle('open'); }
+  function closeMenu()  { menu.classList.remove('open'); }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) menu.classList.remove('open');
+  });
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+
+  // ── LOAD RUN ──
+  function getRuns() {
+    try { return JSON.parse(localStorage.getItem('nuzlocke_runs') || '[]'); }
+    catch { return []; }
+  }
+
+  function saveRuns(runs) {
+    localStorage.setItem('nuzlocke_runs', JSON.stringify(runs));
+  }
+
+  function getRunId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('run') || localStorage.getItem('nuzlocke_active_run');
+  }
+
+  function formatDate(ts) {
+    return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  function getSpriteUrl(pokemonName) {
+    if (!pokemonName) return '';
+    return `https://play.pokemonshowdown.com/sprites/gen5/${pokemonName.toLowerCase().replace(/\s/g, '-')}.png`;
+  }
+
+  // ── RENDER ──
+  let currentRun = null;
+
+  function render() {
+    const runs  = getRuns();
+    const runId = getRunId();
+    currentRun  = runs.find(r => r.id === runId);
+
+    if (!currentRun) {
+      document.getElementById('runTitle').textContent = 'Run not found';
+      return;
+    }
+
+    // Hero
+    document.title = `${currentRun.name} — Nuzlocke Tracker`;
+    document.getElementById('runTitle').textContent    = currentRun.name;
+    document.getElementById('metaStarted').textContent = `Started ${formatDate(currentRun.created)}`;
+    document.getElementById('metaBadges').textContent  = `${currentRun.badges ?? 0} Badges`;
+    document.getElementById('metaParty').textContent   = `Party: ${(currentRun.party || []).length}/6`;
+    document.getElementById('metaDead').textContent    = `Lost: ${(currentRun.dead || []).length}`;
+
+    // Box counts
+    refreshBoxPreviews(currentRun);
+
+    // Party slots
+    const party     = currentRun.party || [];
+    const slotsEl   = document.getElementById('partySlots');
+    slotsEl.innerHTML = '';
+
+    for (let i = 0; i < 6; i++) {
+      const mon  = party[i];
+      const slot = document.createElement('div');
+      slot.className = `party-slot ${mon ? 'filled' : ''}`;
+      slot.onclick   = () => onSlotClick(i, mon);
+
+      if (mon) {
+        slot.innerHTML = `
+          <div class="party-sprite-wrap">
+            <img class="party-sprite"
+              src="${getSpriteUrl(mon.species)}"
+              alt="${mon.nickname || mon.species}"
+              onerror="this.style.opacity='0.3'">
+          </div>
+          <span class="party-slot-name">${mon.nickname || mon.species}</span>`;
+      } else {
+        slot.innerHTML = `
+          <div class="party-sprite-wrap">
+            <span class="party-slot-empty-icon">+</span>
+          </div>
+          <span class="party-slot-name">Empty</span>`;
+      }
+
+      slotsEl.appendChild(slot);
+    }
+  }
+
+  // Party slot action menu
+  let partyMenuIndex = null;
+
+  function onSlotClick(index, mon) {
+    // Close any open box action menus first
+    closeAllActionMenus();
+
+    if (!mon) {
+      openPartySlotPicker(index);
+    } else {
+      openPartyMonMenu(index, mon);
+    }
+  }
+
+  function openPartySlotPicker(index) {
+    const bench = getBox('box');
+    if (bench.length === 0) {
+      alert('No Pokemon on your bench yet.');
+      return;
+    }
+    partyMenuIndex = index;
+    // Build picker list
+    const list = document.getElementById('partyPickerList');
+    list.innerHTML = bench.map(mon => `
+      <div class="party-picker-item" onclick="addFromBenchToSlot('${mon.id}')">
+        <img src="${getSpriteUrl(mon.species)}" style="width:36px;height:36px;image-rendering:pixelated;object-fit:contain" onerror="this.style.opacity='0.3'">
+        <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--text)">${mon.nickname || mon.species}</span>
+      </div>`).join('');
+    document.getElementById('partyPickerModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function addFromBenchToSlot(monId) {
+    const runs = getRuns();
+    const idx  = runs.findIndex(r => r.id === getRunId());
+    if (idx === -1) return;
+    const bench = runs[idx].box || [];
+    const mon   = bench.find(m => m.id === monId);
+    if (!mon) return;
+    const party = runs[idx].party || [];
+    if (party.some(p => p.id === monId)) { alert('Already in party.'); return; }
+    if (party.length >= 6) { alert('Party is full!'); return; }
+    party.push(mon);
+    runs[idx].party = party;
+    runs[idx].box   = bench.filter(m => m.id !== monId);
+    saveRuns(runs);
+    closePartyPicker();
+    render();
+    refreshBoxPreviews(runs[idx]);
+  }
+
+  function closePartyPicker() {
+    document.getElementById('partyPickerModal').classList.remove('open');
+    document.body.style.overflow = '';
+    partyMenuIndex = null;
+  }
+
+  function openPartyMonMenu(index, mon) {
+    partyMenuIndex = index;
+    document.getElementById('partyMonName').textContent = mon.nickname || mon.species;
+    document.getElementById('partyMonSprite').src = getSpriteUrl(mon.species);
+    document.getElementById('partyMonModal').dataset.monIndex = index;
+    document.getElementById('partyMonModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function partyMonAction(action) {
+    const idx      = parseInt(document.getElementById('partyMonModal').dataset.monIndex);
+    const runs     = getRuns();
+    const runIdx   = runs.findIndex(r => r.id === getRunId());
+    if (runIdx === -1) return;
+    const party    = runs[runIdx].party || [];
+    const mon      = party[idx];
+    if (!mon) return;
+
+    if (action === 'evolve') {
+      closePartyMonMenu();
+      openEvolvePlaceholder(mon.id, 'party');
+      return;
+    }
+
+    // Remove from party
+    runs[runIdx].party = party.filter((_, i) => i !== idx);
+
+    if (action === 'bench') {
+      runs[runIdx].box = [...(runs[runIdx].box || []), mon];
+    } else if (action === 'dead') {
+      runs[runIdx].dead = [...(runs[runIdx].dead || []), mon];
+    }
+
+    saveRuns(runs);
+    closePartyMonMenu();
+    render();
+    refreshBoxPreviews(runs[runIdx]);
+  }
+
+  function closePartyMonMenu() {
+    document.getElementById('partyMonModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── BOX DATA ──
+  // bench/dead stored in run object arrays: [{id, species, nickname, entryId}]
+
+  function getBox(type) {
+    const runs = getRuns();
+    const run  = runs.find(r => r.id === getRunId());
+    return run ? (run[type] || []) : [];
+  }
+
+  function setBox(type, arr) {
+    const runs = getRuns();
+    const idx  = runs.findIndex(r => r.id === getRunId());
+    if (idx === -1) return;
+    runs[idx][type] = arr;
+    saveRuns(runs);
+    refreshBoxPreviews(runs[idx]);
+  }
+
+  function refreshBoxPreviews(run) {
+    const bench = run.box  || [];
+    const dead  = run.dead || [];
+    document.getElementById('benchCount').textContent = `${bench.length} Pokemon`;
+    document.getElementById('deadCount').textContent  = `${dead.length} Pokemon`;
+    renderBoxPreview('benchPreview', bench);
+    renderBoxPreview('deadPreview', dead);
+  }
+
+  function renderBoxPreview(elId, mons) {
+    const el     = document.getElementById(elId);
+    if (!el) return;
+    const shown  = mons.slice(0, 8);
+    const extra  = mons.length - shown.length;
+    el.innerHTML = shown.map(m =>
+      `<img class="box-card-preview-sprite" src="${getSpriteUrl(m.species)}"
+        alt="${m.nickname || m.species}" onerror="this.style.opacity='0.2'">`
+    ).join('') + (extra > 0 ? `<span class="box-card-preview-more">+${extra}</span>` : '');
+  }
+
+  function addToBox(type, mon) {
+    const arr = getBox(type);
+    arr.push(mon);
+    setBox(type, arr);
+  }
+
+  function removeFromBox(type, monId) {
+    const arr = getBox(type).filter(m => m.id !== monId);
+    setBox(type, arr);
+  }
+
+  // ── OPEN BOX POPUP ──
+  function openBox(type) {
+    renderBoxGrid(type);
+    document.getElementById(type === 'bench' ? 'benchPopup' : 'deadPopup').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBoxPopup(type, event) {
+    if (event.target === event.currentTarget) {
+      closeBoxPopupDirect(type);
+    }
+  }
+
+  function closeBoxPopupDirect(type) {
+    document.getElementById(type === 'bench' ? 'benchPopup' : 'deadPopup').classList.remove('open');
+    closeAllActionMenus();
+    document.body.style.overflow = '';
+  }
+
+  // ── RENDER SPRITE GRID ──
+  let activeMenuMonId = null;
+
+  function renderBoxGrid(type) {
+    const gridId  = type === 'bench' ? 'benchGrid' : 'deadGrid';
+    const grid    = document.getElementById(gridId);
+    const mons    = getBox(type === 'bench' ? 'box' : 'dead');
+
+    if (mons.length === 0) {
+      grid.innerHTML = `<div class="box-empty">No Pokemon here yet</div>`;
+      return;
+    }
+
+    // Actions differ by box type
+    const actions = type === 'bench'
+      ? [
+          { label: 'Add to Team',   fn: `boxAction('bench','team','__ID__')` },
+          { label: 'Move to Dead',  fn: `boxAction('bench','dead','__ID__')` },
+          { label: 'Evolve',        fn: `openEvolvePlaceholder('__ID__','box')` },
+          { label: 'Delete',        fn: `boxAction('bench','delete','__ID__')`, danger: true },
+        ]
+      : [
+          { label: 'Add to Team',   fn: `boxAction('dead','team','__ID__')` },
+          { label: 'Move to Bench', fn: `boxAction('dead','bench','__ID__')` },
+          { label: 'Evolve',        fn: `openEvolvePlaceholder('__ID__','dead')` },
+          { label: 'Delete',        fn: `boxAction('dead','delete','__ID__')`, danger: true },
+        ];
+
+    grid.innerHTML = `<div class="sprite-grid">${mons.map(mon => {
+      const sprite   = getSpriteUrl(mon.species);
+      const label    = mon.nickname || mon.species;
+      const menuHtml = actions.map(a =>
+        `<div class="sprite-action-item ${a.danger ? 'danger' : ''}"
+          onclick="event.stopPropagation(); ${a.fn.replace('__ID__', mon.id)}">${a.label}</div>`
+      ).join('');
+      return `
+        <div class="sprite-grid-item" id="grid-item-${mon.id}" onclick="toggleActionMenu('${mon.id}', event)">
+          <img class="sprite-grid-img" src="${sprite}" alt="${label}" onerror="this.style.opacity='0.3'">
+          <span class="sprite-grid-name">${label}</span>
+          <div class="sprite-action-menu" id="action-menu-${mon.id}">
+            ${menuHtml}
+          </div>
+        </div>`;
+    }).join('')}</div>`;
+  }
+
+  function toggleActionMenu(monId, event) {
+    event.stopPropagation();
+    const menu = document.getElementById(`action-menu-${monId}`);
+    const item = document.getElementById(`grid-item-${monId}`);
+    if (!menu) return;
+
+    const isOpen = menu.classList.contains('open');
+    closeAllActionMenus();
+
+    if (!isOpen) {
+      // Position fixed relative to viewport
+      const rect    = item.getBoundingClientRect();
+      const menuW   = 144;
+      let left      = rect.left + rect.width / 2 - menuW / 2;
+      let top       = rect.bottom + 6;
+
+      // Keep within viewport horizontally
+      if (left < 8) left = 8;
+      if (left + menuW > window.innerWidth - 8) left = window.innerWidth - menuW - 8;
+
+      // Flip above if too close to bottom
+      if (top + 120 > window.innerHeight) top = rect.top - 120;
+
+      menu.style.left = `${left}px`;
+      menu.style.top  = `${top}px`;
+      menu.style.width = `${menuW}px`;
+
+      menu.classList.add('open');
+      item.classList.add('menu-open');
+      activeMenuMonId = monId;
+    }
+  }
+
+  function closeAllActionMenus() {
+    document.querySelectorAll('.sprite-action-menu.open').forEach(m => m.classList.remove('open'));
+    document.querySelectorAll('.sprite-grid-item.menu-open').forEach(i => i.classList.remove('menu-open'));
+    activeMenuMonId = null;
+  }
+
+  // Close menus when clicking inside popup body but not on a grid item
+  document.addEventListener('click', (e) => {
+    if (activeMenuMonId && !e.target.closest('.sprite-grid-item')) {
+      closeAllActionMenus();
+    }
+  });
+
+  // ── BOX ACTIONS ──
+  // Pending delete state for confirm dialog
+  let pendingDelete = null;
+
+  function boxAction(fromBox, action, monId) {
+    const srcKey = fromBox === 'bench' ? 'box' : 'dead';
+    const runs   = getRuns();
+    const runIdx = runs.findIndex(r => r.id === getRunId());
+    if (runIdx === -1) return;
+    const run    = runs[runIdx];
+    const mons   = run[srcKey] || [];
+    const mon    = mons.find(m => m.id === monId);
+    if (!mon) return;
+
+    closeAllActionMenus();
+
+    if (action === 'delete') {
+      // Show confirm dialog
+      pendingDelete = { fromBox, srcKey, monId };
+      const name = mon.nickname || mon.species;
+      document.getElementById('deleteConfirmName').textContent = name;
+      document.getElementById('deleteConfirmModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      return;
+
+    } else if (action === 'dead') {
+      run[srcKey] = mons.filter(m => m.id !== monId);
+      run.dead = [...(run.dead || []).filter(m => m.id !== monId), mon];
+
+    } else if (action === 'bench') {
+      run[srcKey] = mons.filter(m => m.id !== monId);
+      run.box = [...(run.box || []).filter(m => m.id !== monId), mon];
+
+    } else if (action === 'team') {
+      const party = run.party || [];
+
+      // Check already in party
+      const alreadyIn = party.some(p => p.id === mon.id);
+      if (alreadyIn) {
+        alert(`${mon.nickname || mon.species} is already in your team.`);
+        return;
+      }
+      if (party.length >= 6) {
+        alert('Your party is full!');
+        return;
+      }
+      run.party = [...party, mon];
+      run[srcKey] = mons.filter(m => m.id !== monId);
+    }
+
+    saveRuns(runs);
+    renderBoxGrid(fromBox);
+    render();
+  }
+
+  function confirmDeleteMon() {
+    if (!pendingDelete) return;
+    const { fromBox, srcKey, monId } = pendingDelete;
+
+    // Find the mon to get its entryId
+    const mons = getBox(srcKey);
+    const mon  = mons.find(m => m.id === monId);
+
+    // Remove from box
+    removeFromBox(srcKey, monId);
+
+    // Reset the encounter entry back to uncompleted
+    if (mon && mon.entryId) {
+      delete entryData[mon.entryId];
+      completeEntry(mon.entryId, '', true); // revert to uncompleted
+    }
+
+    pendingDelete = null;
+    closeDeleteConfirm();
+    renderBoxGrid(fromBox);
+    render();
+  }
+
+  function closeDeleteConfirm() {
+    document.getElementById('deleteConfirmModal').classList.remove('open');
+    document.body.style.overflow = 'hidden'; // keep box popup scroll locked
+    pendingDelete = null;
+  }
+
+  // ── SEARCH FILTER ──
+  function filterEntries() {
+    const q = document.getElementById('encounterSearch').value.toLowerCase().trim();
+    const rows = document.querySelectorAll('.entry-row');
+    const chapters = {};
+
+    rows.forEach(row => {
+      const text    = (row.dataset.text || '') + ' ' + (row.querySelector('.entry-row-area')?.textContent || '');
+      const visible = !q || text.toLowerCase().includes(q);
+      row.classList.toggle('hidden', !visible);
+      const ch = row.dataset.chapter;
+      if (ch) chapters[ch] = (chapters[ch] || false) || visible;
+    });
+
+    document.querySelectorAll('.chapter-row').forEach(ch => {
+      const id = ch.dataset.chapter;
+      ch.classList.toggle('hidden', q && !chapters[id]);
+    });
+  }
+
+  // ── ENTRY STATE STORE ──
+  // entryData[entryId] = { status: 'caught'|'failed'|'win'|'loss'|'reverted', pokemon, nickname, resultHtml }
+  let entryData = {};
+  let _evolutionIndex = new Map();
+  let _evolutionNameMap = new Map();
+  let _evolutionLoadPromise = null;
+
+  // ── LOG ──
+  function openLog(entryId, type) {
+    const row = document.querySelector(`.entry-row[data-id="${entryId}"]`);
+    if (!row) return;
+
+    if (type === 'encounter') {
+      openEncounterModal(entryId, row);
+    } else {
+      openBattleModal(entryId, row);
+    }
+  }
+
+  function completeEntry(entryId, resultHtml, revert) {
+    const row = document.querySelector(`.entry-row[data-id="${entryId}"]`);
+    if (!row) return;
+
+    const caughtEl = row.querySelector('.entry-row-caught');
+
+    if (revert) {
+      // Revert to uncompleted — move back to natural position
+      row.classList.remove('completed');
+      if (caughtEl) caughtEl.innerHTML = '';
+      // Move back to bottom of chapter (before next chapter header or end)
+      const chapter = row.dataset.chapter;
+      const allChapterRows = [...document.querySelectorAll(`.entry-row[data-chapter="${chapter}"]`)];
+      const lastInChapter = allChapterRows[allChapterRows.length - 1];
+      if (lastInChapter && lastInChapter !== row) {
+        lastInChapter.insertAdjacentElement('afterend', row);
+      }
+    } else {
+      // Mark completed, show result, float to top of chapter
+      if (caughtEl && resultHtml) caughtEl.innerHTML = resultHtml;
+      row.classList.add('completed');
+      const chapter = row.dataset.chapter;
+      const chapterHeader = document.querySelector(`.chapter-row[data-chapter="${chapter}"]`);
+      // Insert after header but before other completed entries? No — just after header (newest on top)
+      if (chapterHeader) chapterHeader.insertAdjacentElement('afterend', row);
+    }
+
+    saveEntryStates();
+  }
+
+  // ── ENCOUNTER MODAL ──
+  function openEncounterModal(entryId, row) {
+    const area       = row.querySelector('.entry-row-area')?.textContent || '';
+    const isEdit     = row.classList.contains('completed');
+    const existing   = entryData[entryId] || {};
+
+    document.getElementById('encModalTitle').textContent  = area;
+    document.getElementById('encEntryId').value           = entryId;
+    document.getElementById('encPokemonInput').value      = existing.pokemon  || '';
+    document.getElementById('encNicknameInput').value     = existing.nickname || '';
+
+    const preview = document.getElementById('encSpritePreview');
+    if (existing.pokemon) {
+      preview.src          = getSpriteUrl(existing.pokemon);
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+      preview.src           = '';
+    }
+
+    // Show revert button only when editing
+    const revertBtn = document.getElementById('encRevertBtn');
+    revertBtn.style.display = isEdit ? 'inline-block' : 'none';
+
+    clearSuggestions();
+    document.getElementById('encounterModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('encPokemonInput').focus(), 50);
+  }
+
+  function closeEncounterModal() {
+    document.getElementById('encounterModal').classList.remove('open');
+    document.body.style.overflow = '';
+    clearSuggestions();
+  }
+
+  function logEncounter(failed) {
+    const entryId  = document.getElementById('encEntryId').value;
+    const pokemon  = document.getElementById('encPokemonInput').value.trim();
+    const nickname = document.getElementById('encNicknameInput').value.trim();
+
+    if (!failed && !pokemon) {
+      document.getElementById('encPokemonInput').focus();
+      return;
+    }
+
+    let resultHtml = '';
+    if (!failed && pokemon) {
+      const sprite  = getSpriteUrl(pokemon);
+      const display = nickname ? `${nickname} <span style="opacity:0.6">(${pokemon})</span>` : pokemon;
+      resultHtml    = `<img class="caught-sprite" src="${sprite}" onerror="this.style.display='none'"><span class="caught-name">${display}</span>`;
+      entryData[entryId] = { status: 'caught', pokemon, nickname, resultHtml };
+      // Add to bench box
+      const monId = `mon_${Date.now()}`;
+      addToBox('box', { id: monId, species: pokemon, nickname, entryId });
+    } else {
+      resultHtml = `<span style="font-family:'DM Mono',monospace;font-size:10px;color:#c87878;">Failed</span>`;
+      entryData[entryId] = { status: 'failed', pokemon: '', nickname: '', resultHtml };
+    }
+
+    closeEncounterModal();
+    completeEntry(entryId, resultHtml, false);
+  }
+
+  function revertEncounter() {
+    const entryId = document.getElementById('encEntryId').value;
+    const existing = entryData[entryId];
+    if (existing && existing.status === 'caught') {
+      // Check bench first, then dead box
+      const bench = getBox('box');
+      const monInBench = bench.find(m => m.entryId === entryId);
+      if (monInBench) {
+        removeFromBox('box', monInBench.id);
+      } else {
+        const dead = getBox('dead');
+        const monInDead = dead.find(m => m.entryId === entryId);
+        if (monInDead) removeFromBox('dead', monInDead.id);
+      }
+      // Also remove from party if it ended up there
+      const runs   = getRuns();
+      const runIdx = runs.findIndex(r => r.id === getRunId());
+      if (runIdx !== -1) {
+        const before = (runs[runIdx].party || []).length;
+        runs[runIdx].party = (runs[runIdx].party || []).filter(p => p.entryId !== entryId);
+        if (runs[runIdx].party.length !== before) {
+          saveRuns(runs);
+          render();
+        }
+      }
+    }
+    delete entryData[entryId];
+    closeEncounterModal();
+    completeEntry(entryId, '', true);
+  }
+
+  // ── BATTLE MODAL ──
+  function openBattleModal(entryId, row) {
+    const area   = row.querySelector('.entry-row-area')?.textContent || '';
+    const isEdit = row.classList.contains('completed');
+
+    document.getElementById('battleModalTitle').textContent = area;
+    document.getElementById('battleEntryId').value          = entryId;
+
+    const revertBtn = document.getElementById('battleRevertBtn');
+    revertBtn.style.display = isEdit ? 'inline-block' : 'none';
+
+    document.getElementById('battleModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBattleModal() {
+    document.getElementById('battleModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function logBattle(result) {
+    const entryId  = document.getElementById('battleEntryId').value;
+    const resultHtml = result === 'win'
+      ? `<span style="font-family:'DM Mono',monospace;font-size:10px;color:#6aab78;">Victory</span>`
+      : `<span style="font-family:'DM Mono',monospace;font-size:10px;color:#c87878;">Defeat</span>`;
+    entryData[entryId] = { status: result, resultHtml };
+    closeBattleModal();
+    completeEntry(entryId, resultHtml, false);
+  }
+
+  function revertBattle() {
+    const entryId = document.getElementById('battleEntryId').value;
+    delete entryData[entryId];
+    closeBattleModal();
+    completeEntry(entryId, '', true);
+  }
+
+  // ── STARTER SUGGESTIONS ──
+  const STARTERS = [
+    'Bulbasaur','Charmander','Squirtle',
+    'Chikorita','Cyndaquil','Totodile',
+    'Treecko','Torchic','Mudkip',
+    'Turtwig','Chimchar','Piplup',
+    'Snivy','Tepig','Oshawott',
+    'Chespin','Fennekin','Froakie',
+    'Rowlet','Litten','Popplio',
+    'Grookey','Scorbunny','Sobble',
+    'Sprigatito','Fuecoco','Quaxly'
+  ];
+
+  function onPokemonInput() {
+    const val     = document.getElementById('encPokemonInput').value.trim();
+    const preview = document.getElementById('encSpritePreview');
+    const entryId = document.getElementById('encEntryId').value;
+
+    // Sprite preview
+    if (val.length > 2) {
+      preview.src           = getSpriteUrl(val);
+      preview.style.display = 'block';
+      preview.onerror       = () => { preview.style.display = 'none'; };
+    } else {
+      preview.style.display = 'none';
+    }
+
+    // Suggestions — starter slot gets starter list, all others get no suggestions
+    if (entryId === 'starter') {
+      showSuggestions(val);
+    } else {
+      clearSuggestions();
+    }
+  }
+
+  function showSuggestions(val) {
+    const list = document.getElementById('encSuggestions');
+    if (!val) { list.innerHTML = ''; return; }
+    const matches = STARTERS.filter(s => s.toLowerCase().startsWith(val.toLowerCase())).slice(0, 6);
+    list.innerHTML = matches.map(s => {
+      const spriteUrl = getSpriteUrl(s);
+      return `<div class="suggestion-item" onmousedown="selectSuggestion('${s}')">
+        <img src="${spriteUrl}" style="width:32px;height:32px;image-rendering:pixelated;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
+        ${s}
+      </div>`;
+    }).join('');
+  }
+
+  function clearSuggestions() {
+    document.getElementById('encSuggestions').innerHTML = '';
+  }
+
+  function selectSuggestion(name) {
+    document.getElementById('encPokemonInput').value = name;
+    clearSuggestions();   // close immediately
+    onPokemonInput();     // update sprite preview
+    document.getElementById('encNicknameInput').focus();
+  }
+
+  // Close suggestions when input loses focus (use mousedown on items to fire before blur)
+  document.getElementById('encPokemonInput').addEventListener('blur', () => {
+    setTimeout(clearSuggestions, 100);
+  });
+
+  // ── PERSIST ENTRY STATES ──
+  function saveEntryStates() {
+    const runId  = getRunId();
+    const states = {};
+    document.querySelectorAll('.entry-row').forEach(row => {
+      if (row.dataset.id) states[row.dataset.id] = row.classList.contains('completed');
+    });
+    localStorage.setItem(`nuzlocke_entries_${runId}`, JSON.stringify(states));
+  }
+
+  function loadEntryStates() {
+    const runId  = getRunId();
+    const raw    = localStorage.getItem(`nuzlocke_entries_${runId}`);
+    if (!raw) return;
+    try {
+      const states = JSON.parse(raw);
+      document.querySelectorAll('.entry-row').forEach(row => {
+        if (row.dataset.id && states[row.dataset.id]) {
+          row.classList.add('completed');
+        }
+      });
+    } catch {}
+  }
+
+  // ── EVOLUTION EDITOR ──
+  function _syncTrackerBodyLock() {
+    const keepLocked = [
+      'benchPopup',
+      'deadPopup',
+      'partyPickerModal',
+      'partyMonModal',
+      'encounterModal',
+      'battleModal',
+      'evolveModal',
+      'deleteConfirmModal',
+    ].some(id => document.getElementById(id)?.classList.contains('open'));
+    document.body.style.overflow = keepLocked ? 'hidden' : '';
+  }
+
+  function _findTrackedMon(monId, sourceHint) {
+    const runs   = getRuns();
+    const runIdx = runs.findIndex(r => r.id === getRunId());
+    if (runIdx === -1) return null;
+
+    const run = runs[runIdx];
+    const keys = sourceHint
+      ? [sourceHint, 'party', 'box', 'dead'].filter((key, idx, arr) => arr.indexOf(key) === idx)
+      : ['party', 'box', 'dead'];
+
+    for (const key of keys) {
+      const list = run[key] || [];
+      const monIdx = list.findIndex(mon => mon.id === monId);
+      if (monIdx !== -1) {
+        return { runs, runIdx, sourceKey: key, monIdx, mon: list[monIdx] };
+      }
+    }
+    return null;
+  }
+
+  function _normalizeDexName(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function _prettifyDexName(value) {
+    return String(value || '')
+      .split('-')
+      .filter(Boolean)
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
+  function _rememberDexDisplay(entry) {
+    if (!entry || !entry.name) return;
+    const slug = _normalizeDexName(entry.name);
+    const display = entry.display_name || entry.displayName || entry.name;
+    if (slug && display && !_evolutionNameMap.has(slug)) _evolutionNameMap.set(slug, display);
+  }
+
+  function _registerEvolutionList(evolutions) {
+    (evolutions || []).forEach(evo => {
+      const from = _normalizeDexName(evo?.from);
+      const to   = _normalizeDexName(evo?.to);
+      if (!from || !to) return;
+
+      const list = _evolutionIndex.get(from) || [];
+      const key  = `${from}->${to}|${evo?.method?.type || ''}|${evo?.method?.value || ''}`;
+      if (list.some(opt => opt.key === key)) return;
+
+      list.push({
+        key,
+        from,
+        to,
+        method: evo?.method || {},
+      });
+      _evolutionIndex.set(from, list);
+    });
+  }
+
+  async function ensureEvolutionIndex() {
+    if (_evolutionLoadPromise) return _evolutionLoadPromise;
+
+    _evolutionLoadPromise = (async () => {
+      _evolutionIndex = new Map();
+      _evolutionNameMap = new Map();
+      const raw = window.TRACKER_EVOLUTION_DATA || {};
+      const names = raw.names || {};
+      const chains = raw.chains || {};
+
+      Object.entries(names).forEach(([slug, display]) => {
+        const normalized = _normalizeDexName(slug);
+        if (normalized && display) _evolutionNameMap.set(normalized, display);
+      });
+
+      Object.entries(chains).forEach(([from, list]) => {
+        const normalizedFrom = _normalizeDexName(from);
+        if (!normalizedFrom || !Array.isArray(list)) return;
+
+        const bucket = [];
+        list.forEach(item => {
+          const to = _normalizeDexName(item?.to);
+          if (!to) return;
+          const key = `${normalizedFrom}->${to}|${item?.method?.type || ''}|${item?.method?.value || ''}`;
+          if (bucket.some(opt => opt.key === key)) return;
+          bucket.push({
+            key,
+            from: normalizedFrom,
+            to,
+            method: item?.method || {},
+          });
+        });
+
+        if (bucket.length) _evolutionIndex.set(normalizedFrom, bucket);
+      });
+    })();
+
+    return _evolutionLoadPromise;
+  }
+
+  function _describeEvolutionMethod(method) {
+    const type  = String(method?.type || '').toLowerCase();
+    const value = method?.value;
+
+    if (type === 'level') {
+      return value && value !== '?' ? `Level ${value}` : 'Level Up';
+    }
+    if (type === 'item') {
+      return value ? `Use ${value}` : 'Use Item';
+    }
+    if (type === 'trade') {
+      return value ? `Trade (${value})` : 'Trade';
+    }
+    if (type === 'friendship') {
+      return 'Friendship';
+    }
+    if (type === 'move') {
+      return value ? `Learn ${value}` : 'Learn Move';
+    }
+    if (type === 'time') {
+      return value ? `Time: ${value}` : 'Time-based';
+    }
+    if (type === 'location') {
+      return value ? `At ${value}` : 'Location-based';
+    }
+    if (type) {
+      return value ? `${type.charAt(0).toUpperCase() + type.slice(1)}: ${value}` : (type.charAt(0).toUpperCase() + type.slice(1));
+    }
+    return value ? String(value) : 'Special';
+  }
+
+  function getEvolutionOptions(speciesName) {
+    const slug = _normalizeDexName(speciesName);
+    const options = _evolutionIndex.get(slug) || [];
+    return options.map(opt => ({
+      ...opt,
+      display: _evolutionNameMap.get(opt.to) || _prettifyDexName(opt.to),
+      methodText: _describeEvolutionMethod(opt.method),
+    }));
+  }
+
+  function selectEvolutionOption(targetSlug) {
+    const targetName = _evolutionNameMap.get(targetSlug) || _prettifyDexName(targetSlug);
+    const input = document.getElementById('evolveSpeciesInput');
+    input.value = targetName;
+
+    document.querySelectorAll('#evolveOptions .evolve-option').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === targetSlug);
+    });
+
+    const preview = document.getElementById('evolveSpritePreview');
+    preview.src = getSpriteUrl(targetName);
+    preview.style.display = 'block';
+    preview.onerror = () => { preview.style.display = 'none'; };
+  }
+
+  async function renderEvolutionOptions(speciesName) {
+    const wrap      = document.getElementById('evolveOptions');
+    const noData    = document.getElementById('evolveNoOptions');
+    const input     = document.getElementById('evolveSpeciesInput');
+
+    wrap.innerHTML = `<div class="evolve-options-empty">Loading evolution data...</div>`;
+    noData.style.display = 'none';
+    input.style.display = 'none';
+    input.value = '';
+
+    await ensureEvolutionIndex();
+
+    const options = getEvolutionOptions(speciesName);
+    wrap.innerHTML = '';
+
+    if (!options.length) {
+      noData.style.display = 'block';
+      input.style.display = 'block';
+      if (document.getElementById('evolveModal').classList.contains('open')) {
+        setTimeout(() => {
+          input.focus();
+          input.select();
+        }, 0);
+      }
+      return;
+    }
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'party-picker-item evolve-option';
+      btn.dataset.target = opt.to;
+      btn.onclick = () => selectEvolutionOption(opt.to);
+
+      const sprite = document.createElement('img');
+      sprite.src = getSpriteUrl(opt.display);
+      sprite.style.width = '36px';
+      sprite.style.height = '36px';
+      sprite.style.imageRendering = 'pixelated';
+      sprite.style.objectFit = 'contain';
+      sprite.onerror = function() { this.style.opacity = '0.3'; };
+
+      const info = document.createElement('div');
+      info.className = 'evolve-option-info';
+
+      const name = document.createElement('div');
+      name.className = 'evolve-option-name';
+      name.textContent = opt.display;
+
+      const meta = document.createElement('div');
+      meta.className = 'evolve-option-meta';
+      meta.textContent = opt.methodText;
+
+      info.appendChild(name);
+      info.appendChild(meta);
+      btn.appendChild(sprite);
+      btn.appendChild(info);
+      wrap.appendChild(btn);
+    });
+
+    selectEvolutionOption(options[0].to);
+  }
+
+  function openEvolvePlaceholder(monId, sourceHint) {
+    closeAllActionMenus();
+    const found = _findTrackedMon(monId, sourceHint);
+    if (!found || !found.mon) return;
+
+    const mon = found.mon;
+    document.getElementById('evolveMonId').value = monId;
+    document.getElementById('evolveSourceHint').value = found.sourceKey;
+    document.getElementById('evolveModalTitle').textContent = `Evolve ${mon.nickname || mon.species}`;
+    document.getElementById('evolveCurrentSpecies').textContent = mon.species || 'Unknown';
+
+    const input = document.getElementById('evolveSpeciesInput');
+    input.value = '';
+
+    const preview = document.getElementById('evolveSpritePreview');
+    preview.src = getSpriteUrl(mon.species);
+    preview.style.display = mon.species ? 'block' : 'none';
+    preview.onerror = () => { preview.style.display = 'none'; };
+
+    renderEvolutionOptions(mon.species);
+
+    document.getElementById('evolveModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      if (input.style.display !== 'none') {
+        input.focus();
+        input.select();
+      }
+    }, 50);
+  }
+
+  function onEvolveInput() {
+    const value   = document.getElementById('evolveSpeciesInput').value.trim();
+    const preview = document.getElementById('evolveSpritePreview');
+    if (!value) {
+      preview.style.display = 'none';
+      preview.src = '';
+      return;
+    }
+    preview.src = getSpriteUrl(value);
+    preview.style.display = 'block';
+    preview.onerror = () => { preview.style.display = 'none'; };
+  }
+
+  function closeEvolveModal() {
+    document.getElementById('evolveModal').classList.remove('open');
+    document.getElementById('evolveMonId').value = '';
+    document.getElementById('evolveSourceHint').value = '';
+    document.getElementById('evolveSpeciesInput').value = '';
+    document.getElementById('evolveOptions').innerHTML = '';
+    document.getElementById('evolveNoOptions').style.display = 'none';
+    document.getElementById('evolveSpeciesInput').style.display = 'none';
+    _syncTrackerBodyLock();
+  }
+
+  function applyEvolution() {
+    const monId      = document.getElementById('evolveMonId').value;
+    const sourceHint = document.getElementById('evolveSourceHint').value;
+    const species    = document.getElementById('evolveSpeciesInput').value.trim();
+    const input      = document.getElementById('evolveSpeciesInput');
+
+    if (!species) {
+      input.focus();
+      return;
+    }
+
+    const found = _findTrackedMon(monId, sourceHint);
+    if (!found || !found.mon) {
+      closeEvolveModal();
+      return;
+    }
+
+    found.runs[found.runIdx][found.sourceKey][found.monIdx] = {
+      ...found.mon,
+      species,
+    };
+    saveRuns(found.runs);
+
+    closeEvolveModal();
+    render();
+
+    if (found.sourceKey === 'box' && document.getElementById('benchPopup').classList.contains('open')) {
+      renderBoxGrid('bench');
+    } else if (found.sourceKey === 'dead' && document.getElementById('deadPopup').classList.contains('open')) {
+      renderBoxGrid('dead');
+    }
+  }
+
+  // ── UNIQUE STATE ENFORCEMENT ──
+  // Ensures a mon exists in only one of: party, box, dead
+  function enforceUniqueState(runs, runIdx, monId) {
+    const r = runs[runIdx];
+    const inParty = (r.party || []).some(m => m.id === monId);
+    const inBox   = (r.box   || []).some(m => m.id === monId);
+    const inDead  = (r.dead  || []).some(m => m.id === monId);
+    const count   = [inParty, inBox, inDead].filter(Boolean).length;
+    if (count > 1) {
+      // Keep only the most recently added (last added wins — remove duplicates from other lists)
+      if (inParty) {
+        r.box  = (r.box  || []).filter(m => m.id !== monId);
+        r.dead = (r.dead || []).filter(m => m.id !== monId);
+      } else if (inBox) {
+        r.dead = (r.dead || []).filter(m => m.id !== monId);
+      }
+    }
+  }
+
+  // ── INIT ──
+  render();
+  loadEntryStates();
+</script>
+<!-- ── BENCH POPUP ── -->
+<div class="box-popup-backdrop" id="benchPopup" onclick="closeBoxPopup('bench', event)">
+  <div class="box-popup">
+    <div class="box-popup-header">
+      <span class="box-popup-title">Pokemon Bench</span>
+      <div class="box-popup-header-right">
+        <span class="box-popup-export">Export</span>
+        <span class="box-popup-close" onclick="closeBoxPopupDirect('bench')">×</span>
+      </div>
+    </div>
+    <div class="box-popup-body">
+      <div id="benchGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DEAD POPUP ── -->
+<div class="box-popup-backdrop" id="deadPopup" onclick="closeBoxPopup('dead', event)">
+  <div class="box-popup">
+    <div class="box-popup-header">
+      <span class="box-popup-title box-popup-title-dead">Pokemon Dead</span>
+      <div class="box-popup-header-right">
+        <span class="box-popup-export">Export</span>
+        <span class="box-popup-close" onclick="closeBoxPopupDirect('dead')">×</span>
+      </div>
+    </div>
+    <div class="box-popup-body">
+      <div id="deadGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── PARTY SLOT PICKER MODAL ── -->
+<div class="modal-backdrop" id="partyPickerModal" onclick="if(event.target===this)closePartyPicker()" style="z-index:700">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-title">Add to Party</div>
+    <div class="modal-subtitle">Choose a Pokemon from your bench</div>
+    <div id="partyPickerList" style="display:flex;flex-direction:column;gap:4px;margin-top:16px;max-height:260px;overflow-y:auto"></div>
+    <div class="modal-actions" style="margin-top:16px">
+      <button class="modal-btn" onclick="closePartyPicker()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── PARTY MON ACTIONS MODAL ── -->
+<div class="modal-backdrop" id="partyMonModal" onclick="if(event.target===this)closePartyMonMenu()" style="z-index:700" data-mon-index="">
+  <div class="modal" style="max-width:320px;text-align:center">
+    <img id="partyMonSprite" style="width:72px;height:72px;image-rendering:pixelated;object-fit:contain;margin-bottom:4px" onerror="this.style.opacity='0.3'">
+    <div class="modal-title" id="partyMonName" style="margin-bottom:20px"></div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="modal-btn" style="width:100%;justify-content:center" onclick="partyMonAction('bench')">Move to Bench</button>
+      <button class="modal-btn" style="width:100%;justify-content:center" onclick="partyMonAction('evolve')">Evolve</button>
+      <button class="modal-btn modal-btn-fail" style="width:100%;justify-content:center" onclick="partyMonAction('dead')">Mark as Dead</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px;justify-content:center">
+      <button class="modal-btn" onclick="closePartyMonMenu()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── EVOLVE MODAL ── -->
+<div class="modal-backdrop" id="evolveModal" onclick="if(event.target===this)closeEvolveModal()" style="z-index:710">
+  <div class="modal">
+    <div class="modal-title" id="evolveModalTitle">Evolve Pokemon</div>
+    <div class="modal-subtitle">Update the stored species for this run.</div>
+    <input type="hidden" id="evolveMonId">
+    <input type="hidden" id="evolveSourceHint">
+
+    <div class="modal-field">
+      <label class="modal-label">Current Species</label>
+      <div style="display:flex;align-items:center;justify-content:center;min-height:42px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:rgba(255,255,255,0.02);font-family:'DM Mono',monospace;font-size:12px;color:var(--text)">
+        <span id="evolveCurrentSpecies">Pokemon</span>
+      </div>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Possible Evolutions</label>
+      <div id="evolveOptions" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div class="evolve-options-empty" id="evolveNoOptions" style="display:none;margin-top:10px">
+        No tracked evolutions found. Enter a species manually.
+      </div>
+      <input
+        class="modal-input"
+        id="evolveSpeciesInput"
+        type="text"
+        placeholder="e.g. Pidgeotto, Raichu..."
+        oninput="onEvolveInput()"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();applyEvolution();} if(event.key==='Escape'){closeEvolveModal();}"
+        style="margin-top:10px;display:none"
+      >
+    </div>
+
+    <div style="text-align:center">
+      <img class="modal-sprite-preview" id="evolveSpritePreview" alt="">
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="closeEvolveModal()">Cancel</button>
+      <button class="modal-btn modal-btn-confirm" onclick="applyEvolution()">Save Evolution</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DELETE CONFIRM MODAL ── -->
+<div class="modal-backdrop" id="deleteConfirmModal" style="z-index:700">
+  <div class="modal" style="max-width:340px">
+    <div class="modal-title" style="color:#c87878">Delete Pokemon</div>
+    <div class="modal-subtitle">Remove <strong id="deleteConfirmName" style="color:var(--text)"></strong> permanently from this run?</div>
+    <div class="modal-actions" style="justify-content:center; gap:12px; margin-top:20px">
+      <button class="modal-btn" onclick="closeDeleteConfirm()">Cancel</button>
+      <button class="modal-btn modal-btn-fail" onclick="confirmDeleteMon()">Delete</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Torkoal — Pokédex — Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#161A1F;--surface:#20262D;--surface2:#272E37;--border:#313943;--text:#E9EDF1;--text-muted:#AAB2BA;--accent:#8E9CAA;--main:#AEB8C2;--highlight:#C8D2DB;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;min-height:100vh;}
+
+  /* HEADER */
+  .page-header{background:var(--surface);border-bottom:2px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;}
+  .romhack-title{font-family:'Press Start 2P',monospace;font-size:11px;color:var(--accent);letter-spacing:1px;text-shadow:0 0 20px rgba(142,156,170,0.3);white-space:nowrap;flex-shrink:0;}
+  .header-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .menu-btn{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;transition:all 0.2s;user-select:none;}
+  .menu-btn:hover{border-color:var(--main);color:var(--main);}
+  .menu-icon{display:flex;flex-direction:column;gap:3px;}
+  .menu-icon span{display:block;width:14px;height:1.5px;background:currentColor;border-radius:1px;}
+  .theme-toggle{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;cursor:pointer;transition:all 0.2s;user-select:none;}
+  .theme-toggle:hover{border-color:var(--accent);}
+  .toggle-track{width:32px;height:18px;background:var(--border);border-radius:9px;position:relative;transition:background 0.2s;}
+  .toggle-track.active{background:var(--main);}
+  .toggle-thumb{width:12px;height:12px;background:white;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+  .toggle-track.active .toggle-thumb{transform:translateX(14px);}
+  .theme-label{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .menu-overlay{position:fixed;top:72px;right:32px;width:220px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;z-index:200;display:none;box-shadow:0 8px 32px rgba(0,0,0,0.4);}
+  .menu-overlay.open{display:block;animation:menuIn .15s ease;}
+  @keyframes menuIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .menu-section-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--text-muted);text-transform:uppercase;padding:0 8px;margin-bottom:4px;margin-top:12px;}
+  .menu-section-title:first-child{margin-top:0;}
+  .menu-link{display:flex;align-items:center;padding:8px;border-radius:6px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);text-decoration:none;transition:all .15s;}
+  .menu-link:hover{background:rgba(255,255,255,.06);color:var(--main);}
+  .menu-divider{height:1px;background:var(--border);margin:8px 0;}
+
+  /* LAYOUT */
+  .back-bar{max-width:1000px;margin:0 auto;padding:20px 32px 0;}
+  .back-link{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--main);}
+  .page-body{max-width:1000px;margin:0 auto;padding:20px 32px 80px;display:flex;flex-direction:column;gap:24px;}
+
+  /* POKEMON HEADER */
+  .poke-header{position:relative;display:grid;grid-template-columns:auto 1fr auto;gap:24px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;}
+
+  /* Shiny button — hover reveal */
+  .shiny-btn{position:absolute;top:10px;left:10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 9px;font-size:15px;line-height:1;cursor:pointer;opacity:0;transition:opacity .2s,background .2s,border-color .2s;z-index:2;color:var(--text);}
+  .poke-header:hover .shiny-btn{opacity:1;}
+  .shiny-btn.active{opacity:1!important;background:rgba(248,208,48,.12);border-color:rgba(248,208,48,.45);}
+  .shiny-btn.active::after{content:'';}
+
+  /* Sprite */
+  .sprite-wrap{flex-shrink:0;text-align:center;}
+  .sprite-img{width:128px;height:128px;image-rendering:pixelated;object-fit:contain;transition:transform .15s;}
+  .sprite-img.shiny{}
+
+  /* Info */
+  .poke-info{display:flex;flex-direction:column;gap:8px;min-width:160px;}
+  .poke-dex{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);letter-spacing:1px;}
+  .poke-name{font-family:'Press Start 2P',monospace;font-size:18px;color:var(--text);letter-spacing:1px;line-height:1.4;}
+  .poke-genus{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .poke-types-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .type-badge{font-family:'DM Mono',monospace;font-weight:500;padding:3px 10px;border-radius:4px;letter-spacing:.3px;}
+  .poke-flags{display:flex;gap:6px;flex-wrap:wrap;}
+  .page-flag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;}
+  .flag-mod{background:rgba(201,168,106,.15);color:#C9A86A;border:1px solid rgba(201,168,106,.35);}
+  .flag-meta{background:rgba(120,170,220,.15);color:#78AADC;border:1px solid rgba(120,170,220,.35);}
+
+  /* EVO CHAIN in header — larger */
+  .evo-combined{display:flex;flex-direction:column;gap:8px;justify-content:center;}
+  .evo-chain-h{display:flex;align-items:center;flex-wrap:wrap;gap:4px;justify-content:flex-end;}
+  .evo-c-node{display:flex;flex-direction:column;align-items:center;gap:5px;text-decoration:none;color:var(--text-muted);transition:color .15s;padding:5px;border-radius:8px;}
+  .evo-c-node:hover{color:var(--main);background:rgba(255,255,255,.04);}
+  .evo-c-cur{color:var(--highlight)!important;}
+  .evo-c-cur .evo-c-spr{border-color:var(--main);}
+  .evo-c-spr{width:68px;height:68px;image-rendering:pixelated;object-fit:contain;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px;}
+  .evo-c-lbl{font-family:'DM Mono',monospace;font-size:10px;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .evo-c-arr{display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--text-muted);padding:0 3px;}
+  .evo-c-mth{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);text-align:center;white-space:nowrap;}
+  .evo-c-arw{font-size:16px;line-height:1;}
+  .evo-c-wide-arr{font-size:20px;align-self:center;padding:0 2px;flex-shrink:0;}
+  .evo-c-branches{display:flex;flex-direction:column;gap:6px;}
+  .evo-c-branches-wide{display:grid;grid-template-columns:repeat(3,auto);gap:8px 6px;align-items:start;}
+  .evo-c-wide-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
+  .evo-c-wide-item .evo-c-mth{margin-bottom:2px;}
+  .evo-c-branch{display:flex;align-items:center;}
+  .family-web{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start;padding-top:8px;border-top:1px solid var(--border);}
+
+  /* SECONDARY ROW */
+  .poke-secondary{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .poke-section{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:12px;}
+  .section-head{display:flex;align-items:center;gap:14px;}
+  .section-lbl{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);flex-shrink:0;}
+  .section-line{flex:1;height:1px;background:var(--border);}
+
+  /* Stats */
+  .stat-row{display:grid;grid-template-columns:36px 36px 1fr;align-items:center;gap:10px;}
+  .stat-lbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted);text-align:right;}
+  .stat-val{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;text-align:right;}
+  .stat-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+  .stat-fill{height:100%;border-radius:4px;}
+  .stat-total{display:flex;justify-content:space-between;align-items:center;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
+  .stat-total-lbl{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .stat-total-val{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--highlight);}
+
+  /* Abilities — sized for max 3 items */
+  .abilities-list{display:flex;flex-direction:column;gap:8px;flex:1;}
+  .ability-item{padding:10px 14px;background:var(--surface2);border-radius:8px;display:flex;flex-direction:column;gap:4px;flex:1;min-height:0;}
+  .ability-name-row{display:flex;align-items:center;gap:8px;}
+  .ability-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);font-weight:500;}
+  .ability-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+  .ability-ha{border:1px dashed var(--border);background:transparent;}
+  .ability-ha .ability-name{color:var(--text-muted);}
+  .ha-tag{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);padding:1px 5px;border:1px solid var(--border);border-radius:3px;letter-spacing:.5px;flex-shrink:0;}
+
+  /* LEARNSET */
+  .learnset-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;display:flex;flex-direction:column;gap:14px;}
+  .mv-filters{display:flex;flex-direction:column;gap:8px;}
+  .mv-frow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .mv-fbtn{font-family:'DM Mono',monospace;font-size:10px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text-muted);cursor:pointer;transition:all .15s;user-select:none;}
+  .mv-fbtn:hover{color:var(--text);border-color:var(--main);}
+  .mv-fbtn.active{color:var(--main);border-color:var(--main);background:rgba(174,184,194,.08);}
+  .mv-search{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:5px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:160px;transition:border-color .2s;}
+  .mv-search::placeholder{color:var(--text-muted);}
+  .mv-search:focus{border-color:var(--main);}
+  .mv-tp{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 7px;border-radius:3px;cursor:pointer;opacity:.35;transition:opacity .15s,transform .1s;user-select:none;}
+  .mv-tp:hover{opacity:.6;}
+  .mv-tp.active{opacity:1;transform:scale(1.06);}
+  .mv-count{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);margin-left:auto;flex-shrink:0;}
+  .mv-sep{width:1px;background:var(--border);height:18px;flex-shrink:0;}
+
+  .mv-table-wrap{overflow-x:auto;}
+  .mv-table{width:100%;border-collapse:collapse;min-width:640px;}
+  .mv-table th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.5px;text-transform:uppercase;color:var(--text);padding:10px 10px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap;user-select:none;}
+  .mv-table th.num{text-align:right;}
+  .mv-row td{padding:7px 10px;border-bottom:1px solid rgba(49,57,67,.4);vertical-align:middle;font-size:13px;}
+  .mv-row:hover td{background:rgba(255,255,255,.025);}
+  .mv-row:last-child td{border-bottom:none;}
+  .mv-td-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);white-space:nowrap;}
+  .mv-td-num{font-family:'DM Mono',monospace;font-size:11px;text-align:right;color:var(--text-muted);}
+  .mv-td-desc{font-size:12px;color:var(--text-muted);max-width:280px;}
+  .mv-src{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+  .mv-tbadge{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;padding:2px 6px;border-radius:3px;white-space:nowrap;}
+  .mv-cat{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
+  .mv-cat-img{height:16px;image-rendering:pixelated;vertical-align:middle;display:block;}
+  .mv-empty-row{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);text-align:center;padding:24px !important;}
+
+  /* DEX ENTRY + STRATEGY + RELATED ITEMS */
+  .dex-items-row{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .dex-top-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
+  .dex-entry-section,.strategy-section{padding:20px 22px;display:flex;flex-direction:column;gap:10px;min-width:0;}
+  .strategy-section{border-left:1px solid var(--border);}
+  .row-divider{height:1px;background:var(--border);flex-shrink:0;}
+  .items-section{padding:20px 22px;display:flex;flex-direction:column;gap:10px;}
+  .dex-entry-text{font-size:13px;color:var(--text-muted);line-height:1.75;font-style:italic;}
+  .dex-entry-empty{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);opacity:.5;}
+  .strategy-text{font-size:13px;color:var(--text-muted);line-height:1.75;}
+  .strategy-empty{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-muted);opacity:.5;}
+  .strategy-set-box{display:flex;flex-direction:column;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+  .strategy-set-head{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .strategy-set-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .strategy-export-btn{padding:5px 10px;background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;transition:all .15s;}
+  .strategy-export-btn:hover,.strategy-export-btn.copied{border-color:var(--main);color:var(--main);}
+  .strategy-set-code{margin:0;padding:10px 12px;background:rgba(0,0,0,.12);border:1px solid rgba(255,255,255,.05);border-radius:8px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--highlight);white-space:pre-wrap;word-break:break-word;user-select:text;}
+  .strategy-set-code.is-selected{border-color:var(--main);box-shadow:0 0 0 1px rgba(174,184,194,.18) inset;}
+  .strategy-notes-wrap{display:flex;flex-direction:column;gap:8px;}
+  .strategy-notes-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);}
+  .strategy-bullets{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;color:var(--text-muted);font-size:13px;line-height:1.65;}
+  .strategy-bullets li::marker{color:var(--main);}
+  .items-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .item-entry{display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--surface2);border-radius:7px;text-decoration:none;}
+  .item-entry-link{cursor:pointer;transition:border-color .15s,background .15s;border:1px solid transparent;}
+  .item-entry-link:hover{border-color:var(--main);background:rgba(255,255,255,.04);}
+  .item-icon{width:24px;height:24px;image-rendering:pixelated;object-fit:contain;flex-shrink:0;}
+  .item-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--highlight);}
+  body.light .dex-items-row{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .strategy-section{border-color:#D4C4A8;}
+  body.light .strategy-set-box{background:#EDE0CC;border-color:#D4C4A8;}
+  body.light .strategy-set-code{background:rgba(255,255,255,.35);border-color:rgba(122,107,85,.12);}
+  body.light .row-divider{background:#D4C4A8;}
+  body.light .item-entry{background:#EDE0CC;}
+
+  /* LIGHT */
+  body.light{--bg:#FCF8F1;--surface:#F5EBDD;--surface2:#EDE0CC;--border:#D4C4A8;--text:#2C2416;--text-muted:#7A6B55;--accent:#C9A86A;--main:#B8944E;--highlight:#7a5020;}
+  body.light .page-header{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .romhack-title{color:#C9A86A;text-shadow:none;}
+  body.light .menu-overlay{background:#F5EBDD;box-shadow:0 8px 32px rgba(74,64,50,.15);}
+  body.light .menu-link{color:#4A4032;} body.light .menu-link:hover{background:rgba(0,0,0,.05);color:#C9A86A;}
+  body.light .menu-btn{background:#EDE0CC;border-color:#D4C4A8;color:#4A4032;} body.light .menu-btn:hover{border-color:#C9A86A;color:#C9A86A;}
+  body.light .theme-toggle{background:#EDE0CC;border-color:#D4C4A8;}
+  body.light .poke-header{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .evo-c-spr{background:#EDE0CC;border-color:#D4C4A8;} body.light .evo-c-cur .evo-c-spr{border-color:#C9A86A;}
+  body.light .poke-section, body.light .learnset-wrap{background:#F5EBDD;border-color:#D4C4A8;}
+  body.light .ability-item{background:#EDE0CC;} body.light .ability-ha{background:transparent;border-color:#D4C4A8;}
+  body.light .stat-track{background:#EDE0CC;}
+  body.light .mv-fbtn{background:#EDE0CC;border-color:#D4C4A8;} body.light .mv-fbtn.active{background:rgba(201,168,106,.1);border-color:#C9A86A;color:#B8944E;}
+  body.light .mv-search{background:#EDE0CC;border-color:#D4C4A8;color:#2C2416;} body.light .mv-search:focus{border-color:#C9A86A;}
+  body.light .mv-row:hover td{background:rgba(0,0,0,.02);} body.light .mv-row td{border-color:rgba(212,196,168,.5);}
+  body.light .mv-table th{border-color:#D4C4A8;}
+  @media(max-width:720px){
+    .poke-header{grid-template-columns:1fr;}
+    .poke-secondary{grid-template-columns:1fr;}
+    .evo-chain-h{justify-content:flex-start;}
+    .dex-top-grid{grid-template-columns:1fr;}
+    .strategy-section{border-left:none;border-top:1px solid var(--border);}
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="../index.html" class="menu-link">Home</a>
+  <a href="../areadex.html" class="menu-link">Area Sheets</a>
+  <a href="../pokedex.html" class="menu-link">Pokedex</a>
+  <a href="../trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="../itemdex.html" class="menu-link">ItemDex</a>
+  <a href="../progression.html" class="menu-link">Progression</a>
+  <a href="../mechanics.html" class="menu-link">Mechanics</a>
+  <a href="../calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="../tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="back-bar"><a href="../pokedex.html" class="back-link">← Back to Pokédex</a></div>
+
+<div class="page-body">
+
+  <div class="poke-header">
+    <button class="shiny-btn" id="shinyBtn" onclick="toggleShiny()" title="Toggle Shiny">✨</button>
+    <div class="sprite-wrap">
+      <img class="sprite-img" id="mainSprite" src="https://play.pokemonshowdown.com/sprites/gen5/torkoal.png" alt="Torkoal"
+           data-fallback="https://play.pokemonshowdown.com/sprites/dex/torkoal.png"
+           onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src=this.dataset.fallback}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}">
+    </div>
+    <div class="poke-info">
+      <span class="poke-dex">#0324 · Gen III · Coal Pokémon</span>
+      <h1 class="poke-name">Torkoal</h1>
+      <div class="poke-types-row"><span class="type-badge" style="background:#F08030;color:#fff;font-size:12px">Fire</span></div>
+      
+    </div>
+    <div></div>
+  </div>
+
+  <div class="dex-items-row">
+    <div class="dex-top-grid">
+      <div class="dex-entry-section">
+        <div class="section-head"><span class="section-lbl">Pokédex Entry</span><div class="section-line"></div></div>
+        <p class="dex-entry-text">You find abandoned coal mines full of them. They dig tirelessly in search of coal.</p>
+      </div>
+      <div class="strategy-section">
+        <div class="section-head"><span class="section-lbl">Strategy</span><div class="section-line"></div></div>
+        <p class="strategy-empty">No strategy notes yet.</p>
+      </div>
+    </div>
+    <div class="row-divider"></div>
+    <div class="items-section">
+      <div class="section-head"><span class="section-lbl">Related Items</span><div class="section-line"></div></div>
+      <p class="dex-entry-empty">—</p>
+    </div>
+  </div>
+
+  <div class="poke-secondary">
+    <div class="poke-section">
+      <div class="section-head"><span class="section-lbl">Base Stats</span><div class="section-line"></div></div>
+      <div class="stat-row"><span class="stat-lbl">HP</span><span class="stat-val" style="color:#FC6C6D">70</span><div class="stat-track"><div class="stat-fill" style="width:27.5%;background:#FC6C6D"></div></div></div><div class="stat-row"><span class="stat-lbl">Atk</span><span class="stat-val" style="color:#F5A073">85</span><div class="stat-track"><div class="stat-fill" style="width:33.3%;background:#F5A073"></div></div></div><div class="stat-row"><span class="stat-lbl">Def</span><span class="stat-val" style="color:#F5D782">140</span><div class="stat-track"><div class="stat-fill" style="width:54.9%;background:#F5D782"></div></div></div><div class="stat-row"><span class="stat-lbl">SpA</span><span class="stat-val" style="color:#86BFFF">85</span><div class="stat-track"><div class="stat-fill" style="width:33.3%;background:#86BFFF"></div></div></div><div class="stat-row"><span class="stat-lbl">SpD</span><span class="stat-val" style="color:#96D9D6">70</span><div class="stat-track"><div class="stat-fill" style="width:27.5%;background:#96D9D6"></div></div></div><div class="stat-row"><span class="stat-lbl">Spe</span><span class="stat-val" style="color:#F85888">20</span><div class="stat-track"><div class="stat-fill" style="width:7.8%;background:#F85888"></div></div></div><div class="stat-total"><span class="stat-total-lbl">Total</span><span class="stat-total-val">470</span></div>
+    </div>
+    <div class="poke-section">
+      <div class="section-head"><span class="section-lbl">Abilities</span><div class="section-line"></div></div>
+      <div class="abilities-list"><div class="ability-item" data-slug="white-smoke"><span class="ability-name">White Smoke</span><span class="ability-desc" id="ab-white-smoke">Prevents the Pokémon&#x27;s stats from being lowered by an opponent.</span></div>
+<div class="ability-item" data-slug="drought"><span class="ability-name">Drought</span><span class="ability-desc" id="ab-drought">Summons harsh sunlight when the Pokémon enters battle.</span></div>
+<div class="ability-item ability-ha" data-slug="shell-armor"><div class="ability-name-row"><span class="ability-name">Shell Armor</span><span class="ha-tag">HA</span></div><span class="ability-desc" id="ab-shell-armor">Prevents the Pokémon from receiving critical hits.</span></div></div>
+    </div>
+  </div>
+
+  <div class="learnset-wrap">
+    <div class="section-head"><span class="section-lbl">Learnset</span><div class="section-line"></div></div>
+    <div class="mv-filters">
+      <div class="mv-frow">
+        <button class="mv-fbtn active" data-group="source" data-val="all" onclick="toggleSrc(this)">All</button>
+        <button class="mv-fbtn" data-group="source" data-val="levelup" onclick="toggleSrc(this)">Level Up</button>
+        <button class="mv-fbtn" data-group="source" data-val="tm" onclick="toggleSrc(this)">TM / HM</button>
+        <button class="mv-fbtn" data-group="source" data-val="egg" onclick="toggleSrc(this)">Egg</button>
+        <button class="mv-fbtn" data-group="source" data-val="tutor" onclick="toggleSrc(this)">Tutor</button>
+        <div class="mv-sep"></div>
+        <button class="mv-fbtn active" data-group="cat" data-val="all" onclick="toggleCat(this)">All</button>
+        <button class="mv-fbtn" data-group="cat" data-val="physical" onclick="toggleCat(this)" style="color:#F5A073">Phys</button>
+        <button class="mv-fbtn" data-group="cat" data-val="special" onclick="toggleCat(this)" style="color:#86BFFF">Spec</button>
+        <button class="mv-fbtn" data-group="cat" data-val="status" onclick="toggleCat(this)" style="color:#96D9D6">Stat</button>
+        <input class="mv-search" id="mvSearch" type="text" placeholder="Search moves…" oninput="renderTable()">
+        <span class="mv-count" id="mvCount"></span>
+      </div>
+      <div class="mv-frow"><span class="mv-tp" data-type="Normal" style="background:#A8A878;color:#fff" onclick="toggleMvType('Normal',this)">Normal</span><span class="mv-tp" data-type="Fire" style="background:#F08030;color:#fff" onclick="toggleMvType('Fire',this)">Fire</span><span class="mv-tp" data-type="Water" style="background:#6890F0;color:#fff" onclick="toggleMvType('Water',this)">Water</span><span class="mv-tp" data-type="Electric" style="background:#F8D030;color:#333" onclick="toggleMvType('Electric',this)">Electric</span><span class="mv-tp" data-type="Grass" style="background:#78C850;color:#fff" onclick="toggleMvType('Grass',this)">Grass</span><span class="mv-tp" data-type="Ice" style="background:#98D8D8;color:#333" onclick="toggleMvType('Ice',this)">Ice</span><span class="mv-tp" data-type="Fighting" style="background:#C03028;color:#fff" onclick="toggleMvType('Fighting',this)">Fighting</span><span class="mv-tp" data-type="Poison" style="background:#A040A0;color:#fff" onclick="toggleMvType('Poison',this)">Poison</span><span class="mv-tp" data-type="Ground" style="background:#E0C068;color:#333" onclick="toggleMvType('Ground',this)">Ground</span><span class="mv-tp" data-type="Flying" style="background:#A890F0;color:#fff" onclick="toggleMvType('Flying',this)">Flying</span><span class="mv-tp" data-type="Psychic" style="background:#F85888;color:#fff" onclick="toggleMvType('Psychic',this)">Psychic</span><span class="mv-tp" data-type="Bug" style="background:#A8B820;color:#fff" onclick="toggleMvType('Bug',this)">Bug</span><span class="mv-tp" data-type="Rock" style="background:#B8A038;color:#fff" onclick="toggleMvType('Rock',this)">Rock</span><span class="mv-tp" data-type="Ghost" style="background:#705898;color:#fff" onclick="toggleMvType('Ghost',this)">Ghost</span><span class="mv-tp" data-type="Dragon" style="background:#7038F8;color:#fff" onclick="toggleMvType('Dragon',this)">Dragon</span><span class="mv-tp" data-type="Dark" style="background:#705848;color:#fff" onclick="toggleMvType('Dark',this)">Dark</span><span class="mv-tp" data-type="Steel" style="background:#B8B8D0;color:#333" onclick="toggleMvType('Steel',this)">Steel</span><span class="mv-tp" data-type="Fairy" style="background:#EE99AC;color:#fff" onclick="toggleMvType('Fairy',this)">Fairy</span></div>
+    </div>
+    <div class="mv-table-wrap">
+      <table class="mv-table">
+        <thead><tr>
+          <th>Src</th><th>Move</th><th>Type</th><th>Cat</th>
+          <th class="num">Pwr</th><th class="num">Acc</th><th class="num">PP</th><th>Description</th>
+        </tr></thead>
+        <tbody id="mvTableBody"><tr><td colspan="8" class="mv-empty-row">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const MOVE_DATA = {"levelup":[{"level":1,"slug":"ember","name":"Ember"},{"level":1,"slug":"smog","name":"Smog"},{"level":4,"slug":"withdraw","name":"Withdraw"},{"level":8,"slug":"rapid-spin","name":"Rapid Spin"},{"level":12,"slug":"smokescreen","name":"Smokescreen"},{"level":16,"slug":"clear-smog","name":"Clear Smog"},{"level":20,"slug":"flame-wheel","name":"Flame Wheel"},{"level":24,"slug":"protect","name":"Protect"},{"level":28,"slug":"lava-plume","name":"Lava Plume"},{"level":32,"slug":"body-slam","name":"Body Slam"},{"level":36,"slug":"iron-defense","name":"Iron Defense"},{"level":40,"slug":"flamethrower","name":"Flamethrower"},{"level":44,"slug":"curse","name":"Curse"},{"level":48,"slug":"heat-wave","name":"Heat Wave"},{"level":52,"slug":"amnesia","name":"Amnesia"},{"level":56,"slug":"inferno","name":"Inferno"},{"level":60,"slug":"shell-smash","name":"Shell Smash"},{"level":64,"slug":"eruption","name":"Eruption"}],"egg":[{"slug":"ancient-power","name":"Ancient Power"},{"slug":"fissure","name":"Fissure"},{"slug":"flail","name":"Flail"},{"slug":"yawn","name":"Yawn"}],"tm":[{"slug":"amnesia","name":"Amnesia"},{"slug":"body-press","name":"Body Press"},{"slug":"body-slam","name":"Body Slam"},{"slug":"bulldoze","name":"Bulldoze"},{"slug":"burning-jealousy","name":"Burning Jealousy"},{"slug":"curse","name":"Curse"},{"slug":"double-edge","name":"Double Edge"},{"slug":"earth-power","name":"Earth Power"},{"slug":"earthquake","name":"Earthquake"},{"slug":"endure","name":"Endure"},{"slug":"facade","name":"Facade"},{"slug":"fire-blast","name":"Fire Blast"},{"slug":"fire-spin","name":"Fire Spin"},{"slug":"flame-charge","name":"Flame Charge"},{"slug":"flamethrower","name":"Flamethrower"},{"slug":"flare-blitz","name":"Flare Blitz"},{"slug":"giga-impact","name":"Giga Impact"},{"slug":"gyro-ball","name":"Gyro Ball"},{"slug":"heat-crash","name":"Heat Crash"},{"slug":"heat-wave","name":"Heat Wave"},{"slug":"heavy-slam","name":"Heavy Slam"},{"slug":"helping-hand","name":"Helping Hand"},{"slug":"hyper-beam","name":"Hyper Beam"},{"slug":"iron-defense","name":"Iron Defense"},{"slug":"overheat","name":"Overheat"},{"slug":"protect","name":"Protect"},{"slug":"rest","name":"Rest"},{"slug":"rock-slide","name":"Rock Slide"},{"slug":"rock-tomb","name":"Rock Tomb"},{"slug":"sandstorm","name":"Sandstorm"},{"slug":"scorching-sands","name":"Scorching Sands"},{"slug":"sleep-talk","name":"Sleep Talk"},{"slug":"sludge-bomb","name":"Sludge Bomb"},{"slug":"solar-beam","name":"Solar Beam"},{"slug":"stealth-rock","name":"Stealth Rock"},{"slug":"stomping-tantrum","name":"Stomping Tantrum"},{"slug":"stone-edge","name":"Stone Edge"},{"slug":"substitute","name":"Substitute"},{"slug":"sunny-day","name":"Sunny Day"},{"slug":"take-down","name":"Take Down"},{"slug":"temper-flare","name":"Temper Flare"},{"slug":"tera-blast","name":"Tera Blast"},{"slug":"weather-ball","name":"Weather Ball"},{"slug":"will-o-wisp","name":"Will O Wisp"},{"slug":"zen-headbutt","name":"Zen Headbutt"}],"tutor":[]};
+// Move details baked in at generation time — works on file:// without a server.
+// If moves.json loads successfully at runtime it will override (more complete data).
+const BAKED_MOVE_DB = {"curse":{"name":"Curse","type":"Ghost","category":"status","power":null,"accuracy":null,"pp":10,"desc":"A move that has different effects depending on whether the user is a Ghost type or not."},"double-edge":{"name":"Double Edge","type":"Normal","category":"physical","power":120,"accuracy":100,"pp":15,"desc":"A reckless life-risking tackle in which the user rushes the target. This also damages the user quite a lot."},"sunny-day":{"name":"Sunny Day","type":"Fire","category":"status","power":null,"accuracy":null,"pp":5,"desc":"The user intensifies the sun for five turns, powering up Fire-type attacks. The sunlight also lowers the power of Water-type attacks."},"take-down":{"name":"Take Down","type":"Normal","category":"physical","power":90,"accuracy":85,"pp":20,"desc":"A reckless full-body charge attack for slamming into the target. This also damages the user a little."},"rock-slide":{"name":"Rock Slide","type":"Rock","category":"physical","power":75,"accuracy":90,"pp":10,"desc":"Large boulders are hurled at opposing Pok\u00e9mon to inflict damage. This may also make the opposing Pok\u00e9mon flinch."},"fissure":{"name":"Fissure","type":"Ground","category":"physical","power":null,"accuracy":30,"pp":5,"desc":"The user opens up a fissure in the ground and drops the target in. The target faints instantly if this attack hits."},"withdraw":{"name":"Withdraw","type":"Water","category":"status","power":null,"accuracy":null,"pp":40,"desc":"The user withdraws its body into its hard shell, boosting its Defense stat."},"earth-power":{"name":"Earth Power","type":"Ground","category":"special","power":90,"accuracy":100,"pp":10,"desc":"The user makes the ground under the target erupt with power. This may also lower the target's Sp. Def stat."},"endure":{"name":"Endure","type":"Normal","category":"status","power":null,"accuracy":null,"pp":10,"desc":"The user endures any attack with at least 1 HP. This move's chance of failing rises if used in succession."},"flame-charge":{"name":"Flame Charge","type":"Fire","category":"physical","power":50,"accuracy":100,"pp":20,"desc":"Cloaking itself in flame, the user attacks the target. Then, building up momentum, the user boosts its Speed stat."},"smog":{"name":"Smog","type":"Poison","category":"special","power":30,"accuracy":70,"pp":20,"desc":"The target is attacked with a discharge of filthy gases. This may also poison the target."},"sandstorm":{"name":"Sandstorm","type":"Rock","category":"status","power":null,"accuracy":null,"pp":10,"desc":"A five-turn sandstorm is summoned to damage all Pok\u00e9mon except Rock, Ground, and Steel types. The sandstorm also boosts the Sp. Def stats of Rock types."},"body-press":{"name":"Body Press","type":"Fighting","category":"physical","power":80,"accuracy":100,"pp":10,"desc":"The user attacks by slamming its body into the target. The higher the user's Defense stat, the greater the damage this move deals."},"body-slam":{"name":"Body Slam","type":"Normal","category":"physical","power":85,"accuracy":100,"pp":15,"desc":"The user attacks by dropping onto the target with its full body weight. This may also leave the target with paralysis."},"stealth-rock":{"name":"Stealth Rock","type":"Rock","category":"status","power":null,"accuracy":null,"pp":20,"desc":"The user lays a trap of levitating stones around the opposing team. The trap damages opposing Pok\u00e9mon that switch into battle."},"protect":{"name":"Protect","type":"Normal","category":"status","power":null,"accuracy":null,"pp":10,"desc":"This move enables the user to protect itself from all attacks. Its chance of failing rises if it is used in succession."},"smokescreen":{"name":"Smokescreen","type":"Normal","category":"status","power":null,"accuracy":100,"pp":20,"desc":"The user releases an obscuring cloud of smoke or ink. This lowers the target's accuracy."},"overheat":{"name":"Overheat","type":"Fire","category":"special","power":130,"accuracy":90,"pp":5,"desc":"The user attacks the target with all its might. The recoil from this move harshly lowers the user's Sp. Atk stat."},"flamethrower":{"name":"Flamethrower","type":"Fire","category":"special","power":90,"accuracy":100,"pp":15,"desc":"The target is scorched with an intense blast of fire. This may also leave the target with a burn."},"fire-spin":{"name":"Fire Spin","type":"Fire","category":"special","power":35,"accuracy":85,"pp":15,"desc":"The user traps the target inside a fierce vortex of fire that inflicts damage for four to five turns."},"will-o-wisp":{"name":"Will O Wisp","type":"Fire","category":"status","power":null,"accuracy":85,"pp":15,"desc":"The user shoots a sinister flame at the target to inflict a burn."},"sleep-talk":{"name":"Sleep Talk","type":"Normal","category":"status","power":null,"accuracy":null,"pp":10,"desc":"The user randomly uses one of the moves it knows. This move can only be used while the user is asleep."},"amnesia":{"name":"Amnesia","type":"Psychic","category":"status","power":null,"accuracy":null,"pp":20,"desc":"The user temporarily empties its mind to forget its concerns. This sharply boosts the user's Sp. Def stat."},"temper-flare":{"name":"Temper Flare","type":"Fire","category":"physical","power":75,"accuracy":100,"pp":10,"desc":"Spurred by desperation, the user attacks the target. This move's power is doubled if the user's previous move failed."},"flame-wheel":{"name":"Flame Wheel","type":"Fire","category":"physical","power":60,"accuracy":100,"pp":25,"desc":"The user attacks by cloaking itself in fire and charging at the target. This may also leave the target with a burn."},"clear-smog":{"name":"Clear Smog","type":"Poison","category":"special","power":50,"accuracy":null,"pp":15,"desc":"The user attacks the target by throwing a clump of special mud. All stat changes are eliminated."},"ember":{"name":"Ember","type":"Fire","category":"special","power":40,"accuracy":100,"pp":25,"desc":"The target is attacked with small flames. This may also leave the target with a burn."},"lava-plume":{"name":"Lava Plume","type":"Fire","category":"special","power":80,"accuracy":100,"pp":15,"desc":"The user torches everything around it in an inferno of scarlet flames. This may also leave those it hits with a burn."},"flail":{"name":"Flail","type":"Normal","category":"physical","power":null,"accuracy":100,"pp":15,"desc":"The user flails about aimlessly to attack. The less HP the user has, the greater the move's power."},"sludge-bomb":{"name":"Sludge Bomb","type":"Poison","category":"special","power":90,"accuracy":100,"pp":10,"desc":"The user hurls unsanitary sludge at the target to inflict damage. This may also poison the target."},"stone-edge":{"name":"Stone Edge","type":"Rock","category":"physical","power":100,"accuracy":80,"pp":5,"desc":"The user stabs the target with sharpened stones. This move has a heightened chance of landing a critical hit."},"giga-impact":{"name":"Giga Impact","type":"Normal","category":"physical","power":150,"accuracy":90,"pp":5,"desc":"The user charges at the target using every bit of its power. The user can't move on the next turn."},"weather-ball":{"name":"Weather Ball","type":"Normal","category":"special","power":50,"accuracy":100,"pp":10,"desc":"This move's type and power change depending on the weather at the time the move is used."},"zen-headbutt":{"name":"Zen Headbutt","type":"Psychic","category":"physical","power":80,"accuracy":90,"pp":15,"desc":"The user focuses its willpower to its head and attacks the target. This may also make the target flinch."},"rest":{"name":"Rest","type":"Psychic","category":"status","power":null,"accuracy":null,"pp":5,"desc":"The user goes to sleep for two turns. This fully restores the user's HP and cures any status conditions."},"heavy-slam":{"name":"Heavy Slam","type":"Steel","category":"physical","power":null,"accuracy":100,"pp":10,"desc":"The user slams into the target with its heavy body. The more the user outweighs the target, the greater the move's power."},"fire-blast":{"name":"Fire Blast","type":"Fire","category":"special","power":110,"accuracy":85,"pp":5,"desc":"The target is attacked with an intense blast of all-consuming fire. This may also leave the target with a burn."},"gyro-ball":{"name":"Gyro Ball","type":"Steel","category":"physical","power":null,"accuracy":100,"pp":5,"desc":"The user tackles the target with a high-speed spin. The slower the user is than the target, the greater the move's power."},"rapid-spin":{"name":"Rapid Spin","type":"Normal","category":"physical","power":50,"accuracy":100,"pp":40,"desc":"The user performs a spin attack that can also eliminate the effects of such moves as Bind, Wrap, and Leech Seed. This also boosts the user's Speed stat."},"hyper-beam":{"name":"Hyper Beam","type":"Normal","category":"special","power":150,"accuracy":90,"pp":5,"desc":"The target is attacked with a powerful beam. The user can't move on the next turn."},"heat-wave":{"name":"Heat Wave","type":"Fire","category":"special","power":95,"accuracy":90,"pp":10,"desc":"The user attacks by exhaling hot breath on opposing Pok\u00e9mon. This may also leave them with a burn."},"shell-smash":{"name":"Shell Smash","type":"Normal","category":"status","power":null,"accuracy":null,"pp":15,"desc":"The user breaks its shell, which lowers its Defense and Sp. Def stats but sharply boosts its Attack, Sp. Atk, and Speed stats."},"burning-jealousy":{"name":"Burning Jealousy","type":"Fire","category":"special","power":70,"accuracy":100,"pp":5,"desc":"The user attacks with energy from jealousy. This leaves all opposing Pok\u00e9mon that have had their stats boosted during the turn with a burn."},"helping-hand":{"name":"Helping Hand","type":"Normal","category":"status","power":null,"accuracy":null,"pp":20,"desc":"The user assists an ally by boosting the power of that ally's attack."},"rock-tomb":{"name":"Rock Tomb","type":"Rock","category":"physical","power":60,"accuracy":95,"pp":15,"desc":"The user hurls boulders at the target to inflict damage. This also lowers the target's Speed stat by cutting off its movement."},"substitute":{"name":"Substitute","type":"Normal","category":"status","power":null,"accuracy":null,"pp":10,"desc":"The user creates a substitute for itself using some of its own HP. The substitute serves as the user's decoy."},"eruption":{"name":"Eruption","type":"Fire","category":"special","power":150,"accuracy":100,"pp":5,"desc":"The user attacks opposing Pok\u00e9mon with explosive fury. The lower the user's HP, the lower the move's power."},"tera-blast":{"name":"Tera Blast","type":"Normal","category":"special","power":80,"accuracy":100,"pp":10,"desc":"If the user has Terastallized, it unleashes energy of its Tera Type. This move inflicts damage using the Attack or Sp. Atk stat\u2014whichever is higher for the user."},"earthquake":{"name":"Earthquake","type":"Ground","category":"physical","power":100,"accuracy":100,"pp":10,"desc":"The user sets off an earthquake that strikes every Pok\u00e9mon around it."},"iron-defense":{"name":"Iron Defense","type":"Steel","category":"status","power":null,"accuracy":null,"pp":15,"desc":"The user hardens its body's surface like iron, sharply boosting its Defense stat."},"bulldoze":{"name":"Bulldoze","type":"Ground","category":"physical","power":60,"accuracy":100,"pp":20,"desc":"The user strikes everything around it by stomping down on the ground. This lowers the Speed stats of those hit."},"yawn":{"name":"Yawn","type":"Normal","category":"status","power":null,"accuracy":null,"pp":10,"desc":"The user lets loose a huge yawn that lulls the target into falling asleep on the next turn."},"flare-blitz":{"name":"Flare Blitz","type":"Fire","category":"physical","power":120,"accuracy":100,"pp":15,"desc":"The user cloaks itself in fire and charges the target to inflict damage. This also damages the user quite a lot and may leave the target with a burn."},"heat-crash":{"name":"Heat Crash","type":"Fire","category":"physical","power":null,"accuracy":100,"pp":10,"desc":"The user slams into the target with its flame-covered body. The more the user outweighs the target, the greater the move's power."},"scorching-sands":{"name":"Scorching Sands","type":"Ground","category":"special","power":70,"accuracy":100,"pp":10,"desc":"The user throws scorching sand at the target to attack. This may also leave the target with a burn."},"facade":{"name":"Facade","type":"Normal","category":"physical","power":70,"accuracy":100,"pp":20,"desc":"This move's power is doubled if the user is poisoned, burned, or paralyzed."},"ancient-power":{"name":"Ancient Power","type":"Rock","category":"special","power":60,"accuracy":100,"pp":5,"desc":"The user attacks with a prehistoric power. This may also boost all the user's stats at once."},"solar-beam":{"name":"Solar Beam","type":"Grass","category":"special","power":120,"accuracy":100,"pp":10,"desc":"The user gathers light on the first turn, then blasts a bundled beam on the next turn."},"stomping-tantrum":{"name":"Stomping Tantrum","type":"Ground","category":"physical","power":75,"accuracy":100,"pp":10,"desc":"Driven by frustration, the user attacks the target. This move's power is doubled if the user's previous move failed."},"inferno":{"name":"Inferno","type":"Fire","category":"special","power":100,"accuracy":50,"pp":5,"desc":"The user attacks by engulfing the target in an intense fire. This leaves the target with a burn."}};
+const SPRITE_N = "https://play.pokemonshowdown.com/sprites/gen5/torkoal.png";
+const SPRITE_S = "https://play.pokemonshowdown.com/sprites/gen5-shiny/torkoal.png";
+let shiny = false;
+let moveDb = BAKED_MOVE_DB, abilityDb = {};
+let tableRows = [];
+let activeSources = new Set();   // empty = all
+let activeCats    = new Set();
+let activeTypes   = new Set();
+
+const TC = {Normal:'#A8A878',Fire:'#F08030',Water:'#6890F0',Electric:'#F8D030',Grass:'#78C850',Ice:'#98D8D8',Fighting:'#C03028',Poison:'#A040A0',Ground:'#E0C068',Flying:'#A890F0',Psychic:'#F85888',Bug:'#A8B820',Rock:'#B8A038',Ghost:'#705898',Dragon:'#7038F8',Dark:'#705848',Steel:'#B8B8D0',Fairy:'#EE99AC'};
+const TT = {Electric:'#333',Ice:'#333',Ground:'#333',Steel:'#333'};
+const CS = {physical:{c:'#F5A073',l:'Phys'},special:{c:'#86BFFF',l:'Spec'},status:{c:'#96D9D6',l:'Stat'}};
+const SS = {levelup:{c:'#86BFFF',b:'rgba(134,191,255,.12)',l:'LV'},tm:{c:'#A878FA',b:'rgba(168,120,250,.12)',l:'TM'},egg:{c:'#F5A073',b:'rgba(245,160,115,.12)',l:'EGG'},tutor:{c:'#78C850',b:'rgba(120,200,80,.12)',l:'TUT'}};
+
+function exportStrategySet(btn) {
+  if (!btn) return;
+  const wrap = btn.closest('.strategy-set-box');
+  const code = wrap ? wrap.querySelector('.strategy-set-code') : null;
+  if (!code) return;
+
+  const selection = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(code);
+  selection.removeAllRanges();
+  selection.addRange(range);
+
+  code.classList.add('is-selected');
+  if (code._clearSelectionTimer) clearTimeout(code._clearSelectionTimer);
+  code._clearSelectionTimer = setTimeout(() => code.classList.remove('is-selected'), 1400);
+
+  const resetBtn = (copied) => {
+    btn.textContent = copied ? 'Copied' : 'Export';
+    btn.classList.toggle('copied', copied);
+    setTimeout(() => {
+      btn.textContent = 'Export';
+      btn.classList.remove('copied');
+    }, 1200);
+  };
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(code.textContent).then(() => resetBtn(true)).catch(() => resetBtn(false));
+  } else {
+    resetBtn(false);
+  }
+}
+
+// ── SHINY ──
+const spriteEl = document.getElementById('mainSprite');
+function toggleShiny() {
+  shiny = !shiny;
+  // Main sprite
+  spriteEl.src = shiny ? SPRITE_S : SPRITE_N;
+  spriteEl.classList.toggle('shiny', shiny);
+  // Evo chain sprites (includes family-web nodes, which also use .evo-c-spr)
+  document.querySelectorAll('.evo-c-spr').forEach(img => {
+    img.src = shiny ? img.dataset.shiny : img.dataset.normal;
+  });
+  // Button state
+  document.getElementById('shinyBtn').classList.toggle('active', shiny);
+}
+
+function esc(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : ''; }
+function srcBadge(s, lv) {
+  const x = SS[s]||{c:'#aaa',b:'rgba(0,0,0,.1)',l:s};
+  const label = (s==='levelup'&&lv) ? `Lv.${lv}` : x.l;
+  return `<span class="mv-src" style="color:${x.c};background:${x.b}">${label}</span>`;
+}
+function typeBadge(t) { if(!t||t==='?') return '<span class="mv-tbadge" style="background:#444;color:#aaa">?</span>'; return `<span class="mv-tbadge" style="background:${TC[t]||'#888'};color:${TT[t]||'#fff'}">${t}</span>`; }
+const CAT_IMGS = {
+  physical: 'https://play.pokemonshowdown.com/sprites/categories/Physical.png',
+  special:  'https://play.pokemonshowdown.com/sprites/categories/Special.png',
+  status:   'https://play.pokemonshowdown.com/sprites/categories/Status.png',
+};
+function catBadge(c) {
+  const src = CAT_IMGS[c];
+  if (src) return `<img class="mv-cat-img" src="${src}" alt="${c}" title="${c[0].toUpperCase()+c.slice(1)}">`;
+  return `<span class="mv-cat" style="color:#aaa">?</span>`;
+}
+
+// ── DATA LOADING ──
+// moveDb is pre-initialised from BAKED_MOVE_DB so the table renders immediately.
+// The fetches below succeed only when served via a local server (not file://) and
+// give us the full move database; they are silent no-ops on file://.
+async function init() {
+  try {
+    const fetched = await fetch('../data/moves.json').then(r=>r.json());
+    if (fetched && Object.keys(fetched).length > 0) moveDb = fetched;
+  } catch(e) {}
+  try {
+    abilityDb = await fetch('../data/abilities.json').then(r=>r.json());
+    document.querySelectorAll('.ability-item').forEach(el => {
+      const slug = el.dataset.slug;
+      const info = abilityDb[slug];
+      if (info) {
+        const desc = typeof info === 'string' ? info : (info.desc || info.short_effect || '');
+        const descEl = el.querySelector('.ability-desc');
+        if (descEl && desc) descEl.textContent = desc;
+      }
+    });
+  } catch(e) {}
+  buildRows();
+  renderTable();
+}
+
+function buildRows() {
+  tableRows = [];
+  function add(list, src) {
+    list.forEach(m => {
+      const db = moveDb[m.slug] || {};
+      tableRows.push({src, level: src==='levelup'?m.level:null, name: db.name||m.name, slug: m.slug,
+        type: db.type||'?', cat: db.category||'status', power: db.power??null,
+        acc: db.accuracy??null, pp: db.pp??null, desc: db.desc||''});
+    });
+  }
+  add(MOVE_DATA.levelup,'levelup'); add(MOVE_DATA.egg,'egg'); add(MOVE_DATA.tm,'tm'); add(MOVE_DATA.tutor,'tutor');
+  const ord={levelup:0,egg:1,tm:2,tutor:3};
+  tableRows.sort((a,b) => {
+    if(a.src!==b.src) return (ord[a.src]||9)-(ord[b.src]||9);
+    if(a.src==='levelup') return (a.level||0)-(b.level||0);
+    return a.name.localeCompare(b.name);
+  });
+}
+
+function getFiltered() {
+  const q = document.getElementById('mvSearch').value.toLowerCase().trim();
+  return tableRows.filter(r => {
+    if (activeSources.size > 0 && !activeSources.has(r.src)) return false;
+    if (activeCats.size > 0 && !activeCats.has(r.cat)) return false;
+    if (activeTypes.size > 0 && !activeTypes.has(r.type)) return false;
+    if (q && !r.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+}
+
+function renderTable() {
+  const rows = getFiltered();
+  const tbody = document.getElementById('mvTableBody');
+  document.getElementById('mvCount').textContent = rows.length + ' move' + (rows.length!==1?'s':'');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8" class="mv-empty-row">No moves match filters.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `<tr class="mv-row">
+    <td>${srcBadge(r.src, r.level)}</td>
+    <td class="mv-td-name">${esc(r.name)}</td>
+    <td>${typeBadge(r.type)}</td>
+    <td>${catBadge(r.cat)}</td>
+    <td class="mv-td-num">${r.power??'—'}</td>
+    <td class="mv-td-num">${r.acc!=null?r.acc+'%':'—'}</td>
+    <td class="mv-td-num">${r.pp??'—'}</td>
+    <td class="mv-td-desc">${esc(r.desc)}</td>
+  </tr>`).join('');
+}
+
+// ── MULTI-SELECT FILTERS (union) ──
+function toggleSrc(el) {
+  const val = el.dataset.val;
+  if (val === 'all') {
+    activeSources.clear();
+    document.querySelectorAll('[data-group="source"]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    // Remove "All" active
+    document.querySelector('[data-group="source"][data-val="all"]').classList.remove('active');
+    if (activeSources.has(val)) {
+      activeSources.delete(val);
+      el.classList.remove('active');
+    } else {
+      activeSources.add(val);
+      el.classList.add('active');
+    }
+    // If none left, re-activate All
+    if (activeSources.size === 0) {
+      document.querySelector('[data-group="source"][data-val="all"]').classList.add('active');
+    }
+  }
+  renderTable();
+}
+
+function toggleCat(el) {
+  const val = el.dataset.val;
+  if (val === 'all') {
+    activeCats.clear();
+    document.querySelectorAll('[data-group="cat"]').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+  } else {
+    document.querySelector('[data-group="cat"][data-val="all"]').classList.remove('active');
+    if (activeCats.has(val)) {
+      activeCats.delete(val);
+      el.classList.remove('active');
+    } else {
+      activeCats.add(val);
+      el.classList.add('active');
+    }
+    if (activeCats.size === 0) {
+      document.querySelector('[data-group="cat"][data-val="all"]').classList.add('active');
+    }
+  }
+  renderTable();
+}
+
+function toggleMvType(type, el) {
+  if (activeTypes.has(type)) {
+    activeTypes.delete(type);
+    el.classList.remove('active');
+  } else {
+    activeTypes.add(type);
+    el.classList.add('active');
+  }
+  renderTable();
+}
+
+// ── THEME ──
+const toggleTrack=document.getElementById('toggleTrack');
+const themeLabel=document.getElementById('themeLabel');
+const menu=document.getElementById('menuOverlay');
+function toggleTheme(){ document.body.classList.toggle('light'); const l=document.body.classList.contains('light'); toggleTrack.classList.toggle('active',l); themeLabel.textContent=l?'Light':'Dark'; localStorage.setItem('theme',l?'light':'dark'); }
+function toggleMenu(){ menu.classList.toggle('open'); }
+document.addEventListener('click',e=>{ if(!e.target.closest('.menu-overlay')&&!e.target.closest('.menu-btn')) menu.classList.remove('open'); });
+if(localStorage.getItem('theme')==='light'){ document.body.classList.add('light'); toggleTrack.classList.add('active'); themeLabel.textContent='Light'; }
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mechanics Guide — Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* ── MENU BUTTON ── */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* ── THEME TOGGLE ── */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* ── MENU OVERLAY ── */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── PAGE HERO ── */
+  .page-hero {
+    padding: 32px 32px 0;
+    max-width: 960px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+
+  .page-intro {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 680px;
+    line-height: 1.7;
+  }
+
+  /* ── MECHANICS BODY ── */
+  .mechanics-body {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  /* ── CATEGORY ── */
+  .category {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 4px;
+  }
+
+  .category-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .category-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── MECHANIC CARD ── */
+  .mechanic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .mechanic-card:hover { border-color: var(--accent); }
+
+  .mechanic-card-inner {
+    padding: 18px 22px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .mechanic-main { flex: 1; }
+
+  .mechanic-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .mechanic-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--highlight);
+  }
+
+  .mechanic-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .mechanic-tag-battle  { border-color: rgba(174,184,194,0.3); color: var(--main); background: rgba(174,184,194,0.08); }
+  .mechanic-tag-prog    { border-color: rgba(200,210,219,0.3); color: var(--highlight); background: rgba(200,210,219,0.07); }
+  .mechanic-tag-catch   { border-color: rgba(142,156,170,0.3); color: var(--accent); background: rgba(142,156,170,0.07); }
+  .mechanic-tag-quality { border-color: rgba(174,184,194,0.25); color: var(--text-muted); background: rgba(174,184,194,0.05); }
+
+  .mechanic-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 10px;
+  }
+
+  .mechanic-desc:last-child { margin-bottom: 0; }
+
+  .mechanic-note {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    line-height: 1.6;
+    width: 100%;
+  }
+
+  .mechanic-note-label {
+    color: var(--accent);
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+
+  /* ── LIGHT MODE ── */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #A07030;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .mechanic-card { background: #ffffff; border-color: #E7D8C1; }
+  body.light .mechanic-card:hover { border-color: #C9A86A; }
+  body.light .mechanic-name { color: #7a5020; }
+  body.light .mechanic-tag { background: rgba(0,0,0,0.03); border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .mechanic-tag-battle  { background: rgba(201,168,106,0.1); border-color: rgba(201,168,106,0.35); color: #8a6830; }
+  body.light .mechanic-tag-prog    { background: rgba(160,112,48,0.08); border-color: rgba(160,112,48,0.3); color: #7a5020; }
+  body.light .mechanic-tag-catch   { background: rgba(106,138,80,0.08); border-color: rgba(106,138,80,0.3); color: #4a6a38; }
+  body.light .mechanic-tag-quality { background: rgba(0,0,0,0.03); border-color: #E7D8C1; color: #7A6D5C; }
+  body.light .mechanic-note { background: rgba(0,0,0,0.02); border-color: #E7D8C1; }
+  body.light .mechanic-note-label { color: #C9A86A; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Jump To</div>
+  <a href="#cat-battle" class="menu-link" onclick="closeMenu()">Battle</a>
+  <a href="#cat-progression" class="menu-link" onclick="closeMenu()">Progression</a>
+  <a href="#cat-catching" class="menu-link" onclick="closeMenu()">Catching</a>
+  <a href="#cat-quality" class="menu-link" onclick="closeMenu()">Quality of Life</a>
+  <a href="#cat-misc" class="menu-link" onclick="closeMenu()">Miscellaneous</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-title">Mechanics Guide</div>
+    <p class="page-intro">
+      This guide covers all custom mechanics, rule changes, and new features introduced in this romhack.
+      If something feels different from a standard HeartGold playthrough, you will find the explanation here.
+      This page is updated as new mechanics are added.
+    </p>
+  </div>
+</div>
+
+<div class="mechanics-body">
+
+  <!-- ── BATTLE ── -->
+  <div class="category" id="cat-battle">
+    <div class="category-header">
+      <span class="category-title">Battle</span>
+      <div class="category-line"></div>
+    </div>
+
+    <!-- MECHANIC CARD — duplicate this block to add a new mechanic -->
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">[Mechanic Name]</span>
+            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
+          </div>
+          <p class="mechanic-desc">
+            [Short explanation of what this mechanic does and how it differs from vanilla. Keep it player-facing and practical — tell them what to expect, not the technical implementation.]
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Note:</span>
+            [Any edge case, exception, or extra detail worth calling out.]
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">No EVs</span>
+            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
+          </div>
+          <p class="mechanic-desc">
+            Effort Values have been removed from the game entirely. Pokemon do not gain EVs from battles and
+            no EV-boosting items have any effect. All stat calculations are based purely on base stats,
+            IVs, nature, and level — keeping the playing field even between the player and trainers.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Note:</span>
+            Vitamins and wings still exist in the world but serve no mechanical purpose. They may be sold for money.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Level Cap</span>
+            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Each gym leader imposes a level cap on the player's team. Pokemon that exceed the cap
+            before the badge is earned will disobey orders in battle. The cap is lifted the moment
+            the badge is obtained. Caps are listed on each area sheet and in the Progression Guide.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Note:</span>
+            Traded Pokemon follow stricter obedience rules as in vanilla. Keep this in mind if you are using trade evolutions.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── PROGRESSION ── -->
+  <div class="category" id="cat-progression">
+    <div class="category-header">
+      <span class="category-title">Progression</span>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Silver Coin System</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Silver Coins are part of an informal tradition among dedicated trainers in Johto.
+            They are not rewards for victory — they are markers of personal resolve.
+            Each coin represents a personal goal, a self-imposed challenge, or a turning point
+            in a trainer's journey.
+          </p>
+          <p class="mechanic-desc">
+            A coin changes hands under two conditions: when a trainer is overcome by someone
+            whose resolve surpasses theirs, or when a trainer achieves the goal they were
+            chasing. In both cases, the coin moves forward because a chapter has ended.
+            The coin does not belong to the strongest trainer — it belongs to the one currently
+            closest to their purpose.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Pokémon Centers:</span>
+            Coins exchanged by the player are returned into circulation — given to new trainers
+            beginning their journeys and used to support future challengers. This keeps the
+            tradition alive without turning coins into relics or trophies.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Progressive Disadvantage</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
+          </div>
+          <p class="mechanic-desc">
+            Gym leaders and rival battles scale in difficulty as the game progresses. Early fights
+            are straightforward, but later trainers will have more optimised teams, held items,
+            and stronger movesets — rewarding players who engage with the game's mechanics rather
+            than relying on overlevelling alone.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── CATCHING ── -->
+  <div class="category" id="cat-catching">
+    <div class="category-header">
+      <span class="category-title">Catching</span>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">All Starters Available</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+          </div>
+          <p class="mechanic-desc">
+            All starter Pokemon from every generation can be found in the wild at various points
+            throughout the game. Check the area sheets for locations and encounter rates.
+            Starters are typically found at rare or ultra rare encounter rates.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── QUALITY OF LIFE ── -->
+  <div class="category" id="cat-quality">
+    <div class="category-header">
+      <span class="category-title">Quality of Life</span>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Pokemon Center Puzzle Room</span>
+            <span class="mechanic-tag mechanic-tag-quality">Quality of Life</span>
+          </div>
+          <p class="mechanic-desc">
+            A special puzzle room is available in the Pokemon Center. Each puzzle gives you a
+            pre-set team and a scenario to solve — designed to teach battle mechanics through
+            hands-on challenges. Completing a puzzle for the first time awards coins redeemable
+            at the special shop. Puzzles can be replayed freely after clearing them.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Note:</span>
+            Coin rewards are one-time only. Replaying a puzzle after clearing it gives no additional coins.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── MISCELLANEOUS ── -->
+  <div class="category" id="cat-misc">
+    <div class="category-header">
+      <span class="category-title">Miscellaneous</span>
+      <div class="category-line"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu  = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() { menu.classList.toggle('open'); }
+  function closeMenu()  { menu.classList.remove('open'); }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+</script>
+</body>
+</html>

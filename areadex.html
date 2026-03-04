@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AreaDex - Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --surface3: #1B2128;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --green: #78C87C;
+    --blue: #78AADC;
+    --gold: #C9A86A;
+    --red: #C87878;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  body.light-theme {
+    --bg: #EEF3F8;
+    --surface: #FFFFFF;
+    --surface2: #E6EDF5;
+    --surface3: #F6F9FC;
+    --border: #D3DDE8;
+    --text: #19222B;
+    --text-muted: #5F6C79;
+    --accent: #6C7B89;
+    --main: #43586C;
+    --highlight: #273A4B;
+    --green: #5D9F61;
+    --blue: #4F7FB5;
+    --gold: #A98648;
+    --red: #B46262;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  .menu-btn,
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover,
+  .theme-toggle:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span {
+    display: block;
+    width: 14px;
+    height: 1.5px;
+    background: currentColor;
+    border-radius: 1px;
+  }
+  .toggle-track {
+    width: 32px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+
+  .page-hero {
+    padding: 32px 32px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .page-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+  .page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .page-intro {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 760px;
+    line-height: 1.7;
+  }
+  .hero-note {
+    padding-top: 2px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+
+  .filter-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    position: sticky;
+    top: 52px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .search-input,
+  .subfilter-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-input::placeholder,
+  .subfilter-input::placeholder { color: var(--text-muted); }
+  .search-input:focus,
+  .subfilter-input:focus { border-color: var(--main); }
+
+  .view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .view-btn {
+    padding: 5px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .view-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  .search-hints {
+    width: 100%;
+    padding: 5px 2px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+  .hint-tag {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--main);
+    margin-right: 2px;
+    font-size: 10px;
+  }
+
+  .type-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .type-pill {
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+    color: #fff;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.15s, border-color 0.15s, opacity 0.15s;
+    opacity: 0.9;
+  }
+  .type-pill:hover { transform: translateY(-1px); }
+  .type-pill.active {
+    border-color: rgba(255,255,255,0.28);
+    opacity: 1;
+  }
+  .type-pill.all { background: #5F6C79; }
+  .type-pill.route { background: #8DAA5A; }
+  .type-pill.city { background: #6A8FB7; }
+  .type-pill.tower { background: #8D6AB7; }
+  .type-pill.dungeon { background: #A67A54; }
+
+  .subfilter-wrap {
+    flex: 1;
+    min-width: 240px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .subfilter-label {
+    min-width: 62px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .subfilter-input { flex: 1; }
+
+  .results-bar,
+  .area-grid,
+  .area-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .results-bar {
+    padding-top: 18px;
+    padding-bottom: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+  }
+
+  .area-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+    padding-bottom: 26px;
+  }
+  .area-card,
+  .area-list-row {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06)), var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+  }
+  .area-card:hover,
+  .area-list-row:hover {
+    transform: translateY(-2px);
+    border-color: rgba(174,184,194,0.45);
+    box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+  }
+  .area-card {
+    padding: 14px;
+    min-height: 244px;
+    display: flex;
+    flex-direction: column;
+  }
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .display-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+  }
+  .status-chip {
+    padding: 2px 6px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+  }
+  .status-chip.live { color: var(--green); }
+  .status-chip.planned { color: var(--gold); }
+
+  .area-emblem {
+    width: 74px;
+    height: 74px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 15px;
+    color: var(--main);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .area-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    text-align: center;
+    margin-bottom: 6px;
+    line-height: 1.45;
+  }
+  .area-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .area-summary {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: auto;
+  }
+  .mini-chip {
+    padding: 2px 6px;
+    border-radius: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3px;
+    color: #fff;
+  }
+  .mini-chip.route { background: #8DAA5A; }
+  .mini-chip.city { background: #6A8FB7; }
+  .mini-chip.tower { background: #8D6AB7; }
+  .mini-chip.dungeon { background: #A67A54; }
+  .mini-chip.neutral { background: #5F6C79; }
+
+  .area-list {
+    display: none;
+    padding-bottom: 26px;
+  }
+  .area-list.open { display: flex; flex-direction: column; gap: 10px; }
+  .area-list-row {
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns: 54px 70px minmax(200px, 1.2fr) minmax(180px, 0.9fr) auto;
+    gap: 12px;
+    align-items: center;
+  }
+  .area-list .area-emblem {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+    font-size: 11px;
+  }
+  .list-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .list-subline,
+  .list-summary {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.45;
+  }
+  .list-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { border-color: var(--main); color: var(--main); }
+  .btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+    color: var(--text-muted);
+  }
+
+  .empty-state {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 18px 32px 0;
+  }
+  .empty-state-card {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    color: var(--text-muted);
+    text-align: center;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,12,16,0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 220;
+  }
+  .modal.open { display: flex; }
+  .modal-panel {
+    width: min(1080px, 100%);
+    max-height: min(90vh, 880px);
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+  .close-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .close-btn:hover { color: var(--text); }
+
+  .modal-body {
+    padding: 22px;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+    gap: 18px;
+  }
+  .detail-panel {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.05)), var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .detail-panel .area-emblem {
+    width: 84px;
+    height: 84px;
+    margin-bottom: 16px;
+  }
+  .detail-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .detail-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+  .detail-subline {
+    color: var(--text-muted);
+    margin-bottom: 18px;
+  }
+  .detail-block { margin-top: 18px; }
+  .detail-label {
+    display: block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .detail-value {
+    color: var(--text);
+    line-height: 1.7;
+  }
+  .detail-notes {
+    padding-left: 18px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .preview-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+    min-height: 116px;
+  }
+  .preview-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .preview-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .preview-desc {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.9px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .link-box {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    background: rgba(255,255,255,0.02);
+  }
+  .link-box p {
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  @media (max-width: 980px) {
+    .modal-body { grid-template-columns: 1fr; }
+    .preview-grid { grid-template-columns: 1fr; }
+    .area-list-row {
+      grid-template-columns: 54px 70px minmax(0, 1fr);
+      gap: 10px;
+    }
+    .area-list-row > :nth-child(4),
+    .area-list-row > :nth-child(5) { grid-column: 3; }
+    .list-actions { justify-content: flex-start; }
+  }
+
+  @media (max-width: 720px) {
+    .page-header,
+    .filter-bar,
+    .page-hero,
+    .results-bar,
+    .area-grid,
+    .area-list,
+    .empty-state { padding-left: 16px; padding-right: 16px; }
+    .menu-overlay { right: 16px; width: min(240px, calc(100vw - 32px)); }
+    .page-hero-inner { align-items: flex-start; }
+    .subfilter-wrap { min-width: 100%; }
+    .area-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .area-card { min-height: 226px; }
+  }
+
+  @media (max-width: 560px) {
+    .area-grid { grid-template-columns: 1fr; }
+    .view-btn span { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="romhack-title">JAY'S ROMHACK</div>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-title">AreaDex</div>
+      <p class="page-intro">
+        Browse every documented route, city, cave, and dungeon sheet in one place, then jump straight
+        into the local encounter, trainer, and item breakdown for that area.
+      </p>
+    </div>
+    <div class="hero-note" id="heroNote">Areas</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <input
+      type="text"
+      class="search-input"
+      id="searchInput"
+      placeholder="Search areas, notes, tags, or page content..."
+      oninput="applyFilters()"
+      autocomplete="off"
+    >
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnGrid" onclick="setView('grid')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="0" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="0" width="4.5" height="4.5" rx="1"/><rect x="0" y="6.5" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx="1"/></svg>
+        <span>Grid</span>
+      </button>
+      <button class="view-btn" id="btnList" onclick="setView('list')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="1" width="11" height="2" rx="1"/><rect x="0" y="4.5" width="11" height="2" rx="1"/><rect x="0" y="8" width="11" height="2" rx="1"/></svg>
+        <span>List</span>
+      </button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="search-hints">
+      <span class="hint-tag">Name</span> route / town / dungeon &nbsp;
+      <span class="hint-tag">Type</span> route / city / tower / dungeon &nbsp;
+      <span class="hint-tag">Biome</span> urban / forest / cave / coastal &nbsp;
+      <span class="hint-tag">Chapter</span> progression gate
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="type-pills" id="typePills"></div>
+  </div>
+  <div class="filter-row">
+    <div class="subfilter-wrap">
+      <span class="subfilter-label">Biome</span>
+      <input
+        type="text"
+        class="subfilter-input"
+        id="biomeInput"
+        placeholder="filter biome..."
+        oninput="applyFilters()"
+        autocomplete="off"
+      >
+    </div>
+    <div class="subfilter-wrap">
+      <span class="subfilter-label">Chapter</span>
+      <input
+        type="text"
+        class="subfilter-input"
+        id="chapterInput"
+        placeholder="filter chapter..."
+        oninput="applyFilters()"
+        autocomplete="off"
+      >
+    </div>
+  </div>
+</div>
+
+<div class="results-bar" id="resultsMeta">0 areas shown</div>
+<div class="area-grid" id="areaGrid"></div>
+<div class="area-list" id="areaList"></div>
+<div class="empty-state" id="emptyState" style="display:none">
+  <div class="empty-state-card">No areas match the current filters.</div>
+</div>
+
+<div class="modal" id="areaModal" onclick="handleModalBackdrop(event)">
+  <div class="modal-panel">
+    <div class="modal-header">
+      <div class="modal-title">Area Detail</div>
+      <button class="close-btn" onclick="closeAreaModal()">x</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  const AREADEX_SOURCE = [
+    {
+      id: 'sprout-tower',
+      displayId: 1,
+      name: 'Sprout Tower',
+      type: 'Tower',
+      biome: 'Spiritual',
+      chapter: 'Chapter 1',
+      status: 'Live',
+      summary: 'Early challenge area with monks, tower encounters, and key opening resources.',
+      tags: ['Tower', 'Encounters', 'Trainers', 'Items'],
+      counts: {
+        encounters: '3 time sets',
+        trainers: 'Sages',
+        items: 'Early pickups'
+      },
+      notes: [
+        'Use this as the live reference layout for a full area sheet.',
+        'Tracks encounter tables, trainer notes, and item pickups in one page.',
+        'Acts as the first documentation sample for Chapter 1.'
+      ],
+      link: 'areas/sproutower.html'
+    },
+    {
+      id: 'route-29',
+      displayId: 2,
+      name: 'Route 29',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 1',
+      status: 'Planned',
+      summary: 'Starter outbound route slot for early encounters, item pickups, and first trainer routing.',
+      tags: ['Route', 'Early Game', 'Day/Night'],
+      counts: {
+        encounters: 'Starter grass',
+        trainers: 'Early route',
+        items: 'Field pickups'
+      },
+      notes: [
+        'Good template slot for your first normal route page.',
+        'Can track day and night differences once the route sheet is written.',
+        'Use it to document tutorial pacing and first catch logic.'
+      ],
+      link: ''
+    },
+    {
+      id: 'violet-city',
+      displayId: 3,
+      name: 'Violet City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 1',
+      status: 'Planned',
+      summary: 'Hub-town slot for shops, NPC gifts, gym access, and branching documentation links.',
+      tags: ['City', 'Hub', 'Story'],
+      counts: {
+        encounters: 'Local gifts',
+        trainers: 'Gym path',
+        items: 'Shops and NPCs'
+      },
+      notes: [
+        'Use city sheets to track vendors, move tutors, and important NPC rewards.',
+        'This is the best place to link back into Progression and TrainerDex.',
+        'Once the hub is finished, it can anchor Chapter 1 navigation.'
+      ],
+      link: ''
+    }
+  ];
+
+  const TYPE_CLASSES = {
+    All: 'all',
+    Route: 'route',
+    City: 'city',
+    Tower: 'tower',
+    Dungeon: 'dungeon'
+  };
+
+  const state = {
+    view: 'grid',
+    type: 'All',
+    filtered: []
+  };
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function formatId(value) {
+    return `#${String(value).padStart(4, '0')}`;
+  }
+
+  function getAreaById(areaId) {
+    return AREADEX_SOURCE.find(area => area.id === areaId);
+  }
+
+  function getTypeClass(typeName) {
+    return TYPE_CLASSES[typeName] || 'all';
+  }
+
+  function getAreaInitials(area) {
+    return area.name
+      .split(/\s+/)
+      .slice(0, 2)
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+  }
+
+  function renderAreaEmblem(area) {
+    return `<div class="area-emblem">${escapeHtml(getAreaInitials(area))}</div>`;
+  }
+
+  function setTheme(isLight) {
+    document.body.classList.toggle('light-theme', isLight);
+    document.getElementById('toggleTrack').classList.toggle('active', isLight);
+    document.getElementById('themeLabel').textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('companion-theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleTheme() {
+    setTheme(!document.body.classList.contains('light-theme'));
+  }
+
+  function toggleMenu() {
+    document.getElementById('menuOverlay').classList.toggle('open');
+  }
+
+  function closeMenu() {
+    document.getElementById('menuOverlay').classList.remove('open');
+  }
+
+  function buildTypePills() {
+    const types = ['All', ...Array.from(new Set(AREADEX_SOURCE.map(area => area.type))).sort()];
+    const html = types.map(typeName => {
+      const pillClass = getTypeClass(typeName);
+      const activeClass = state.type === typeName ? ' active' : '';
+      return `<button class="type-pill ${pillClass}${activeClass}" onclick="setTypeFilter('${escapeHtml(typeName)}')">${escapeHtml(typeName)}</button>`;
+    }).join('');
+    document.getElementById('typePills').innerHTML = html;
+  }
+
+  function setTypeFilter(typeName) {
+    state.type = typeName;
+    buildTypePills();
+    applyFilters();
+  }
+
+  function setView(viewMode) {
+    state.view = viewMode;
+    document.getElementById('btnGrid').classList.toggle('active', viewMode === 'grid');
+    document.getElementById('btnList').classList.toggle('active', viewMode === 'list');
+    document.getElementById('areaGrid').style.display = viewMode === 'grid' ? 'grid' : 'none';
+    document.getElementById('areaList').classList.toggle('open', viewMode === 'list');
+  }
+
+  function applyFilters() {
+    const searchValue = document.getElementById('searchInput').value.trim().toLowerCase();
+    const biomeValue = document.getElementById('biomeInput').value.trim().toLowerCase();
+    const chapterValue = document.getElementById('chapterInput').value.trim().toLowerCase();
+
+    state.filtered = AREADEX_SOURCE.filter(area => {
+      if (state.type !== 'All' && area.type !== state.type) {
+        return false;
+      }
+
+      const haystack = [
+        area.name,
+        area.type,
+        area.biome,
+        area.chapter,
+        area.status,
+        area.summary,
+        ...(area.tags || []),
+        ...(area.notes || []),
+        area.counts?.encounters,
+        area.counts?.trainers,
+        area.counts?.items
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      if (searchValue && !haystack.includes(searchValue)) {
+        return false;
+      }
+
+      const biomeHaystack = [area.biome, ...(area.tags || [])].join(' ').toLowerCase();
+      if (biomeValue && !biomeHaystack.includes(biomeValue)) {
+        return false;
+      }
+
+      const chapterHaystack = [area.chapter, area.status].join(' ').toLowerCase();
+      if (chapterValue && !chapterHaystack.includes(chapterValue)) {
+        return false;
+      }
+
+      return true;
+    }).sort((a, b) => a.displayId - b.displayId);
+
+    renderResults();
+  }
+
+  function renderResults() {
+    document.getElementById('heroNote').textContent = `${state.filtered.length} ${state.filtered.length === 1 ? 'Area' : 'Areas'}`;
+    document.getElementById('resultsMeta').textContent = `${state.filtered.length} ${state.filtered.length === 1 ? 'area' : 'areas'} shown`;
+    renderGrid();
+    renderList();
+    document.getElementById('emptyState').style.display = state.filtered.length ? 'none' : 'block';
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('areaGrid');
+    if (!state.filtered.length) {
+      grid.innerHTML = '';
+      return;
+    }
+
+    grid.innerHTML = state.filtered.map(area => {
+      const tags = area.tags || [];
+      return `
+      <article class="area-card" onclick="openAreaModal('${area.id}')">
+        <div class="card-top">
+          <span class="display-id">${formatId(area.displayId)}</span>
+          <span class="status-chip ${area.status.toLowerCase()}">${escapeHtml(area.status)}</span>
+        </div>
+        ${renderAreaEmblem(area)}
+        <div class="area-name">${escapeHtml(area.name)}</div>
+        <div class="area-meta">${escapeHtml(area.type)} · ${escapeHtml(area.chapter)}</div>
+        <div class="area-summary">${escapeHtml(area.summary)}</div>
+        <div class="chip-row">
+          <span class="mini-chip ${getTypeClass(area.type)}">${escapeHtml(area.type)}</span>
+          ${tags.slice(0, 2).map(tag => `<span class="mini-chip neutral">${escapeHtml(tag)}</span>`).join('')}
+        </div>
+      </article>
+    `;
+    }).join('');
+  }
+
+  function renderList() {
+    const list = document.getElementById('areaList');
+    if (!state.filtered.length) {
+      list.innerHTML = '';
+      return;
+    }
+
+    list.innerHTML = state.filtered.map(area => `
+      <article class="area-list-row" onclick="openAreaModal('${area.id}')">
+        ${renderAreaEmblem(area)}
+        <div class="display-id">${formatId(area.displayId)}</div>
+        <div>
+          <div class="list-name">${escapeHtml(area.name)}</div>
+          <div class="list-summary">${escapeHtml(area.summary)}</div>
+        </div>
+        <div>
+          <div class="list-subline">${escapeHtml(area.type)} · ${escapeHtml(area.biome)}</div>
+          <div class="list-subline">${escapeHtml(area.chapter)} · ${escapeHtml(area.status)}</div>
+        </div>
+        <div class="list-actions">
+          <span class="status-chip ${area.status.toLowerCase()}">${escapeHtml(area.status)}</span>
+          <button class="btn" onclick="event.stopPropagation();openAreaPage('${area.id}')" ${area.link ? '' : 'disabled'}>${area.link ? 'Open Sheet' : 'Planned'}</button>
+        </div>
+      </article>
+    `).join('');
+  }
+
+  function openAreaPage(areaId) {
+    const area = getAreaById(areaId);
+    if (area && area.link) {
+      window.location.href = area.link;
+    }
+  }
+
+  function openAreaModal(areaId) {
+    const area = getAreaById(areaId);
+    if (!area) {
+      return;
+    }
+
+    const tags = area.tags || [];
+    const notes = area.notes || [];
+    const counts = area.counts || {};
+    const tagsHtml = tags
+      .map(tag => `<span class="mini-chip neutral">${escapeHtml(tag)}</span>`)
+      .join('');
+
+    const notesHtml = notes
+      .map(note => `<li>${escapeHtml(note)}</li>`)
+      .join('');
+
+    document.getElementById('modalBody').innerHTML = `
+      <section class="detail-panel">
+        <div class="detail-id">${formatId(area.displayId)}</div>
+        ${renderAreaEmblem(area)}
+        <div class="detail-name">${escapeHtml(area.name)}</div>
+        <div class="detail-subline">${escapeHtml(area.type)} · ${escapeHtml(area.biome)} · ${escapeHtml(area.chapter)}</div>
+
+        <div class="detail-block">
+          <span class="detail-label">Status</span>
+          <div class="detail-value"><span class="status-chip ${area.status.toLowerCase()}">${escapeHtml(area.status)}</span></div>
+        </div>
+
+        <div class="detail-block">
+          <span class="detail-label">Tags</span>
+          <div class="chip-row" style="justify-content:flex-start">${tagsHtml}</div>
+        </div>
+
+        <div class="detail-block">
+          <span class="detail-label">Overview</span>
+          <div class="detail-value">${escapeHtml(area.summary)}</div>
+        </div>
+
+        <div class="detail-block">
+          <span class="detail-label">Notes</span>
+          <ul class="detail-notes">${notesHtml}</ul>
+        </div>
+      </section>
+
+      <section class="detail-panel">
+        <div class="section-title">Page Preview</div>
+        <div class="preview-grid">
+          <div class="preview-card">
+            <div class="preview-label">Encounters</div>
+            <div class="preview-value">${escapeHtml(counts.encounters || 'Not set')}</div>
+            <div class="preview-desc">Wild tables, time splits, or gift slots.</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-label">Trainers</div>
+            <div class="preview-value">${escapeHtml(counts.trainers || 'Not set')}</div>
+            <div class="preview-desc">Local NPC battles and route checks.</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-label">Items</div>
+            <div class="preview-value">${escapeHtml(counts.items || 'Not set')}</div>
+            <div class="preview-desc">Ground items, hidden pickups, or shops.</div>
+          </div>
+        </div>
+
+        <div class="section-title">Area Sheet</div>
+        <div class="link-box">
+          <p>${area.link
+            ? 'This area has a dedicated sheet ready. Open it to view the full local breakdown.'
+            : 'This slot is ready in AreaDex, but the dedicated area sheet has not been added yet.'}</p>
+          <button class="btn" onclick="openAreaPage('${area.id}')" ${area.link ? '' : 'disabled'}>
+            ${area.link ? 'Open Area Sheet' : 'Area Sheet Pending'}
+          </button>
+        </div>
+      </section>
+    `;
+
+    document.getElementById('areaModal').classList.add('open');
+  }
+
+  function closeAreaModal() {
+    document.getElementById('areaModal').classList.remove('open');
+  }
+
+  function handleModalBackdrop(event) {
+    if (event.target.id === 'areaModal') {
+      closeAreaModal();
+    }
+  }
+
+  document.addEventListener('click', event => {
+    const menu = document.getElementById('menuOverlay');
+    const menuButton = event.target.closest('.menu-btn');
+    if (!menu.contains(event.target) && !menuButton) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      closeMenu();
+      closeAreaModal();
+    }
+  });
+
+  setTheme(localStorage.getItem('companion-theme') === 'light');
+  buildTypePills();
+  applyFilters();
+  setView('grid');
+</script>
+</body>
+</html>

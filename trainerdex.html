@@ -1,0 +1,2256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrainerDex - Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --surface3: #1B2128;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --green: #78C87C;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  .menu-btn,
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover,
+  .theme-toggle:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  .toggle-track {
+    width: 32px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+
+  .page-hero {
+    padding: 32px 32px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .page-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .page-intro {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 760px;
+    line-height: 1.7;
+  }
+  .proto-note {
+    padding: 2px 0 0;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .filter-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    position: sticky;
+    top: 52px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .search-input,
+  .subfilter-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-input::placeholder,
+  .subfilter-input::placeholder { color: var(--text-muted); }
+  .search-input:focus,
+  .subfilter-input:focus { border-color: var(--main); }
+  .view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .view-btn {
+    padding: 5px 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .view-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .search-hints {
+    width: 100%;
+    padding: 5px 2px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+  .hint-tag {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--main);
+    margin-right: 2px;
+    font-size: 10px;
+  }
+  .filter-row-center {
+    justify-content: center;
+    gap: 12px;
+  }
+  .type-pills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .type-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.15s, transform 0.1s;
+    user-select: none;
+    letter-spacing: 0.4px;
+    border: none;
+  }
+  .type-pill:hover { opacity: 0.7; }
+  .type-pill.active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .tag-filter-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 1;
+    max-width: 440px;
+    min-width: 180px;
+  }
+  .tag-filter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 52px;
+    padding-top: 10px;
+  }
+  .tag-filter-box {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    flex: 1;
+    min-height: 36px;
+    transition: border-color 0.2s;
+  }
+  .tag-filter-box:hover,
+  .tag-filter-box:focus-within { border-color: var(--main); }
+  .tag-filter-box .subfilter-input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    padding: 4px 0;
+  }
+
+  .results-bar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 14px 32px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .results-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+  }
+
+  .empty-state {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 32px;
+    color: var(--text-muted);
+    text-align: center;
+    display: none;
+  }
+
+  .trainer-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 32px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+    gap: 8px;
+  }
+  .trainer-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .trainer-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .trainer-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .entry-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+  }
+  .trainer-team-flag {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--accent);
+    border: 1px solid rgba(120,170,220,0.35);
+    background: rgba(120,170,220,0.12);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .trainer-emblem {
+    width: 78px;
+    height: 78px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: var(--main);
+    letter-spacing: 0.4px;
+    text-align: center;
+    padding-left: 2px;
+  }
+  .trainer-emblem-pair {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 78px;
+    height: 78px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    overflow: hidden;
+  }
+  .trainer-emblem-half {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    min-width: 0;
+  }
+  .trainer-emblem-half + .trainer-emblem-half {
+    border-left: 1px solid rgba(255,255,255,0.06);
+  }
+  .trainer-emblem-half img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .trainer-emblem-half-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--main);
+    letter-spacing: 0.2px;
+    text-align: center;
+    padding-left: 1px;
+  }
+  .trainer-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--highlight);
+    line-height: 1.35;
+    text-align: center;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .trainer-class {
+    font-size: 10px;
+    color: var(--main);
+    text-align: center;
+    line-height: 1.3;
+  }
+  .trainer-grid-area {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.35;
+    min-height: 24px;
+  }
+  .trainer-grid-badges {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .grid-trainer-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .trainer-meta {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .meta-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .trainer-notes {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .trainer-foot {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .trainer-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 32px;
+    display: none;
+  }
+  .list-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .list-table th,
+  .list-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .list-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: var(--surface3);
+  }
+  .th-entry,
+  .td-entry {
+    width: 74px;
+    white-space: nowrap;
+  }
+  .th-portrait,
+  .td-portrait {
+    width: 62px;
+    text-align: center;
+  }
+  .list-table tr:last-child td { border-bottom: none; }
+  .trainer-row { cursor: pointer; }
+  .trainer-row:hover td { background: rgba(255,255,255,0.02); }
+  .td-entry {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .list-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+  }
+  .list-class {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .list-portrait {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .list-portrait .trainer-emblem,
+  .list-portrait .trainer-emblem-pair {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+  .list-portrait .trainer-emblem {
+    font-size: 8px;
+    padding-left: 1px;
+  }
+  .list-portrait .trainer-emblem img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .list-portrait .trainer-emblem-half img {
+    width: 14px;
+    height: 14px;
+  }
+  .list-portrait .trainer-emblem-half-fallback {
+    font-size: 6px;
+    padding-left: 1px;
+  }
+
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(12,15,19,0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 300;
+  }
+  .detail-overlay.open { display: flex; }
+  .detail-modal {
+    width: min(980px, 100%);
+    max-height: 90vh;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 18px 48px rgba(0,0,0,0.35);
+  }
+  .detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .detail-close {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .detail-body {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 18px;
+    overflow: auto;
+    max-height: calc(90vh - 58px);
+  }
+  .detail-panel,
+  .team-panel {
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .detail-portrait-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 14px;
+  }
+  .detail-portrait {
+    width: 110px;
+    height: 110px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .detail-portrait img {
+    width: 74px;
+    height: 74px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .detail-portrait-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: var(--main);
+    letter-spacing: 0.3px;
+    text-align: center;
+    padding-left: 2px;
+  }
+  .detail-portrait-pair {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .detail-portrait-half {
+    width: 82px;
+    height: 82px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .detail-portrait-half img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .detail-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    color: var(--highlight);
+  }
+  .detail-entry-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .detail-class {
+    font-size: 13px;
+    color: var(--main);
+    margin-top: 4px;
+  }
+  .detail-block {
+    margin-top: 16px;
+  }
+  .detail-block-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .detail-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+  .team-split-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .team-side-panel {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    padding: 12px;
+  }
+  .team-side-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .team-side-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--highlight);
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .team-side-panel-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .team-side-panel .team-preview-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .team-panel-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--highlight);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+  }
+  .team-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .team-panel-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .team-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .team-preview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-height: 172px;
+  }
+  .team-preview-card.is-lead {
+    border-color: rgba(201,168,106,0.45);
+    box-shadow: inset 0 0 0 1px rgba(201,168,106,0.16);
+  }
+  .team-preview-card.is-empty {
+    border-style: dashed;
+    opacity: 0.72;
+  }
+  .team-preview-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .team-preview-slot,
+  .team-preview-level {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.7px;
+  }
+  .team-preview-sprite-shell {
+    width: 72px;
+    height: 72px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .team-preview-sprite {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+  .team-preview-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--main);
+    text-align: center;
+    padding-left: 2px;
+  }
+  .team-preview-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--highlight);
+    line-height: 1.35;
+    text-align: center;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    word-break: break-word;
+  }
+  .team-preview-meta {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.35;
+    min-height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .team-preview-detail-stack {
+    width: 100%;
+    margin-top: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .team-preview-detail-line {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 6px;
+    align-items: start;
+  }
+  .team-preview-detail-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  .team-preview-detail-value {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.45;
+    word-break: break-word;
+  }
+  .team-preview-detail-value.mono {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    color: var(--text-muted);
+    letter-spacing: 0.1px;
+  }
+  .team-preview-move-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .team-preview-move-list li {
+    font-size: 10px;
+    color: var(--text);
+    line-height: 1.35;
+    word-break: break-word;
+  }
+  .team-preview-move-list li::before {
+    content: "- ";
+    color: var(--main);
+  }
+  .team-preview-badges {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .team-preview-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .team-preview-badge.item {
+    color: var(--main);
+    border-color: rgba(184,148,78,0.35);
+    background: rgba(184,148,78,0.12);
+  }
+  .team-preview-badge.moves {
+    color: var(--accent);
+    border-color: rgba(201,168,106,0.35);
+    background: rgba(201,168,106,0.12);
+  }
+  .team-preview-badge.tera {
+    color: var(--highlight);
+    border-color: rgba(122,80,32,0.3);
+    background: rgba(122,80,32,0.12);
+  }
+  .team-preview-badge.shiny {
+    color: #E9EDF1;
+    border-color: rgba(111,143,184,0.34);
+    background: rgba(111,143,184,0.18);
+  }
+  .team-preview-badge.lead {
+    color: #E9EDF1;
+    border-color: rgba(94,154,106,0.4);
+    background: rgba(94,154,106,0.22);
+  }
+  .team-preview-badge.empty {
+    color: var(--text-muted);
+    border-color: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+  }
+
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --surface3: #F0E5D4;
+    --border: #D4C4A8;
+    --text: #2C2416;
+    --text-muted: #7A6B55;
+    --accent: #C9A86A;
+    --main: #B8944E;
+    --highlight: #7A5020;
+    --green: #4F8551;
+  }
+  body.light .menu-overlay { box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); }
+  body.light .trainer-card,
+  body.light .list-table,
+  body.light .detail-modal { box-shadow: none; }
+  body.light .detail-panel,
+  body.light .team-panel { background: #EFE4D2; }
+  body.light .meta-chip { background: rgba(255,255,255,0.65); border-color: #D4C4A8; color: #7A6B55; }
+  body.light .trainer-card:hover,
+  body.light .trainer-row:hover td { background: rgba(0,0,0,0.02); }
+  body.light .detail-overlay { background: rgba(44,36,22,0.55); }
+  body.light .detail-portrait,
+  body.light .detail-portrait-half { background: rgba(0,0,0,0.03); }
+  body.light .team-preview-card { background: #F5EBDD; }
+  body.light .team-preview-sprite-shell { background: rgba(0,0,0,0.03); border-color: #D4C4A8; }
+  body.light .trainer-emblem,
+  body.light .trainer-emblem-pair { background: rgba(0,0,0,0.03); }
+  body.light .trainer-emblem-half + .trainer-emblem-half { border-left-color: #D4C4A8; }
+  body.light .team-side-panel { background: #F5EBDD; }
+
+  @media (max-width: 920px) {
+    .detail-body { grid-template-columns: 1fr; }
+    .team-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .team-side-panel .team-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 720px) {
+    .page-header,
+    .page-hero,
+    .filter-bar,
+    .results-bar,
+    .empty-state,
+    .trainer-grid,
+    .trainer-list { padding-left: 16px; padding-right: 16px; }
+    .menu-overlay { right: 16px; width: min(240px, calc(100vw - 32px)); }
+    .page-hero-inner { align-items: flex-start; }
+    .tag-filter-wrap { min-width: 100%; }
+    .trainer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .team-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .team-side-panel .team-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="romhack-title">JAY'S ROMHACK</div>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-title">TrainerDex</div>
+      <p class="page-intro">
+        Browse trainer battles, scout full teams, and check key rewards, areas, and encounter notes
+        before each fight.
+      </p>
+    </div>
+    <div class="proto-note" id="protoNote">Encounters</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <input
+      type="text"
+      class="search-input"
+      id="searchInput"
+      placeholder="Search trainers, classes, areas, rewards, Pokemon, or moves..."
+      oninput="applyFilters();toggleSearchHints(this.value)"
+      onfocus="toggleSearchHints(this.value)"
+      onblur="setTimeout(()=>document.getElementById('searchHints').style.display='none',200)"
+      autocomplete="off"
+    >
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnGrid" onclick="setView('grid')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="0" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="0" width="4.5" height="4.5" rx="1"/><rect x="0" y="6.5" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx="1"/></svg>
+        Grid
+      </button>
+      <button class="view-btn" id="btnList" onclick="setView('list')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="1" width="11" height="2" rx="1"/><rect x="0" y="4.5" width="11" height="2" rx="1"/><rect x="0" y="8" width="11" height="2" rx="1"/></svg>
+        List
+      </button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="search-hints" id="searchHints" style="display:none">
+      <span class="hint-tag">Name</span> trainer / class &nbsp;
+      <span class="hint-tag">Tag</span> boss / route / rival / rematch &nbsp;
+      <span class="hint-tag">Area</span> route / gym / tower &nbsp;
+      <span class="hint-tag">Team</span> Pokemon / moves / reward
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="type-pills" id="typePills"></div>
+  </div>
+  <div class="filter-row filter-row-center">
+    <div class="tag-filter-wrap">
+      <span class="tag-filter-label">Class</span>
+      <div class="tag-filter-box">
+        <input
+          type="text"
+          class="subfilter-input"
+          id="classInput"
+          placeholder="filter trainer class..."
+          oninput="applyFilters()"
+          autocomplete="off"
+        >
+      </div>
+    </div>
+    <div class="tag-filter-wrap">
+      <span class="tag-filter-label">Area</span>
+      <div class="tag-filter-box">
+        <input
+          type="text"
+          class="subfilter-input"
+          id="areaInput"
+          placeholder="filter area or chapter..."
+          oninput="applyFilters()"
+          autocomplete="off"
+        >
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="results-bar">
+  <span class="results-count" id="resultsCount"></span>
+</div>
+
+<div class="empty-state" id="emptyState">No trainers match the current filters.</div>
+<div class="trainer-grid" id="trainerGrid"></div>
+
+<div class="trainer-list" id="trainerList">
+  <table class="list-table">
+    <thead>
+      <tr>
+        <th class="th-entry">#</th>
+        <th class="th-portrait"></th>
+        <th>Trainer</th>
+        <th>Area</th>
+        <th>Tags</th>
+        <th>Reward</th>
+        <th>Team</th>
+      </tr>
+    </thead>
+    <tbody id="listBody"></tbody>
+  </table>
+</div>
+
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <div class="detail-title">Trainer Detail</div>
+      <button class="detail-close" onclick="closeDetail()">x</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<script>
+let TRAINERDEX = [];
+
+const TRAINERDEX_SOURCE = [
+  {
+    id: 'boss-placeholder',
+    displayId: 1,
+    name: 'Boss Trainer Placeholder',
+    trainerClass: 'Gym Leader',
+    area: 'Example Gym',
+    chapter: 'Badge 1',
+    tags: ['Boss', 'Single', 'Story'],
+    reward: 'Example Badge / TM',
+    notes: 'Use this as the layout check for important trainer fights with a named reward and a short notes block.',
+    team: [
+      {
+        slot: 1,
+        name: 'Starter Stage 1',
+        level: 12,
+        item: '',
+        ability: 'Example Ability',
+        moves: ['Move 1', 'Move 2', 'Move 3']
+      },
+      {
+        slot: 2,
+        name: 'Ace Placeholder',
+        level: 14,
+        item: 'Oran Berry',
+        ability: 'Example Ability',
+        moves: ['Move 1', 'Move 2', 'Move 3', 'Move 4']
+      }
+    ]
+  },
+  {
+    id: 'route-placeholder',
+    displayId: 2,
+    name: 'Route Trainer Placeholder',
+    trainerClass: 'Ace Trainer',
+    area: 'Example Route',
+    chapter: 'Pre-Gym 2',
+    tags: ['Route', 'Single', 'Optional'],
+    reward: 'None',
+    notes: 'Use this as the baseline route-fight card for spacing, icon balance, and team table readability.',
+    team: [
+      {
+        slot: 1,
+        name: 'Early Route Mon',
+        level: 16,
+        item: '',
+        ability: 'Example Ability',
+        moves: ['Move 1', 'Move 2']
+      },
+      {
+        slot: 2,
+        name: 'Coverage Mon',
+        level: 17,
+        item: '',
+        ability: 'Example Ability',
+        moves: ['Move 1', 'Move 2', 'Move 3']
+      }
+    ]
+  },
+  {
+    id: 'double-placeholder',
+    displayId: 3,
+    name: 'Jay',
+    trainerClass: 'Trainer',
+    area: 'Custom Double Battle',
+    chapter: 'Level 50 Test',
+    tags: ['Boss', 'Double', 'Optional'],
+    reward: 'Shared Double Battle',
+    notes: 'Left-side trainer in the Jay + Marius linked double battle. Blaziken was entered at level 50 for consistency with the rest of the roster.',
+    battleLink: {
+      battleId: 'jay-marius-double-battle',
+      partnerId: 'double-partner-placeholder',
+      side: 'left',
+      sharedLabel: 'Jay + Marius Double Battle'
+    },
+    team: [
+      {
+        slot: 1,
+        name: 'Blaziken',
+        level: 50,
+        baseStats: { hp: 80, atk: 120, def: 70, spa: 110, spd: 70, spe: 80 },
+        item: 'Leftovers',
+        ability: 'Blaze',
+        nature: 'Adamant',
+        teraType: 'Fire',
+        moves: ['Protect', 'Flare Blitz', 'Close Combat', 'Swords Dance']
+      },
+      {
+        slot: 2,
+        name: 'Roaring Moon',
+        level: 50,
+        baseStats: { hp: 105, atk: 139, def: 71, spa: 55, spd: 101, spe: 119 },
+        item: '',
+        ability: 'Protosynthesis',
+        nature: 'Brave',
+        teraType: 'Dragon',
+        ivs: { atk: 0 },
+        moves: []
+      },
+      {
+        slot: 3,
+        name: 'Typhlosion-Hisui',
+        level: 50,
+        baseStats: { hp: 73, atk: 84, def: 78, spa: 119, spd: 85, spe: 95 },
+        item: '',
+        ability: 'Blaze',
+        nature: 'Mild',
+        teraType: 'Fire',
+        moves: []
+      },
+      {
+        slot: 4,
+        name: 'Tornadus',
+        level: 50,
+        baseStats: { hp: 79, atk: 115, def: 70, spa: 125, spd: 80, spe: 111 },
+        item: '',
+        ability: 'Prankster',
+        nature: 'Relaxed',
+        teraType: 'Flying',
+        ivs: { atk: 0 },
+        moves: ['Bulk Up']
+      }
+    ]
+  },
+  {
+    id: 'double-partner-placeholder',
+    displayId: 4,
+    name: 'Marius',
+    trainerClass: 'Trainer',
+    area: 'Custom Double Battle',
+    chapter: 'Level 50 Test',
+    tags: ['Boss', 'Double', 'Optional'],
+    reward: 'Shared Double Battle',
+    notes: 'Right-side trainer in the Jay + Marius linked double battle. This side carries the bulkier six-mon roster.',
+    battleLink: {
+      battleId: 'jay-marius-double-battle',
+      partnerId: 'double-placeholder',
+      side: 'right',
+      sharedLabel: 'Jay + Marius Double Battle'
+    },
+    team: [
+      {
+        slot: 1,
+        name: 'Kyurem',
+        level: 50,
+        baseStats: { hp: 125, atk: 130, def: 90, spa: 130, spd: 90, spe: 95 },
+        item: 'Leftovers',
+        ability: 'Pressure',
+        nature: 'Timid',
+        teraType: 'Ground',
+        evs: { hp: 52, spa: 204, spe: 252 },
+        ivs: { atk: 0 },
+        moves: ['Substitute', 'Earth Power', 'Freeze-Dry', 'Protect']
+      },
+      {
+        slot: 2,
+        name: 'Corviknight',
+        level: 50,
+        baseStats: { hp: 98, atk: 87, def: 105, spa: 53, spd: 85, spe: 67 },
+        item: 'Rocky Helmet',
+        ability: 'Pressure',
+        nature: 'Impish',
+        teraType: 'Dragon',
+        evs: { hp: 248, def: 252, spd: 8 },
+        moves: ['Defog', 'Brave Bird', 'Roost', 'U-turn']
+      },
+      {
+        slot: 3,
+        name: 'Ting-Lu',
+        level: 50,
+        baseStats: { hp: 155, atk: 110, def: 125, spa: 55, spd: 80, spe: 45 },
+        item: 'Leftovers',
+        ability: 'Vessel of Ruin',
+        nature: 'Careful',
+        teraType: 'Water',
+        evs: { hp: 252, def: 4, spd: 252 },
+        moves: ['Earthquake', 'Payback', 'Rest', 'Sleep Talk']
+      },
+      {
+        slot: 4,
+        name: 'Dondozo',
+        level: 50,
+        baseStats: { hp: 150, atk: 100, def: 115, spa: 65, spd: 65, spe: 35 },
+        item: 'Leftovers',
+        ability: 'Unaware',
+        nature: 'Careful',
+        shiny: true,
+        teraType: 'Dark',
+        evs: { hp: 248, def: 8, spd: 252 },
+        moves: ['Curse', 'Waterfall', 'Body Press', 'Rest']
+      },
+      {
+        slot: 5,
+        name: 'Slowking-Galar',
+        level: 50,
+        baseStats: { hp: 95, atk: 65, def: 80, spa: 110, spd: 110, spe: 30 },
+        item: 'Shuca Berry',
+        ability: 'Regenerator',
+        nature: 'Relaxed',
+        teraType: 'Water',
+        evs: { hp: 252, def: 252, spd: 4 },
+        ivs: { atk: 0, spe: 0 },
+        moves: ['Future Sight', 'Sludge Bomb', 'Ice Beam', 'Chilly Reception']
+      },
+      {
+        slot: 6,
+        name: 'Cinderace',
+        level: 50,
+        baseStats: { hp: 80, atk: 116, def: 75, spa: 65, spd: 75, spe: 119 },
+        item: 'Heavy-Duty Boots',
+        ability: 'Blaze',
+        nature: 'Jolly',
+        teraType: 'Flying',
+        evs: { hp: 232, atk: 24, spe: 252 },
+        moves: ['Pyro Ball', 'Will-O-Wisp', 'U-turn', 'Court Change']
+      }
+    ]
+  }
+];
+
+const state = {
+  search: '',
+  tag: 'All',
+  view: 'grid'
+};
+
+const TAG_PILL_STYLES = {
+  All: ['#3A424C', '#E9EDF1'],
+  Boss: ['#A35B5B', '#fff'],
+  Route: ['#6E8F5B', '#fff'],
+  Story: ['#8A6FB8', '#fff'],
+  Single: ['#5F8D8D', '#fff'],
+  Double: ['#B56A4C', '#fff'],
+  Optional: ['#6B8EA8', '#fff'],
+  Rematch: ['#9B7A52', '#fff'],
+  Rival: ['#8C6FAF', '#fff']
+};
+
+const TYPE_COLORS = {
+  Normal: ['#A8A878', '#fff'],
+  Fire: ['#F08030', '#fff'],
+  Water: ['#6890F0', '#fff'],
+  Electric: ['#F8D030', '#333'],
+  Grass: ['#78C850', '#fff'],
+  Ice: ['#98D8D8', '#333'],
+  Fighting: ['#C03028', '#fff'],
+  Poison: ['#A040A0', '#fff'],
+  Ground: ['#E0C068', '#333'],
+  Flying: ['#A890F0', '#fff'],
+  Psychic: ['#F85888', '#fff'],
+  Bug: ['#A8B820', '#fff'],
+  Rock: ['#B8A038', '#fff'],
+  Ghost: ['#705898', '#fff'],
+  Dragon: ['#7038F8', '#fff'],
+  Dark: ['#705848', '#fff'],
+  Steel: ['#B8B8D0', '#333'],
+  Fairy: ['#EE99AC', '#fff']
+};
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function normalizeDisplayId(value, fallback) {
+  return value === undefined || value === null || value === '' ? fallback : value;
+}
+
+function compareDisplayIds(a, b) {
+  const aNum = Number(a);
+  const bNum = Number(b);
+  const aIsNum = Number.isFinite(aNum);
+  const bIsNum = Number.isFinite(bNum);
+  if (aIsNum && bIsNum) return aNum - bNum;
+  if (aIsNum) return -1;
+  if (bIsNum) return 1;
+  return String(a).localeCompare(String(b));
+}
+
+function formatEntryNumber(value) {
+  if (value === undefined || value === null || value === '') return '#----';
+  const num = Number(value);
+  if (Number.isFinite(num)) return `#${String(Math.max(0, Math.trunc(num))).padStart(4, '0')}`;
+  const text = String(value).trim();
+  return text.startsWith('#') ? text : `#${text}`;
+}
+
+function uniqSorted(values) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
+function getTrainerTags() {
+  return uniqSorted(TRAINERDEX.flatMap(trainer => trainer.tags || []));
+}
+
+function buildTagPills() {
+  const container = document.getElementById('typePills');
+  if (!container) return;
+  const values = ['All', ...getTrainerTags()];
+  container.innerHTML = values.map(value => {
+    const style = TAG_PILL_STYLES[value] || ['#4A5563', '#E9EDF1'];
+    const active = state.tag === value ? ' active' : '';
+    return `<button class="type-pill${active}" style="background:${style[0]};color:${style[1]}" onclick="setTagFilter('${value.replace(/'/g, "\\'")}')">${escapeHtml(value)}</button>`;
+  }).join('');
+}
+
+function setTagFilter(value) {
+  state.tag = value;
+  buildTagPills();
+  applyFilters();
+}
+
+function setView(view) {
+  state.view = view;
+  document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
+  document.getElementById('btnList').classList.toggle('active', view === 'list');
+  document.getElementById('trainerGrid').style.display = view === 'grid' ? 'grid' : 'none';
+  document.getElementById('trainerList').style.display = view === 'list' ? 'block' : 'none';
+}
+
+function toggleSearchHints(value) {
+  const el = document.getElementById('searchHints');
+  if (!el) return;
+  el.style.display = (value !== undefined) ? 'block' : 'none';
+}
+
+function renderChips(values) {
+  if (!values || !values.length) return '<span class="meta-chip">None</span>';
+  return values.map(value => `<span class="meta-chip">${escapeHtml(value)}</span>`).join('');
+}
+
+function getTrainerMonogram(trainer) {
+  const source = String(trainer.trainerClass || trainer.name || '?').trim();
+  if (!source) return '?';
+  const parts = source.split(/\s+/).filter(Boolean);
+  if (!parts.length) return '?';
+  return parts
+    .slice(0, 2)
+    .map(part => part.replace(/[^A-Za-z0-9]/g, '').slice(0, 1).toUpperCase())
+    .join('') || source.slice(0, 2).toUpperCase();
+}
+
+function getTrainerDisplayPrimary(trainer, linkedPartner) {
+  if (!linkedPartner) return trainer;
+  if (trainer?.battleLink?.side === 'left') return trainer;
+  if (linkedPartner?.battleLink?.side === 'left') return linkedPartner;
+  return compareDisplayIds(trainer.displayId, linkedPartner.displayId) <= 0 ? trainer : linkedPartner;
+}
+
+function getTrainerDisplaySecondary(trainer, linkedPartner) {
+  const primary = getTrainerDisplayPrimary(trainer, linkedPartner);
+  if (!linkedPartner) return null;
+  return primary.id === trainer.id ? linkedPartner : trainer;
+}
+
+function getLinkedEncounterName(trainer, linkedPartner) {
+  if (!linkedPartner) return trainer.name;
+  const primary = getTrainerDisplayPrimary(trainer, linkedPartner);
+  const secondary = getTrainerDisplaySecondary(trainer, linkedPartner);
+  return `${secondary.name} + ${primary.name}`;
+}
+
+function getLinkedEncounterDisplayId(trainer, linkedPartner) {
+  return getTrainerDisplayPrimary(trainer, linkedPartner).displayId;
+}
+
+function getTrainerPortraitSource(trainer) {
+  return trainer?.sprite || trainer?.portrait || '';
+}
+
+function renderTrainerPortrait(displayEntry) {
+  const members = displayEntry.portraitMembers || [displayEntry];
+  if (members.length > 1) {
+    return `
+      <div class="trainer-emblem-pair">
+        ${members.slice(0, 2).map(member => {
+          const sprite = getTrainerPortraitSource(member);
+          const monogram = escapeHtml(getTrainerMonogram(member));
+          return `
+            <div class="trainer-emblem-half">
+              ${sprite
+                ? `<img src="${escapeHtml(sprite)}" alt="${escapeHtml(member.name || 'Trainer')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="trainer-emblem-half-fallback" style="display:none">${monogram}</div>`
+                : `<div class="trainer-emblem-half-fallback">${monogram}</div>`}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  const member = members[0] || displayEntry;
+  const sprite = getTrainerPortraitSource(member);
+  const monogram = escapeHtml(getTrainerMonogram(member));
+  if (!sprite) {
+    return `<div class="trainer-emblem">${monogram}</div>`;
+  }
+  return `
+    <div class="trainer-emblem">
+      <img src="${escapeHtml(sprite)}" alt="${escapeHtml(member.name || 'Trainer')}" style="width:48px;height:48px;object-fit:contain;image-rendering:pixelated" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="trainer-emblem-half-fallback" style="display:none">${monogram}</div>
+    </div>
+  `;
+}
+
+function renderDetailTrainerPortrait(primary, secondary) {
+  const members = secondary ? [secondary, primary].filter(Boolean) : [primary].filter(Boolean);
+  if (!members.length) return '';
+
+  if (members.length > 1) {
+    return `
+      <div class="detail-portrait-wrap">
+        <div class="detail-portrait-pair">
+          ${members.slice(0, 2).map(member => {
+            const sprite = getTrainerPortraitSource(member);
+            const monogram = escapeHtml(getTrainerMonogram(member));
+            return `
+              <div class="detail-portrait-half">
+                ${sprite
+                  ? `<img src="${escapeHtml(sprite)}" alt="${escapeHtml(member.name || 'Trainer')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="detail-portrait-fallback" style="display:none">${monogram}</div>`
+                  : `<div class="detail-portrait-fallback">${monogram}</div>`}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  const member = members[0];
+  const sprite = getTrainerPortraitSource(member);
+  const monogram = escapeHtml(getTrainerMonogram(member));
+  return `
+    <div class="detail-portrait-wrap">
+      <div class="detail-portrait">
+        ${sprite
+          ? `<img src="${escapeHtml(sprite)}" alt="${escapeHtml(member.name || 'Trainer')}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="detail-portrait-fallback" style="display:none">${monogram}</div>`
+          : `<div class="detail-portrait-fallback">${monogram}</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderTrainerGridBadges(values) {
+  return (values || []).slice(0, 3).map(value => {
+    const style = TAG_PILL_STYLES[value] || ['#4A5563', '#E9EDF1'];
+    return `<span class="grid-trainer-badge" style="background:${style[0]};color:${style[1]}">${escapeHtml(value)}</span>`;
+  }).join('');
+}
+
+function getPokemonMonogram(name) {
+  const source = String(name || '').trim();
+  if (!source) return '--';
+  const cleaned = source.replace(/\[[^\]]+\]/g, '').trim();
+  if (!cleaned) return '--';
+  const parts = cleaned.split(/\s+/).filter(Boolean);
+  if (!parts.length) return '--';
+  return parts
+    .slice(0, 2)
+    .map(part => part.replace(/[^A-Za-z0-9]/g, '').slice(0, 1).toUpperCase())
+    .join('') || cleaned.slice(0, 2).toUpperCase();
+}
+
+function getPokemonSpriteId(name) {
+  return String(name || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\[[^\]]+\]/g, '')
+    .replace(/♀/g, 'f')
+    .replace(/♂/g, 'm')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '');
+}
+
+function compactPreviewText(value, fallback, maxLength) {
+  const text = String(value || '').trim();
+  if (!text) return fallback;
+  return text.length > maxLength ? `${text.slice(0, Math.max(1, maxLength - 1))}…` : text;
+}
+
+const SPREAD_STAT_ORDER = [
+  ['hp', 'HP'],
+  ['atk', 'Atk'],
+  ['def', 'Def'],
+  ['spa', 'SpA'],
+  ['spd', 'SpD'],
+  ['spe', 'Spe']
+];
+
+const NATURE_EFFECTS = {
+  Hardy: {},
+  Lonely: { up: 'atk', down: 'def' },
+  Brave: { up: 'atk', down: 'spe' },
+  Adamant: { up: 'atk', down: 'spa' },
+  Naughty: { up: 'atk', down: 'spd' },
+  Bold: { up: 'def', down: 'atk' },
+  Docile: {},
+  Relaxed: { up: 'def', down: 'spe' },
+  Impish: { up: 'def', down: 'spa' },
+  Lax: { up: 'def', down: 'spd' },
+  Timid: { up: 'spe', down: 'atk' },
+  Hasty: { up: 'spe', down: 'def' },
+  Serious: {},
+  Jolly: { up: 'spe', down: 'spa' },
+  Naive: { up: 'spe', down: 'spd' },
+  Modest: { up: 'spa', down: 'atk' },
+  Mild: { up: 'spa', down: 'def' },
+  Quiet: { up: 'spa', down: 'spe' },
+  Bashful: {},
+  Rash: { up: 'spa', down: 'spd' },
+  Calm: { up: 'spd', down: 'atk' },
+  Gentle: { up: 'spd', down: 'def' },
+  Sassy: { up: 'spd', down: 'spe' },
+  Careful: { up: 'spd', down: 'spa' },
+  Quirky: {}
+};
+
+function formatStatSpread(spread, fallback) {
+  if (!spread || typeof spread !== 'object') return fallback;
+  const parts = SPREAD_STAT_ORDER
+    .map(([key, label]) => {
+      const value = Number(spread[key]);
+      if (!Number.isFinite(value)) return '';
+      if (value === 0 && !Object.prototype.hasOwnProperty.call(spread, key)) return '';
+      return `${Math.trunc(value)} ${label}`;
+    })
+    .filter(Boolean);
+  return parts.length ? parts.join(' / ') : fallback;
+}
+
+function renderTeamDetailLine(label, value, options = {}) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  const className = options.mono ? 'team-preview-detail-value mono' : 'team-preview-detail-value';
+  return `
+    <div class="team-preview-detail-line">
+      <div class="team-preview-detail-label">${escapeHtml(label)}</div>
+      <div class="${className}">${escapeHtml(text)}</div>
+    </div>
+  `;
+}
+
+function renderTeamMoveList(moves) {
+  const filtered = (moves || []).map(move => String(move || '').trim()).filter(Boolean);
+  if (!filtered.length) {
+    return renderTeamDetailLine('Moves', 'No moves set');
+  }
+  return `
+    <div class="team-preview-detail-line">
+      <div class="team-preview-detail-label">Moves</div>
+      <div class="team-preview-detail-value">
+        <ul class="team-preview-move-list">
+          ${filtered.map(move => `<li>${escapeHtml(move)}</li>`).join('')}
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+function getNatureMultiplier(nature, statKey) {
+  const effect = NATURE_EFFECTS[String(nature || '').trim()] || {};
+  if (effect.up === statKey) return 1.1;
+  if (effect.down === statKey) return 0.9;
+  return 1;
+}
+
+function calculateDisplayedStats(mon) {
+  if (mon?.stats && typeof mon.stats === 'object') return mon.stats;
+  if (!mon?.baseStats || typeof mon.baseStats !== 'object') return null;
+  const level = Number(mon.level);
+  if (!Number.isFinite(level) || level <= 0) return null;
+
+  const result = {};
+  for (const [key] of SPREAD_STAT_ORDER) {
+    const base = Number(mon.baseStats[key]);
+    if (!Number.isFinite(base)) return null;
+    const iv = Number(mon.ivs?.[key]);
+    const ev = Number(mon.evs?.[key]);
+    const safeIv = Number.isFinite(iv) ? Math.max(0, Math.trunc(iv)) : 31;
+    const safeEv = Number.isFinite(ev) ? Math.max(0, Math.trunc(ev)) : 0;
+    const scaled = Math.floor(((2 * base + safeIv + Math.floor(safeEv / 4)) * level) / 100);
+
+    if (key === 'hp') {
+      result.hp = base === 1 ? 1 : scaled + level + 10;
+      continue;
+    }
+
+    const baseStat = scaled + 5;
+    result[key] = Math.floor(baseStat * getNatureMultiplier(mon.nature, key));
+  }
+
+  return result;
+}
+
+function renderCalculatedStats(mon) {
+  const stats = calculateDisplayedStats(mon);
+  if (!stats) return '';
+  return renderTeamDetailLine('Stats', formatStatSpread(stats, ''), { mono: true });
+}
+
+function getTypeBadgeStyle(type) {
+  const colors = TYPE_COLORS[String(type || '').trim()];
+  if (!colors) return '';
+  return `background:${colors[0]};color:${colors[1]};border-color:${colors[0]};`;
+}
+
+function getTeamSlotCount(team, minimum = 6) {
+  const highestSlot = Math.max(0, ...(team || []).map(mon => {
+    const rawSlot = Number(mon?.slot);
+    return Number.isInteger(rawSlot) && rawSlot > 0 ? rawSlot : 0;
+  }));
+  return Math.max(minimum, highestSlot, countFilledMons(team));
+}
+
+function normalizeTeamSlots(team, minimum = 6) {
+  const totalSlots = getTeamSlotCount(team, minimum);
+  const slots = Array.from({ length: totalSlots }, (_, index) => ({ slot: index + 1, empty: true }));
+  (team || []).forEach((mon, index) => {
+    const rawSlot = Number(mon.slot);
+    let target = Number.isInteger(rawSlot) && rawSlot >= 1 && rawSlot <= totalSlots ? rawSlot - 1 : -1;
+    if (target < 0 || !slots[target].empty) {
+      target = slots.findIndex(entry => entry.empty);
+    }
+    if (target === -1) return;
+    slots[target] = {
+      ...mon,
+      slot: target + 1,
+      empty: false
+    };
+  });
+  return slots;
+}
+
+function renderTeamPreviewSprite(mon) {
+  if (mon.empty || !String(mon.name || '').trim()) {
+    return `
+      <div class="team-preview-sprite-shell">
+        <div class="team-preview-fallback">--</div>
+      </div>
+    `;
+  }
+
+  const spriteId = getPokemonSpriteId(mon.name);
+  if (!spriteId) {
+    return `
+      <div class="team-preview-sprite-shell">
+        <div class="team-preview-fallback">${escapeHtml(getPokemonMonogram(mon.name))}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="team-preview-sprite-shell">
+      <img
+        class="team-preview-sprite"
+        src="https://play.pokemonshowdown.com/sprites/gen5/${spriteId}.png"
+        data-fallback="https://play.pokemonshowdown.com/sprites/dex/${spriteId}.png"
+        alt="${escapeHtml(mon.name)}"
+        loading="lazy"
+        onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"
+      >
+      <div class="team-preview-fallback" style="display:none">${escapeHtml(getPokemonMonogram(mon.name))}</div>
+    </div>
+  `;
+}
+
+function renderTeamPreviewCards(team, minimum = 6, options = {}) {
+  const leadSlots = new Set((options.leadSlots || []).map(value => Number(value)).filter(value => Number.isInteger(value) && value > 0));
+  return normalizeTeamSlots(team, minimum).map(mon => {
+    if (mon.empty) {
+      return `
+        <article class="team-preview-card is-empty">
+          <div class="team-preview-top">
+            <div class="team-preview-slot">SLOT ${mon.slot}</div>
+            <div class="team-preview-level">EMPTY</div>
+          </div>
+          ${renderTeamPreviewSprite(mon)}
+          <div class="team-preview-name">Open Slot</div>
+          <div class="team-preview-meta">No data yet</div>
+          <div class="team-preview-badges">
+            <span class="team-preview-badge empty">Add Mon</span>
+          </div>
+        </article>
+      `;
+    }
+
+    const metaText = mon.ownerName
+      ? compactPreviewText(mon.ownerName, 'Linked Side', 18)
+      : compactPreviewText([mon.ability, mon.nature].filter(Boolean).join(' · '), 'Set Details', 24);
+    const isLead = leadSlots.has(Number(mon.slot));
+    const detailLines = [
+      mon.ownerName ? renderTeamDetailLine('Side', mon.ownerName) : '',
+      renderTeamDetailLine('Ability', mon.ability || 'No Ability'),
+      renderTeamDetailLine('Nature', mon.nature || 'No Nature'),
+      renderTeamDetailLine('Item', mon.item || 'No Item'),
+      renderTeamDetailLine('Tera', mon.teraType || ''),
+      renderCalculatedStats(mon),
+      renderTeamDetailLine('EVs', formatStatSpread(mon.evs, ''), { mono: true }),
+      renderTeamDetailLine('IVs', formatStatSpread(mon.ivs, ''), { mono: true }),
+      renderTeamMoveList(mon.moves || [])
+    ].filter(Boolean).join('');
+    const badgeParts = [
+      isLead ? '<span class="team-preview-badge lead">Lead</span>' : '',
+      mon.teraType
+        ? `<span class="team-preview-badge tera" style="${getTypeBadgeStyle(mon.teraType)}">${escapeHtml(compactPreviewText(mon.teraType, 'Tera', 12))}</span>`
+        : '',
+      mon.shiny ? '<span class="team-preview-badge shiny">Shiny</span>' : ''
+    ].filter(Boolean);
+    return `
+      <article class="team-preview-card${isLead ? ' is-lead' : ''}">
+        <div class="team-preview-top">
+          <div class="team-preview-slot">SLOT ${mon.slot}</div>
+          <div class="team-preview-level">LV ${escapeHtml(String(mon.level || '-'))}</div>
+        </div>
+        ${renderTeamPreviewSprite(mon)}
+        <div class="team-preview-name">${escapeHtml(mon.name || '[Pokemon]')}</div>
+        <div class="team-preview-meta">${escapeHtml(metaText)}</div>
+        ${badgeParts.length ? `<div class="team-preview-badges">${badgeParts.join('')}</div>` : ''}
+        <div class="team-preview-detail-stack">${detailLines}</div>
+      </article>
+    `;
+  }).join('');
+}
+
+function getLinkedPartner(trainer) {
+  const partnerId = trainer?.battleLink?.partnerId;
+  if (!partnerId) return null;
+  const partner = TRAINERDEX.find(entry => entry.id === partnerId);
+  if (!partner || partner.id === trainer.id) return null;
+  return partner;
+}
+
+function buildDisplayTeam(trainer, linkedPartner) {
+  if (!(trainer.tags || []).includes('Double') || !linkedPartner) {
+    return trainer.team || [];
+  }
+
+  const currentSide = trainer?.battleLink?.side === 'right' ? 'right' : 'left';
+  const leftTrainer = currentSide === 'left' ? trainer : linkedPartner;
+  const rightTrainer = currentSide === 'left' ? linkedPartner : trainer;
+  const leftTeam = (leftTrainer.team || []).slice();
+  const rightTeam = (rightTrainer.team || []).slice();
+  const merged = [];
+  const max = Math.max(leftTeam.length, rightTeam.length);
+
+  for (let index = 0; index < max; index += 1) {
+    if (leftTeam[index]) {
+      merged.push({
+        ...leftTeam[index],
+        slot: merged.length + 1,
+        ownerId: leftTrainer.id,
+        ownerName: leftTrainer.name,
+        ownerSide: 'left'
+      });
+    }
+    if (rightTeam[index]) {
+      merged.push({
+        ...rightTeam[index],
+        slot: merged.length + 1,
+        ownerId: rightTrainer.id,
+        ownerName: rightTrainer.name,
+        ownerSide: 'right'
+      });
+    }
+  }
+
+  return merged;
+}
+
+function countFilledMons(team) {
+  return (team || []).filter(mon => mon && String(mon.name || '').trim()).length;
+}
+
+function renderTeamSideSection(trainer, label) {
+  if (!trainer) return '';
+  const filled = countFilledMons(trainer.team || []);
+  return `
+    <section class="team-side-panel">
+      <div class="team-side-panel-head">
+        <div class="team-side-panel-title">${escapeHtml(label)}</div>
+        <div class="team-side-panel-count">${filled} / 6 filled</div>
+      </div>
+      <div class="team-preview-grid">${renderTeamPreviewCards(trainer.team || [], 6, { leadSlots: [1] })}</div>
+    </section>
+  `;
+}
+
+function renderLinkedTeamSections(primary, secondary) {
+  return `
+    <div class="team-split-stack">
+      ${renderTeamSideSection(primary, `${primary.name} Team`)}
+      ${renderTeamSideSection(secondary, `${secondary.name} Team`)}
+    </div>
+  `;
+}
+
+function buildVisibleTrainerEntries(trainers) {
+  const visible = [];
+  const seenKeys = new Set();
+
+  trainers.forEach(trainer => {
+    const linkedPartner = getLinkedPartner(trainer);
+    const isLinkedDouble = (trainer.tags || []).includes('Double') && linkedPartner;
+
+    if (!isLinkedDouble) {
+      visible.push({
+        ...trainer,
+        openId: trainer.id,
+        displayName: trainer.name,
+        displayClass: trainer.trainerClass || 'Unknown Class',
+        displayArea: trainer.area || 'Unknown Area',
+        displayChapter: trainer.chapter || 'Unsorted',
+        displayTags: trainer.tags || [],
+        displayReward: trainer.reward || 'None',
+        displayTeamCount: countFilledMons(trainer.team || []),
+        portraitMembers: [trainer]
+      });
+      return;
+    }
+
+    const battleKey = trainer?.battleLink?.battleId || [trainer.id, linkedPartner.id].sort().join('::');
+    if (seenKeys.has(battleKey)) return;
+    seenKeys.add(battleKey);
+
+    const primary = getTrainerDisplayPrimary(trainer, linkedPartner);
+    const secondary = getTrainerDisplaySecondary(trainer, linkedPartner);
+    const displayTeam = buildDisplayTeam(primary, secondary);
+    visible.push({
+      ...primary,
+      openId: primary.id,
+      displayId: getLinkedEncounterDisplayId(primary, secondary),
+      displayName: getLinkedEncounterName(primary, secondary),
+      displayClass: 'Linked Double Battle',
+      displayArea: primary.area || secondary?.area || 'Unknown Area',
+      displayChapter: primary.chapter || secondary?.chapter || 'Unsorted',
+      displayTags: uniqSorted([...(primary.tags || []), ...(secondary?.tags || [])]),
+      displayReward: primary.reward || secondary?.reward || 'None',
+      displayTeamCount: countFilledMons(displayTeam),
+      portraitMembers: [secondary, primary].filter(Boolean),
+      linkedDisplay: true
+    });
+  });
+
+  return visible.sort((a, b) => compareDisplayIds(a.displayId, b.displayId));
+}
+
+function trainerMatchesSearch(trainer, term) {
+  if (!term) return true;
+  const haystack = [
+    formatEntryNumber(trainer.displayId),
+    trainer.name,
+    trainer.trainerClass,
+    trainer.area,
+    trainer.chapter,
+    trainer.reward,
+    trainer.notes,
+    ...(trainer.tags || []),
+    ...(trainer.team || []).flatMap(mon => [
+      mon.name,
+      mon.item,
+      mon.ability,
+      mon.nature,
+      mon.teraType,
+      JSON.stringify(mon.evs || {}),
+      JSON.stringify(mon.ivs || {}),
+      mon.shiny ? 'shiny' : '',
+      ...(mon.moves || [])
+    ])
+  ].join(' ').toLowerCase();
+  return haystack.includes(term);
+}
+
+function getFilteredTrainers() {
+  state.search = document.getElementById('searchInput').value.trim().toLowerCase();
+  const classTerm = document.getElementById('classInput').value.trim().toLowerCase();
+  const areaTerm = document.getElementById('areaInput').value.trim().toLowerCase();
+
+  return TRAINERDEX.filter(trainer => {
+    if (!trainerMatchesSearch(trainer, state.search)) return false;
+    if (state.tag !== 'All' && !(trainer.tags || []).includes(state.tag)) return false;
+    if (classTerm && !String(trainer.trainerClass || '').toLowerCase().includes(classTerm)) return false;
+    if (areaTerm) {
+      const areaHaystack = `${trainer.area || ''} ${trainer.chapter || ''}`.toLowerCase();
+      if (!areaHaystack.includes(areaTerm)) return false;
+    }
+    return true;
+  });
+}
+
+function renderTrainerGrid(trainers) {
+  const grid = document.getElementById('trainerGrid');
+  grid.innerHTML = trainers.map(trainer => `
+    <article class="trainer-card" onclick="openTrainer('${trainer.openId || trainer.id}')">
+      <div class="trainer-card-top">
+        <div class="entry-number">${formatEntryNumber(trainer.displayId)}</div>
+        <div class="trainer-team-flag">${trainer.displayTeamCount || 0} mon</div>
+      </div>
+      ${renderTrainerPortrait(trainer)}
+      <div class="trainer-name">${escapeHtml(trainer.displayName || trainer.name)}</div>
+      <div class="trainer-class">${escapeHtml(trainer.displayClass || trainer.trainerClass || 'Unknown Class')}</div>
+      <div class="trainer-grid-area">${escapeHtml(trainer.displayArea || trainer.area || 'Unknown Area')}</div>
+      <div class="trainer-grid-badges">${renderTrainerGridBadges(trainer.displayTags || trainer.tags || [])}</div>
+    </article>
+  `).join('');
+}
+
+function renderTrainerList(trainers) {
+  const body = document.getElementById('listBody');
+  body.innerHTML = trainers.map(trainer => `
+    <tr class="trainer-row" onclick="openTrainer('${trainer.openId || trainer.id}')">
+      <td class="td-entry">${formatEntryNumber(trainer.displayId)}</td>
+      <td class="td-portrait"><div class="list-portrait">${renderTrainerPortrait(trainer)}</div></td>
+      <td>
+        <div class="list-name">${escapeHtml(trainer.displayName || trainer.name)}</div>
+        <div class="list-class">${escapeHtml(trainer.displayClass || trainer.trainerClass || 'Unknown Class')}</div>
+      </td>
+      <td>${escapeHtml(trainer.displayArea || trainer.area || 'Unknown Area')}<br><span class="list-class">${escapeHtml(trainer.displayChapter || trainer.chapter || 'Unsorted')}</span></td>
+      <td>${renderChips(trainer.displayTags || trainer.tags || [])}</td>
+      <td>${escapeHtml(trainer.displayReward || trainer.reward || 'None')}</td>
+      <td>${trainer.displayTeamCount || 0}</td>
+    </tr>
+  `).join('');
+}
+
+function applyFilters() {
+  const trainers = buildVisibleTrainerEntries(getFilteredTrainers());
+  document.getElementById('resultsCount').textContent =
+    `${trainers.length} entr${trainers.length === 1 ? 'y' : 'ies'} shown`;
+  document.getElementById('emptyState').style.display = trainers.length ? 'none' : 'block';
+  document.getElementById('trainerGrid').style.display = trainers.length && state.view === 'grid' ? 'grid' : 'none';
+  document.getElementById('trainerList').style.display = trainers.length && state.view === 'list' ? 'block' : 'none';
+  renderTrainerGrid(trainers);
+  renderTrainerList(trainers);
+}
+
+function openTrainer(id) {
+  const trainer = TRAINERDEX.find(entry => entry.id === id);
+  if (!trainer) return;
+  const linkedPartner = getLinkedPartner(trainer);
+  const primaryTrainer = getTrainerDisplayPrimary(trainer, linkedPartner);
+  const secondaryTrainer = getTrainerDisplaySecondary(trainer, linkedPartner);
+  const detailName = getLinkedEncounterName(trainer, linkedPartner);
+  const detailDisplayId = getLinkedEncounterDisplayId(trainer, linkedPartner);
+  const displayTeam = buildDisplayTeam(primaryTrainer, secondaryTrainer);
+  const teamSlotCount = Math.max(6, countFilledMons(displayTeam));
+  const teamCount = countFilledMons(displayTeam);
+  const teamPreview = linkedPartner
+    ? renderLinkedTeamSections(primaryTrainer, secondaryTrainer)
+    : renderTeamPreviewCards(displayTeam, teamSlotCount);
+
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-panel">
+      ${renderDetailTrainerPortrait(primaryTrainer, secondaryTrainer)}
+      <div class="detail-entry-number">${formatEntryNumber(detailDisplayId)}</div>
+      <div class="detail-name">${escapeHtml(detailName)}</div>
+      <div class="detail-class">${escapeHtml(linkedPartner ? 'Linked Double Battle' : (trainer.trainerClass || 'Unknown Class'))}</div>
+
+      <div class="detail-block">
+        <div class="detail-block-title">Area / Chapter</div>
+        <div class="detail-text">${escapeHtml(trainer.area || 'Unknown Area')} / ${escapeHtml(trainer.chapter || 'Unsorted')}</div>
+      </div>
+
+      <div class="detail-block">
+        <div class="detail-block-title">Tags</div>
+        <div>${renderChips(trainer.tags || [])}</div>
+      </div>
+
+      <div class="detail-block">
+        <div class="detail-block-title">Reward</div>
+        <div class="detail-text">${escapeHtml(trainer.reward || 'None')}</div>
+      </div>
+
+      <div class="detail-block">
+        <div class="detail-block-title">Notes</div>
+        <div class="detail-text">${escapeHtml(trainer.notes || 'No notes yet.')}</div>
+      </div>
+    </div>
+
+    <div class="team-panel">
+      <div class="team-panel-header">
+        <div class="team-panel-title">${linkedPartner ? 'Split Team View' : 'Team Preview'}</div>
+        <div class="team-panel-count">${linkedPartner ? `${teamCount} total mons` : `${teamCount} / ${teamSlotCount} slots filled`}</div>
+      </div>
+      ${linkedPartner ? teamPreview : `<div class="team-preview-grid">${teamPreview}</div>`}
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  document.getElementById('toggleTrack').classList.toggle('active', isLight);
+  document.getElementById('themeLabel').textContent = isLight ? 'Light' : 'Dark';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+function toggleMenu() {
+  document.getElementById('menuOverlay').classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu-overlay') && !e.target.closest('.menu-btn')) {
+    document.getElementById('menuOverlay').classList.remove('open');
+  }
+});
+
+if (localStorage.getItem('theme') === 'light') {
+  document.body.classList.add('light');
+  document.getElementById('toggleTrack').classList.add('active');
+  document.getElementById('themeLabel').textContent = 'Light';
+}
+
+function init() {
+  const protoNote = document.getElementById('protoNote');
+
+  TRAINERDEX = TRAINERDEX_SOURCE
+    .map((trainer, index) => ({ ...trainer, displayId: normalizeDisplayId(trainer.displayId, index + 1) }))
+    .sort((a, b) => compareDisplayIds(a.displayId, b.displayId));
+
+  protoNote.textContent = `${buildVisibleTrainerEntries(TRAINERDEX).length} Encounters`;
+  document.getElementById('emptyState').textContent = 'No trainers match the current filters.';
+
+  buildTagPills();
+  setView('grid');
+  applyFilters();
+}
+
+init();
+</script>
+</body>
+</html>

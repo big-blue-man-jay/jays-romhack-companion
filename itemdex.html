@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ItemDex - Jay's Romhack</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --surface3: #1B2128;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --gold: #C9A86A;
+    --green: #78C87C;
+    --blue: #78AADC;
+    --red: #C87878;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 220px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--main); }
+
+  .page-hero {
+    padding: 32px 32px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .page-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .page-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+  }
+  .page-intro {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 720px;
+    line-height: 1.7;
+  }
+  .proto-note {
+    padding: 2px 0 0;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+  }
+
+  .filter-bar {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 32px;
+    position: sticky;
+    top: 52px;
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input::placeholder { color: var(--text-muted); }
+  .search-input:focus { border-color: var(--main); }
+  .search-hints {
+    width: 100%;
+    padding: 5px 2px 0;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+  .hint-tag {
+    display: inline-block;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--main);
+    margin-right: 2px;
+    font-size: 10px;
+  }
+  .search-hints em { font-style: normal; color: var(--text-muted); }
+
+  .view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .view-btn {
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .view-btn.active { background: var(--surface2); color: var(--main); }
+  .view-btn:hover:not(.active) { color: var(--text); }
+
+  .filter-row-center {
+    justify-content: center;
+    gap: 12px;
+  }
+  .type-pills {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .type-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.15s, transform 0.1s;
+    user-select: none;
+    letter-spacing: 0.4px;
+    border: none;
+  }
+  .type-pill:hover { opacity: 0.7; }
+  .type-pill.active {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.15);
+  }
+  .tag-filter-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 1;
+    max-width: 440px;
+    min-width: 180px;
+  }
+  .tag-filter-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    flex-shrink: 0;
+    min-width: 52px;
+    padding-top: 10px;
+  }
+  .tag-filter-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    flex: 1;
+    min-height: 36px;
+    transition: border-color 0.2s;
+  }
+  .tag-filter-box:hover,
+  .tag-filter-box:focus-within { border-color: var(--main); }
+  .tag-filter-box .tag-chip { cursor: pointer; }
+  .tag-chip-x {
+    opacity: 0.45;
+    font-size: 13px;
+    line-height: 1;
+    margin-left: 3px;
+  }
+  .tag-filter-input {
+    flex: 1;
+    min-width: 90px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    padding: 2px 4px;
+  }
+  .tag-filter-input::placeholder { color: var(--text-muted); }
+  .tag-suggestions {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 58px;
+    right: 0;
+    z-index: 300;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    overscroll-behavior: contain;
+  }
+  .tag-suggestions.open { display: block; }
+  .tag-suggestion {
+    padding: 8px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.1s;
+    color: var(--text);
+  }
+  .tag-suggestion:hover,
+  .tag-suggestion.ts-focused { background: rgba(255,255,255,0.08); }
+  .tag-suggestion mark {
+    background: transparent;
+    color: var(--main);
+    font-weight: 600;
+  }
+  .tag-suggestion-empty {
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    cursor: default;
+  }
+  .pill-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .filter-pill {
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    border-radius: 4px;
+    padding: 4px 9px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .filter-pill:hover { border-color: var(--main); color: var(--text); }
+  .filter-pill.active {
+    border-color: var(--main);
+    color: var(--main);
+    background: rgba(174,184,194,0.1);
+  }
+
+  .results-bar {
+    padding: 10px 32px 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .results-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 64px 32px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    display: none;
+  }
+
+  .item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+    gap: 8px;
+    padding: 12px 32px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .item-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.1s;
+  }
+  .item-card:hover { border-color: var(--main); transform: translateY(-1px); }
+  .item-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .entry-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+  }
+  .grid-source-flag {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--main);
+    border: 1px solid rgba(201,168,106,0.35);
+    background: rgba(201,168,106,0.12);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .item-icon-shell {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .item-icon-shell img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .item-icon-fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--main);
+    letter-spacing: 0.5px;
+    text-align: center;
+    padding: 4px;
+  }
+  .item-card .item-icon-shell {
+    width: 78px;
+    height: 78px;
+    border: none;
+    background: transparent;
+  }
+  .item-card .item-icon-shell img {
+    width: 56px;
+    height: 56px;
+  }
+  .item-card .item-icon-fallback {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .item-title-wrap { min-width: 0; flex: 1; }
+  .item-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--highlight);
+    line-height: 1.35;
+    text-align: center;
+    margin: 0;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .item-grid-badges {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .grid-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .item-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  .item-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .item-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+  .tag-type { color: var(--blue); border-color: rgba(120,170,220,0.3); background: rgba(120,170,220,0.08); }
+  .tag-method { color: var(--green); border-color: rgba(120,200,124,0.3); background: rgba(120,200,124,0.08); }
+  .tag-req { color: var(--gold); border-color: rgba(201,168,106,0.3); background: rgba(201,168,106,0.08); }
+  .tag-location { color: var(--text-muted); border-color: rgba(255,255,255,0.06); background: rgba(255,255,255,0.03); }
+
+  .item-foot {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .source-count, .detail-hint {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .detail-hint { color: var(--main); }
+
+  .item-list {
+    display: none;
+    padding: 12px 32px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .list-table { width: 100%; border-collapse: collapse; }
+  .list-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .th-entry,
+  .td-entry {
+    width: 74px;
+    white-space: nowrap;
+  }
+  .item-row { cursor: pointer; }
+  .item-row:hover td { background: rgba(255,255,255,0.03); }
+  .item-row td {
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(49,57,67,0.5);
+    vertical-align: top;
+    font-size: 13px;
+  }
+  .td-icon { width: 54px; }
+  .td-entry {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .list-icon-shell {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .list-icon-shell img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+  .list-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+    margin-bottom: 3px;
+  }
+  .list-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.55;
+  }
+
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.66);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .detail-overlay.open { display: flex; animation: fadeIn 0.15s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .detail-modal {
+    width: 840px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.45);
+  }
+  .detail-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 2;
+  }
+  .detail-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .detail-close {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+  .detail-close:hover { color: var(--text); }
+  .detail-body {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+    gap: 14px;
+  }
+  .detail-panel {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .detail-item-head {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .detail-item-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    color: var(--highlight);
+    line-height: 1.4;
+  }
+  .detail-entry-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .detail-item-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+  .detail-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .source-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .source-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .source-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .source-location {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+  }
+  .source-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .source-notes {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --surface3: #F0E5D4;
+    --border: #D4C4A8;
+    --text: #2C2416;
+    --text-muted: #7A6B55;
+    --accent: #C9A86A;
+    --main: #B8944E;
+    --highlight: #7A5020;
+    --gold: #9C6E25;
+    --green: #4F8551;
+    --blue: #4875A6;
+    --red: #A35B5B;
+  }
+  body.light .menu-overlay { box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); }
+  body.light .item-card:hover { background: rgba(0,0,0,0.02); }
+  body.light .item-row:hover td { background: rgba(0,0,0,0.03); }
+  body.light .tag-suggestions {
+    background: #F5EBDD;
+    border-color: #D4C4A8;
+  }
+  body.light .tag-suggestion:hover,
+  body.light .tag-suggestion.ts-focused { background: rgba(0,0,0,0.04); }
+  body.light .source-card,
+  body.light .detail-panel,
+  body.light .item-card {
+    box-shadow: none;
+  }
+  body.light .detail-overlay { background: rgba(44,36,22,0.55); }
+
+  @media (max-width: 920px) {
+    .detail-body { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 720px) {
+    .page-header,
+    .filter-bar,
+    .page-hero,
+    .results-bar,
+    .item-grid,
+    .item-list { padding-left: 16px; padding-right: 16px; }
+    .menu-overlay { right: 16px; width: min(240px, calc(100vw - 32px)); }
+    .page-hero-inner { align-items: flex-start; }
+    .tag-filter-wrap { flex-direction: column; gap: 6px; max-width: none; }
+    .tag-filter-label { min-width: 0; padding-top: 0; }
+    .tag-suggestions { left: 0; }
+    .item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<header class="page-header">
+  <div class="romhack-title">JAY'S ROMHACK</div>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="index.html" class="menu-link">Home</a>
+  <a href="areadex.html" class="menu-link">Area Sheets</a>
+  <a href="pokedex.html" class="menu-link">Pokedex</a>
+  <a href="trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="itemdex.html" class="menu-link">ItemDex</a>
+  <a href="progression.html" class="menu-link">Progression</a>
+  <a href="mechanics.html" class="menu-link">Mechanics</a>
+  <a href="calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="tracker.html" class="menu-link">Nuzlocke Tracker</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-title">ItemDex</div>
+      <p class="page-intro">
+        Browse key items, TMs, held items, and progression tools, then check where each one is
+        found, how it is obtained, and what is required to reach it.
+      </p>
+    </div>
+    <div class="proto-note" id="protoNote">Items</div>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-row">
+    <input
+      type="text"
+      class="search-input"
+      id="searchInput"
+      placeholder="Search items, tags, methods, requirements, or locations..."
+      oninput="applyFilters();toggleSearchHints(this.value)"
+      onfocus="toggleSearchHints(this.value)"
+      onblur="setTimeout(()=>document.getElementById('searchHints').style.display='none',200)"
+      autocomplete="off"
+    >
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnGrid" onclick="setView('grid')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="0" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="0" width="4.5" height="4.5" rx="1"/><rect x="0" y="6.5" width="4.5" height="4.5" rx="1"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx="1"/></svg>
+        Grid
+      </button>
+      <button class="view-btn" id="btnList" onclick="setView('list')">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="currentColor"><rect x="0" y="1" width="11" height="2" rx="1"/><rect x="0" y="4.5" width="11" height="2" rx="1"/><rect x="0" y="8" width="11" height="2" rx="1"/></svg>
+        List
+      </button>
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="search-hints" id="searchHints" style="display:none">
+      <span class="hint-tag">Name</span> item name &nbsp;
+      <span class="hint-tag">Type</span> TM / key / held / medicine &nbsp;
+      <span class="hint-tag">Method</span> shop / gift / pickup / hidden &nbsp;
+      <span class="hint-tag">Req</span> badge / HM / story gate &nbsp;
+      <span class="hint-tag">Loc</span> area tag
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="type-pills" id="typePills"></div>
+  </div>
+  <div class="filter-row filter-row-center">
+    <div class="tag-filter-wrap">
+      <span class="tag-filter-label">Acquire</span>
+      <div style="flex:1;position:relative;">
+        <div class="tag-filter-box" id="methodBox" onclick="focusTagInput('method')">
+          <input
+            class="tag-filter-input"
+            id="methodInput"
+            placeholder="add method..."
+            autocomplete="off"
+            spellcheck="false"
+            oninput="handleTagInput('method')"
+            onkeydown="handleTagKeydown(event,'method')"
+            onfocus="openTagDropdown('method')"
+            onblur="closeTagDropdown('method',150)"
+          >
+        </div>
+        <div class="tag-suggestions" id="methodSuggestions"></div>
+      </div>
+    </div>
+    <div class="tag-filter-wrap">
+      <span class="tag-filter-label">Requires</span>
+      <div style="flex:1;position:relative;">
+        <div class="tag-filter-box" id="requirementBox" onclick="focusTagInput('requirement')">
+          <input
+            class="tag-filter-input"
+            id="requirementInput"
+            placeholder="add requirement..."
+            autocomplete="off"
+            spellcheck="false"
+            oninput="handleTagInput('requirement')"
+            onkeydown="handleTagKeydown(event,'requirement')"
+            onfocus="openTagDropdown('requirement')"
+            onblur="closeTagDropdown('requirement',150)"
+          >
+        </div>
+        <div class="tag-suggestions" id="requirementSuggestions"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="results-bar">
+  <span class="results-count" id="resultsCount"></span>
+</div>
+
+<div class="empty-state" id="emptyState">No items match the current filters.</div>
+<div class="item-grid" id="itemGrid"></div>
+
+<div class="item-list" id="itemList">
+  <table class="list-table">
+    <thead>
+      <tr>
+        <th class="th-entry">#</th>
+        <th style="width:62px"></th>
+        <th>Item</th>
+        <th>Type Tags</th>
+        <th>Acquire</th>
+        <th>Requires</th>
+        <th>Locations</th>
+      </tr>
+    </thead>
+    <tbody id="listBody"></tbody>
+  </table>
+</div>
+
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)closeDetail()">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <div class="detail-title">Item Details</div>
+      <button class="detail-close" onclick="closeDetail()">x</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<script>
+let ITEMBASE = [];
+
+const ITEMBASE_SOURCE = [
+  {
+    id: 'tm-placeholder',
+    displayId: 1,
+    name: 'TM Placeholder',
+    icon: 'https://play.pokemonshowdown.com/sprites/itemicons/tm.png',
+    iconLabel: 'TM',
+    description: 'Use this as the clean baseline for a move-teaching item entry while you judge spacing, tags, and card density.',
+    typeTags: ['TM', 'Battle Utility'],
+    acquisitions: [
+      {
+        location: 'Example Dept. Store',
+        methodTags: ['Shop', 'Repeatable'],
+        requirementTags: ['Badge 3'],
+        notes: 'Good sample for a repeatable purchase source.'
+      }
+    ]
+  },
+  {
+    id: 'key-item-placeholder',
+    displayId: 2,
+    name: 'Key Item Placeholder',
+    icon: 'https://play.pokemonshowdown.com/sprites/itemicons/bicycle.png',
+    iconLabel: 'KEY',
+    description: 'Use this to evaluate how permanent progression items read in both grid and list view.',
+    typeTags: ['Key Item', 'Traversal'],
+    acquisitions: [
+      {
+        location: 'Example Story Hub',
+        methodTags: ['Gift', 'One-Time'],
+        requirementTags: ['Story Progression'],
+        notes: 'Covers the one-time reward pattern.'
+      }
+    ]
+  },
+  {
+    id: 'held-item-placeholder',
+    displayId: 3,
+    name: 'Held Item Placeholder',
+    icon: 'https://play.pokemonshowdown.com/sprites/itemicons/leftovers.png',
+    iconLabel: 'HOLD',
+    description: 'Use this as the mixed-source sample for held items with more than one acquisition path.',
+    typeTags: ['Held Item', 'Recovery'],
+    acquisitions: [
+      {
+        location: 'Example Cave',
+        methodTags: ['Hidden Pickup', 'One-Time'],
+        requirementTags: ['Surf'],
+        notes: 'Tests a gated exploration pickup.'
+      },
+      {
+        location: 'Example Wilds',
+        methodTags: ['Wild Held', 'Repeatable'],
+        requirementTags: [],
+        notes: 'Tests a repeatable farming source on the same item.'
+      }
+    ]
+  }
+];
+
+const state = {
+  search: '',
+  type: 'All',
+  methodTags: [],
+  requirementTags: [],
+  view: 'grid'
+};
+
+const tagState = {
+  method: { focus: -1 },
+  requirement: { focus: -1 }
+};
+
+const TYPE_PILL_STYLES = {
+  All: ['#3A424C', '#E9EDF1'],
+  TM: ['#B56A4C', '#fff'],
+  HM: ['#8A6FB8', '#fff'],
+  'Battle Utility': ['#8C6FAF', '#fff'],
+  'Key Item': ['#B8944E', '#2C2416'],
+  Traversal: ['#6B8EA8', '#fff'],
+  Medicine: ['#5E9A6A', '#fff'],
+  Leveling: ['#7A9E80', '#fff'],
+  'Evolution Item': ['#9B7A52', '#fff'],
+  'Held Item': ['#7C88B8', '#fff'],
+  Recovery: ['#7D9A63', '#fff'],
+  Utility: ['#5F8D8D', '#fff']
+};
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function normalizeDisplayId(value, fallback) {
+  return value === undefined || value === null || value === '' ? fallback : value;
+}
+
+function compareDisplayIds(a, b) {
+  const aNum = Number(a);
+  const bNum = Number(b);
+  const aIsNum = Number.isFinite(aNum);
+  const bIsNum = Number.isFinite(bNum);
+  if (aIsNum && bIsNum) return aNum - bNum;
+  if (aIsNum) return -1;
+  if (bIsNum) return 1;
+  return String(a).localeCompare(String(b));
+}
+
+function formatEntryNumber(value) {
+  if (value === undefined || value === null || value === '') return '#----';
+  const num = Number(value);
+  if (Number.isFinite(num)) return `#${String(Math.max(0, Math.trunc(num))).padStart(4, '0')}`;
+  const text = String(value).trim();
+  return text.startsWith('#') ? text : `#${text}`;
+}
+
+function uniqSorted(values) {
+  return [...new Set(values)].sort((a, b) => a.localeCompare(b));
+}
+
+function getLocations(item) {
+  return uniqSorted(item.acquisitions.map(a => a.location));
+}
+
+function getMethodTags(item) {
+  return uniqSorted(item.acquisitions.flatMap(a => a.methodTags || []));
+}
+
+function getRequirementTags(item) {
+  return uniqSorted(item.acquisitions.flatMap(a => a.requirementTags || []));
+}
+
+function getTagConfig(type) {
+  return type === 'method'
+    ? {
+        key: 'methodTags',
+        boxId: 'methodBox',
+        inputId: 'methodInput',
+        suggestionsId: 'methodSuggestions',
+        values: uniqSorted(ITEMBASE.flatMap(getMethodTags)),
+        chipClass: 'tag-method',
+        placeholder: 'add method...'
+      }
+    : {
+        key: 'requirementTags',
+        boxId: 'requirementBox',
+        inputId: 'requirementInput',
+        suggestionsId: 'requirementSuggestions',
+        values: uniqSorted(ITEMBASE.flatMap(getRequirementTags)),
+        chipClass: 'tag-req',
+        placeholder: 'add requirement...'
+      };
+}
+
+function buildTypePills() {
+  const container = document.getElementById('typePills');
+  if (!container) return;
+  const values = ['All', ...uniqSorted(ITEMBASE.flatMap(item => item.typeTags))];
+  container.innerHTML = values.map(value => {
+    const style = TYPE_PILL_STYLES[value] || ['#4A5563', '#E9EDF1'];
+    const active = state.type === value ? ' active' : '';
+    return `<button
+      class="type-pill${active}"
+      style="background:${style[0]};color:${style[1]}"
+      onclick="setFilter('type', '${value.replace(/'/g, "\\'")}')"
+    >${value}</button>`;
+  }).join('');
+}
+
+function renderTagFilter(type) {
+  const cfg = getTagConfig(type);
+  const box = document.getElementById(cfg.boxId);
+  const input = document.getElementById(cfg.inputId);
+  if (!box || !input) return;
+
+  [...box.querySelectorAll('.tag-chip')].forEach(el => el.remove());
+  (state[cfg.key] || []).forEach(value => {
+    const chip = document.createElement('span');
+    chip.className = `tag-chip ${cfg.chipClass}`;
+    chip.innerHTML = `${value}<span class="tag-chip-x">x</span>`;
+    chip.onclick = () => removeTag(type, value);
+    box.insertBefore(chip, input);
+  });
+
+  input.placeholder = (state[cfg.key] || []).length ? '' : cfg.placeholder;
+}
+
+function buildFilters() {
+  buildTypePills();
+  renderTagFilter('method');
+  renderTagFilter('requirement');
+}
+
+function setFilter(key, value) {
+  state[key] = value;
+  buildFilters();
+  applyFilters();
+}
+
+function setView(view) {
+  state.view = view;
+  document.getElementById('btnGrid').classList.toggle('active', view === 'grid');
+  document.getElementById('btnList').classList.toggle('active', view === 'list');
+  document.getElementById('itemGrid').style.display = view === 'grid' ? 'grid' : 'none';
+  document.getElementById('itemList').style.display = view === 'list' ? 'block' : 'none';
+}
+
+function formatSuggestionLabel(value, query) {
+  if (!query) return value;
+  const idx = value.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return value;
+  return value.slice(0, idx) + '<mark>' + value.slice(idx, idx + query.length) + '</mark>' + value.slice(idx + query.length);
+}
+
+function focusTagInput(type) {
+  const cfg = getTagConfig(type);
+  document.getElementById(cfg.inputId)?.focus();
+}
+
+function openTagDropdown(type) {
+  const cfg = getTagConfig(type);
+  const input = document.getElementById(cfg.inputId);
+  const drop = document.getElementById(cfg.suggestionsId);
+  if (!input || !drop) return;
+
+  const query = input.value.trim().toLowerCase();
+  const selected = new Set(state[cfg.key] || []);
+  let matches = cfg.values.filter(v => !selected.has(v));
+  if (query) {
+    const starts = matches.filter(v => v.toLowerCase().startsWith(query));
+    const contains = matches.filter(v => !v.toLowerCase().startsWith(query) && v.toLowerCase().includes(query));
+    matches = starts.concat(contains);
+  }
+  matches = matches.slice(0, 12);
+  tagState[type].focus = matches.length ? 0 : -1;
+
+  if (!matches.length) {
+    drop.innerHTML = '<div class="tag-suggestion-empty">No matching tags.</div>';
+    drop.classList.add('open');
+    return;
+  }
+
+  drop.innerHTML = matches.map((value, idx) => {
+    const focused = idx === tagState[type].focus ? ' ts-focused' : '';
+    return `<div class="tag-suggestion${focused}" data-value="${value.replace(/"/g, '&quot;')}" onmousedown="event.preventDefault();addTag('${type}','${value.replace(/'/g, "\\'")}')">${formatSuggestionLabel(value, query)}</div>`;
+  }).join('');
+  drop.classList.add('open');
+}
+
+function closeTagDropdown(type, delay) {
+  const cfg = getTagConfig(type);
+  const fn = () => document.getElementById(cfg.suggestionsId)?.classList.remove('open');
+  if (delay) setTimeout(fn, delay);
+  else fn();
+}
+
+function addTag(type, value) {
+  const cfg = getTagConfig(type);
+  if (!value) return;
+  if (!state[cfg.key].includes(value)) state[cfg.key].push(value);
+  const input = document.getElementById(cfg.inputId);
+  if (input) input.value = '';
+  renderTagFilter(type);
+  openTagDropdown(type);
+  applyFilters();
+}
+
+function removeTag(type, value) {
+  const cfg = getTagConfig(type);
+  state[cfg.key] = state[cfg.key].filter(v => v !== value);
+  renderTagFilter(type);
+  openTagDropdown(type);
+  applyFilters();
+}
+
+function handleTagInput(type) {
+  openTagDropdown(type);
+}
+
+function moveTagFocus(type, dir) {
+  const cfg = getTagConfig(type);
+  const drop = document.getElementById(cfg.suggestionsId);
+  if (!drop || !drop.classList.contains('open')) {
+    openTagDropdown(type);
+    return;
+  }
+  const items = [...drop.querySelectorAll('.tag-suggestion')];
+  if (!items.length) return;
+  const len = items.length;
+  const current = tagState[type].focus < 0 ? 0 : tagState[type].focus;
+  tagState[type].focus = (current + dir + len) % len;
+  items.forEach((el, idx) => el.classList.toggle('ts-focused', idx === tagState[type].focus));
+}
+
+function handleTagKeydown(e, type) {
+  const cfg = getTagConfig(type);
+  const input = document.getElementById(cfg.inputId);
+  const selected = state[cfg.key];
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    moveTagFocus(type, +1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    moveTagFocus(type, -1);
+  } else if (e.key === 'Enter') {
+    const drop = document.getElementById(cfg.suggestionsId);
+    const focused = drop.querySelector('.tag-suggestion.ts-focused') || drop.querySelector('.tag-suggestion');
+    if (focused) {
+      e.preventDefault();
+      addTag(type, focused.dataset.value);
+    }
+  } else if (e.key === 'Backspace' && input && !input.value && selected.length) {
+    removeTag(type, selected[selected.length - 1]);
+  } else if (e.key === 'Escape') {
+    closeTagDropdown(type);
+  }
+}
+
+function toggleSearchHints(value) {
+  const el = document.getElementById('searchHints');
+  if (!el) return;
+  el.style.display = (value !== undefined) ? 'block' : 'none';
+}
+
+function matchesSearch(item, term) {
+  if (!term) return true;
+  const haystack = [
+    formatEntryNumber(item.displayId),
+    item.name,
+    item.description,
+    ...item.typeTags,
+    ...getMethodTags(item),
+    ...getRequirementTags(item),
+    ...getLocations(item)
+  ].join(' ').toLowerCase();
+  return haystack.includes(term);
+}
+
+function getFilteredItems() {
+  state.search = document.getElementById('searchInput').value.trim().toLowerCase();
+  return ITEMBASE.filter(item => {
+    if (!matchesSearch(item, state.search)) return false;
+    if (state.type !== 'All' && !item.typeTags.includes(state.type)) return false;
+    if (state.methodTags.length && !state.methodTags.every(tag => getMethodTags(item).includes(tag))) return false;
+    if (state.requirementTags.length && !state.requirementTags.every(tag => getRequirementTags(item).includes(tag))) return false;
+    return true;
+  });
+}
+
+function renderIcon(item, sizeClass) {
+  const shellClass = sizeClass === 'list' ? 'list-icon-shell' : 'item-icon-shell';
+  return `
+    <div class="${shellClass}">
+      <img src="${item.icon}" alt="${item.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="item-icon-fallback" style="display:none">${item.iconLabel}</div>
+    </div>
+  `;
+}
+
+function renderChips(values, className) {
+  if (!values.length) return '<span class="tag-chip ' + className + '">None</span>';
+  return values.map(v => `<span class="tag-chip ${className}">${v}</span>`).join('');
+}
+
+function renderGridTypeBadges(values) {
+  return values.slice(0, 3).map(value => {
+    const style = TYPE_PILL_STYLES[value] || ['#4A5563', '#E9EDF1'];
+    return `<span class="grid-type-badge" style="background:${style[0]};color:${style[1]}">${escapeHtml(value)}</span>`;
+  }).join('');
+}
+
+function renderGrid(items) {
+  const grid = document.getElementById('itemGrid');
+  grid.innerHTML = items.map(item => `
+      <article class="item-card" onclick="openDetail('${item.id}')">
+        <div class="item-card-top">
+          <div class="entry-number">${formatEntryNumber(item.displayId)}</div>
+          <div class="grid-source-flag">${item.acquisitions.length} src</div>
+        </div>
+        ${renderIcon(item, 'grid')}
+        <div class="item-name">${escapeHtml(item.name)}</div>
+        <div class="item-grid-badges">${renderGridTypeBadges(item.typeTags)}</div>
+      </article>
+    `).join('');
+}
+
+function renderList(items) {
+  const body = document.getElementById('listBody');
+  body.innerHTML = items.map(item => `
+    <tr class="item-row" onclick="openDetail('${item.id}')">
+      <td class="td-entry">${formatEntryNumber(item.displayId)}</td>
+      <td class="td-icon">${renderIcon(item, 'list')}</td>
+      <td>
+        <div class="list-name">${item.name}</div>
+        <div class="list-desc">${item.description}</div>
+      </td>
+      <td><div class="chip-row">${renderChips(item.typeTags, 'tag-type')}</div></td>
+      <td><div class="chip-row">${renderChips(getMethodTags(item), 'tag-method')}</div></td>
+      <td><div class="chip-row">${getRequirementTags(item).length ? renderChips(getRequirementTags(item), 'tag-req') : '<span class="tag-chip tag-req">None</span>'}</div></td>
+      <td><div class="chip-row">${renderChips(getLocations(item), 'tag-location')}</div></td>
+    </tr>
+  `).join('');
+}
+
+function applyFilters() {
+  const items = getFilteredItems();
+  document.getElementById('resultsCount').textContent =
+    `${items.length} item${items.length === 1 ? '' : 's'} shown`;
+  document.getElementById('emptyState').style.display = items.length ? 'none' : 'block';
+  document.getElementById('itemGrid').style.display = items.length && state.view === 'grid' ? 'grid' : 'none';
+  document.getElementById('itemList').style.display = items.length && state.view === 'list' ? 'block' : 'none';
+  renderGrid(items);
+  renderList(items);
+}
+
+function openDetail(id) {
+  const item = ITEMBASE.find(entry => entry.id === id);
+  if (!item) return;
+  const detail = document.getElementById('detailBody');
+  detail.innerHTML = `
+    <div class="detail-panel">
+      <div class="detail-entry-number">${formatEntryNumber(item.displayId)}</div>
+      <div class="detail-item-head">
+        ${renderIcon(item, 'grid')}
+        <div>
+          <div class="detail-item-name">${item.name}</div>
+          <div class="detail-item-desc">${item.description}</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Type Tags</div>
+        <div class="chip-row" style="margin-top:8px">${renderChips(item.typeTags, 'tag-type')}</div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Acquisition Tags</div>
+        <div class="chip-row" style="margin-top:8px">${renderChips(getMethodTags(item), 'tag-method')}</div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Requirement Tags</div>
+        <div class="chip-row" style="margin-top:8px">
+          ${getRequirementTags(item).length ? renderChips(getRequirementTags(item), 'tag-req') : '<span class="tag-chip tag-req">None</span>'}
+        </div>
+      </div>
+
+      <div>
+        <div class="detail-section-title">Location Tags</div>
+        <div class="chip-row" style="margin-top:8px">${renderChips(getLocations(item), 'tag-location')}</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="detail-section-title" style="margin-bottom:12px">Where To Get It</div>
+      <div class="source-list">
+        ${item.acquisitions.map(source => `
+          <div class="source-card">
+            <div class="source-top">
+              <div class="source-location">${source.location}</div>
+              <div class="source-meta">${source.methodTags.length} tag${source.methodTags.length === 1 ? '' : 's'}</div>
+            </div>
+            <div class="chip-row">${renderChips(source.methodTags, 'tag-method')}</div>
+            <div class="chip-row">${source.requirementTags.length ? renderChips(source.requirementTags, 'tag-req') : '<span class="tag-chip tag-req">No requirement</span>'}</div>
+            <div class="source-notes">${source.notes}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('detailOverlay').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light');
+  const isLight = document.body.classList.contains('light');
+  document.getElementById('toggleTrack').classList.toggle('active', isLight);
+  document.getElementById('themeLabel').textContent = isLight ? 'Light' : 'Dark';
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+function toggleMenu() {
+  document.getElementById('menuOverlay').classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu-overlay') && !e.target.closest('.menu-btn')) {
+    document.getElementById('menuOverlay').classList.remove('open');
+  }
+  if (!e.target.closest('.tag-filter-wrap')) {
+    closeTagDropdown('method');
+    closeTagDropdown('requirement');
+  }
+});
+
+if (localStorage.getItem('theme') === 'light') {
+  document.body.classList.add('light');
+  document.getElementById('toggleTrack').classList.add('active');
+  document.getElementById('themeLabel').textContent = 'Light';
+}
+
+function init() {
+  const protoNote = document.getElementById('protoNote');
+  ITEMBASE = ITEMBASE_SOURCE
+    .map((item, index) => ({ ...item, displayId: normalizeDisplayId(item.displayId, index + 1) }))
+    .sort((a, b) => compareDisplayIds(a.displayId, b.displayId));
+
+  protoNote.textContent = `${ITEMBASE.length} Items`;
+  document.getElementById('emptyState').textContent = 'No items match the current filters.';
+
+  buildFilters();
+  setView('grid');
+  applyFilters();
+}
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[AREA NAME] — Jay's Romhack Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --enc-bg: #1A2028;
+    --enc-border: #2A3540;
+    --trainer-bg: #1B2028;
+    --trainer-border: #2D3840;
+    --item-bg: #1C2128;
+    --item-border: #2E3840;
+    --common: #6aab78;
+    --uncommon: #b8a860;
+    --rare: #b06868;
+    --ultra: #8878b8;
+    --biome-path: #8E9CAA;
+    --biome-prairie: #7a9e80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* LOCATION HERO */
+  .location-hero {
+    padding: 32px 32px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .location-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .location-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    text-shadow: none;
+  }
+
+  .biome-tags {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .biome-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    background: rgba(174,184,194,0.1);
+    color: var(--main);
+    border: 1px solid rgba(174,184,194,0.2);
+  }
+
+  .biome-path { background: rgba(142,156,170,0.1); color: var(--accent); border: 1px solid rgba(142,156,170,0.25); }
+  .biome-prairie { background: rgba(174,184,194,0.1); color: var(--main); border: 1px solid rgba(174,184,194,0.2); }
+
+  .nav-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  .page-body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .section { border-radius: 12px; overflow: hidden; border: 1px solid; }
+  .section-enc { background: var(--enc-bg); border-color: var(--enc-border); }
+  .section-trainer { background: var(--trainer-bg); border-color: var(--trainer-border); }
+  .section-item { background: var(--item-bg); border-color: var(--item-border); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .section-enc .section-header { border-color: var(--enc-border); color: var(--main); }
+  .section-trainer .section-header { border-color: var(--trainer-border); color: var(--main); }
+  .section-item .section-header { border-color: var(--item-border); color: var(--main); }
+
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .section-enc .section-dot { background: var(--main); box-shadow: 0 0 8px rgba(174,184,194,0.5); }
+  .section-trainer .section-dot { background: var(--accent); box-shadow: 0 0 8px rgba(142,156,170,0.5); }
+  .section-item .section-dot { background: var(--highlight); box-shadow: 0 0 8px rgba(200,210,219,0.5); }
+
+  .section-body { padding: 20px; }
+
+  /* ENCOUNTERS */
+  .enc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .enc-time {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--enc-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .enc-time-header {
+    padding: 8px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--enc-border);
+  }
+
+  .time-morning { color: #f0a030; }
+  .time-day { color: #70c0f0; }
+  .time-night { color: #8090d0; }
+
+  .enc-slot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .enc-slot:last-child { border-bottom: none; }
+  .enc-slot:hover { background: rgba(255,255,255,0.04); }
+
+  .enc-sprite { width: 32px; height: 32px; image-rendering: pixelated; flex-shrink: 0; }
+  .enc-name { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; flex: 1; }
+
+  .enc-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  .rarity-common { background: rgba(76,175,80,0.15); color: var(--common); }
+  .rarity-uncommon { background: rgba(245,200,66,0.15); color: var(--uncommon); }
+  .rarity-rare { background: rgba(224,82,82,0.15); color: var(--rare); }
+  .rarity-ultra { background: rgba(156,111,224,0.15); color: var(--ultra); }
+
+  /* TRAINERS */
+  .trainer-grid { display: flex; flex-direction: column; gap: 20px; }
+
+  .trainer-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--trainer-border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .trainer-card-header {
+    padding: 12px 16px;
+    background: rgba(142,156,170,0.08);
+    border-bottom: 1px solid var(--trainer-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .trainer-sprite-wrap {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    background: rgba(142,156,170,0.08);
+    border: 1px solid var(--trainer-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .trainer-sprite {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  .trainer-info { flex: 1; }
+  .trainer-name { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--text-muted); margin-bottom: 4px; }
+  .trainer-class { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .trainer-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+
+  .trainer-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(142,156,170,0.12);
+    border: 1px solid rgba(142,156,170,0.3);
+    color: var(--main);
+  }
+
+  .paste-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(142,156,170,0.1);
+    border: 1px solid rgba(142,156,170,0.3);
+    color: var(--main);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .paste-link:hover { background: rgba(142,156,170,0.2); }
+
+  .trainer-team {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .pokemon-slot {
+    padding: 14px 16px;
+    border-right: 1px solid var(--trainer-border);
+    border-bottom: 1px solid var(--trainer-border);
+  }
+  .pokemon-slot:nth-child(6n) { border-right: none; }
+  .pokemon-slot.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    opacity: 0.25;
+  }
+  .pokemon-slot.empty::after {
+    content: '—';
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--border);
+  }
+
+  .pokemon-slot-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .poke-sprite { width: 48px; height: 48px; image-rendering: pixelated; }
+  .poke-info { flex: 1; }
+  .poke-name { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .poke-level { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .poke-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--main);
+    margin-bottom: 8px;
+    padding: 2px 6px;
+    background: rgba(142,156,170,0.1);
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .poke-ability { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); margin-bottom: 8px; }
+
+  .poke-moves { display: flex; flex-direction: column; gap: 3px; }
+  .poke-move {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-muted);
+    display: inline-block;
+  }
+
+  .poke-nature {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+  }
+
+  .stat-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+    padding: 2px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-table th:first-child { text-align: left; }
+
+  .stat-table td {
+    text-align: center;
+    padding: 2px 4px;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .stat-table td:first-child {
+    text-align: left;
+    color: var(--text-muted);
+  }
+
+  .stat-boosted {
+    font-weight: 700;
+    color: var(--bg) !important;
+    background: var(--highlight);
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  .stat-lowered {
+    font-weight: 700;
+    color: var(--bg) !important;
+    background: var(--main);
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  body.light .stat-boosted {
+    color: var(--bg) !important;
+    background: var(--border);
+  }
+
+  body.light .stat-lowered {
+    color: var(--highlight) !important;
+    background: var(--text);
+  }
+
+  /* ITEMS */
+  .items-table { width: 100%; border-collapse: collapse; }
+
+  .items-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--item-border);
+  }
+
+  .items-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  .items-table tr:last-child td { border-bottom: none; }
+  .items-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  .item-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .item-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .item-sprite-poke {
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .item-name { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--main); }
+  .item-how { font-size: 13px; color: var(--text); }
+  .item-req { font-size: 12px; color: var(--text-muted); font-style: italic; }
+  .item-trade-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .item-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .item-ground { background: rgba(174,184,194,0.12); color: var(--main); border: 1px solid rgba(174,184,194,0.25); }
+  .item-hidden { background: rgba(142,156,170,0.1); color: var(--accent); border: 1px solid rgba(142,156,170,0.25); }
+  .item-gift { background: rgba(174,184,194,0.1); color: var(--highlight); border: 1px solid rgba(174,184,194,0.25); }
+  .item-trade { background: rgba(200,210,219,0.1); color: var(--highlight); border: 1px solid rgba(200,210,219,0.25); }
+
+  /* LIGHT MODE */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #F3DEC2;
+    --enc-bg: #F8F3EB;
+    --enc-border: #E2CFA8;
+    --trainer-bg: #F8F2EC;
+    --trainer-border: #E2CFA8;
+    --item-bg: #F9F4EC;
+    --item-border: #E2CFA8;
+    --common: #5a8c5a;
+    --uncommon: #9a7a30;
+    --rare: #a04040;
+    --ultra: #7060a0;
+    --biome-path: #C9A86A;
+    --biome-prairie: #6a8a50;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .section-enc .section-header { color: #4a7a50; }
+  body.light .section-trainer .section-header { color: #7a5a30; }
+  body.light .section-item .section-header { color: #8a6020; }
+  body.light .section-enc .section-dot { background: #4a7a50; box-shadow: 0 0 8px rgba(74,122,80,0.4); }
+  body.light .section-trainer .section-dot { background: #7a5a30; box-shadow: 0 0 8px rgba(122,90,48,0.4); }
+  body.light .section-item .section-dot { background: #8a6020; box-shadow: 0 0 8px rgba(138,96,32,0.4); }
+  body.light .trainer-card-header { background: rgba(201,168,106,0.12); }
+  body.light .trainer-sprite-wrap { background: rgba(201,168,106,0.1); border-color: #E2CFA8; }
+  body.light .trainer-card { background: rgba(255,255,255,0.6); }
+  body.light .trainer-name { color: #7a5a30; }
+  body.light .trainer-badge { background: rgba(201,168,106,0.15); border-color: rgba(201,168,106,0.4); color: #8a6a30; }
+  body.light .paste-link { background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.4); color: #a07830; }
+  body.light .poke-ability { color: #507090; }
+  body.light .poke-item { background: rgba(201,168,106,0.12); color: #a07830; }
+  body.light .poke-move { background: rgba(0,0,0,0.05); color: #6a5a48; }
+  body.light .item-name { color: #9a7030; }
+  body.light .item-ground { background: rgba(180,140,60,0.12); color: #9a7030; border-color: rgba(180,140,60,0.3); }
+  body.light .item-hidden { background: rgba(80,100,160,0.1); color: #507090; border-color: rgba(80,100,160,0.25); }
+  body.light .item-gift { background: rgba(60,140,80,0.1); color: #4a7a50; border-color: rgba(60,140,80,0.25); }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .enc-time { border-color: #E2CFA8; }
+  body.light .enc-time-header { background: rgba(0,0,0,0.03); border-color: #E2CFA8; }
+  body.light .enc-slot:hover { background: rgba(0,0,0,0.03); }
+  body.light .rarity-common { background: rgba(90,140,90,0.12); }
+  body.light .rarity-uncommon { background: rgba(154,122,48,0.12); }
+  body.light .rarity-rare { background: rgba(160,64,64,0.1); }
+  body.light .rarity-ultra { background: rgba(112,96,160,0.1); }
+  body.light .pokemon-slot { border-color: #E2CFA8; }
+  body.light .items-table td { border-color: rgba(0,0,0,0.05); }
+  body.light .items-table tr:hover td { background: rgba(0,0,0,0.02); }
+  body.light .biome-path { background: rgba(201,168,106,0.15); color: #8a6830; border: 1px solid rgba(201,168,106,0.35); }
+  body.light .biome-prairie { background: rgba(201,168,106,0.1); color: #7a6830; border: 1px solid rgba(201,168,106,0.25); }
+  body.light .pokemon-slot.empty::after { color: var(--border); }
+
+  /* MENU BUTTON */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* THEME TOGGLE */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* MENU OVERLAY */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--accent); }
+  .menu-icon-sm { font-size: 14px; width: 20px; text-align: center; }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<!-- MENU OVERLAY -->
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="../index.html" class="menu-link">Home</a>
+  <a href="../areadex.html" class="menu-link">Area Sheets</a>
+  <a href="../pokedex.html" class="menu-link">Pokedex</a>
+  <a href="../trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="../itemdex.html" class="menu-link">ItemDex</a>
+  <a href="../progression.html" class="menu-link">Progression</a>
+  <a href="../mechanics.html" class="menu-link">Mechanics</a>
+  <a href="../calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="../tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Jump To</div>
+  <a href="#section-enc" class="menu-link" onclick="closeMenu()">Wild Encounters</a>
+  <a href="#section-trainer" class="menu-link" onclick="closeMenu()">Trainers</a>
+  <a href="#section-item" class="menu-link" onclick="closeMenu()">Items</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Tools</div>
+  <a href="#" class="menu-link">Encounter Spreadsheet</a>
+</div>
+
+<div class="location-hero">
+  <div class="location-hero-inner">
+    <div class="location-name">[AREA NAME]</div>
+    <div class="biome-tags">
+      <span class="biome-tag">[BIOME 1]</span>
+      <span class="biome-tag">[BIOME 2]</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- ENCOUNTERS -->
+  <div class="section section-enc" id="section-enc">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Wild Encounters
+    </div>
+    <div class="section-body">
+      <div class="enc-grid">
+
+        <div class="enc-time">
+          <div class="enc-time-header time-morning">☀ Morning</div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 1]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 2]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 3]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 4]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 5]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 6]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 7]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 8]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 9]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 10]</span>
+            <span class="enc-pct rarity-ultra">[X%]</span>
+          </div>
+        </div>
+
+        <div class="enc-time">
+          <div class="enc-time-header time-day">◆ Day</div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 1]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 2]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 3]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 4]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 5]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 6]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 7]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 8]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 9]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 10]</span>
+            <span class="enc-pct rarity-ultra">[X%]</span>
+          </div>
+        </div>
+
+        <div class="enc-time">
+          <div class="enc-time-header time-night">☽ Night</div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 1]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 2]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 3]</span>
+            <span class="enc-pct rarity-common">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 4]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 5]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 6]</span>
+            <span class="enc-pct rarity-uncommon">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 7]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 8]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 9]</span>
+            <span class="enc-pct rarity-rare">[X%]</span>
+          </div>
+          <div class="enc-slot">
+            <img class="enc-sprite" src="" alt="">
+            <span class="enc-name">[Pokemon 10]</span>
+            <span class="enc-pct rarity-ultra">[X%]</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAINERS -->
+  <div class="section section-trainer" id="section-trainer">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Trainers
+    </div>
+    <div class="section-body">
+      <div class="trainer-grid">
+
+        <!-- TRAINER CARD — duplicate this block for each trainer -->
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <!-- Replace src with correct Bulbagarden Archives URL -->
+              <img class="trainer-sprite" src="" alt="[Trainer Class]">
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">[TRAINER NAME]</div>
+              <div class="trainer-class">[Class] · [Location]</div>
+              <div class="trainer-meta">
+                <!-- Add Level Cap and Mandatory tags only when relevant -->
+                <!-- <span class="trainer-badge">Level Cap: X</span> -->
+                <!-- <span class="trainer-badge" style="background:rgba(224,82,82,0.2);border-color:rgba(224,82,82,0.4);color:#e08080;">Mandatory</span> -->
+                <a href="[POKEPAST URL]" class="paste-link" target="_blank">Pokepast ↗</a>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <!-- POKEMON SLOT — fill in, leave empty slots as <div class="pokemon-slot empty"></div> -->
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/[DEX#].png" alt="[Pokemon]">
+                <div class="poke-info">
+                  <div class="poke-name">[Pokemon]</div>
+                  <div class="poke-level">Lv. [X]</div>
+                </div>
+              </div>
+              <div class="poke-item">[Item]</div>
+              <div class="poke-ability">Ability: [Ability]</div>
+              <div class="poke-nature">Nature: [Nature]</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <tr><td>Atk</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <tr><td>Def</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <!-- Boosted stat: <td><span class="stat-boosted">↑[Stat]</span></td> -->
+                  <!-- Lowered stat: <td><span class="stat-lowered">↓[Stat]</span></td> -->
+                  <tr><td>SpA</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <tr><td>SpD</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <tr><td>Spe</td><td>[IV]</td><td>[Stat]</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">[Move 1]</span>
+                <span class="poke-move">[Move 2]</span>
+                <span class="poke-move">[Move 3]</span>
+                <span class="poke-move">[Move 4]</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  <!-- ITEMS -->
+  <div class="section section-item" id="section-item">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Items
+    </div>
+    <div class="section-body">
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>How to Get</th>
+            <th>Requirements</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Type badges: item-ground / item-hidden / item-gift / item-trade -->
+          <!-- Standard item -->
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/[item-name].png" alt="[Item]">
+                <span class="item-name">[Item Name]</span>
+              </div>
+            </td>
+            <td class="item-how">[How to get]</td>
+            <td class="item-req">[Requirements or None]</td>
+            <td><span class="item-type-badge item-ground">[Type]</span></td>
+          </tr>
+          <!-- Trade Pokemon — swap item-sprite for item-sprite-poke and use Pokemon dex number -->
+          <!--
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite-poke" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/[DEX#].png" alt="[Pokemon]">
+                <div>
+                  <div class="item-name">[Pokemon]</div>
+                  <div class="item-trade-tag">Trade Pokemon</div>
+                </div>
+              </div>
+            </td>
+            <td class="item-how">[Trade description]</td>
+            <td class="item-req">[Pokemon needed in party]</td>
+            <td><span class="item-type-badge item-trade">Trade</span></td>
+          </tr>
+          -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() {
+    menu.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
+      menu.classList.remove('open');
+    }
+  });
+
+  // Restore saved theme
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+</script>
+</body>
+</html>
