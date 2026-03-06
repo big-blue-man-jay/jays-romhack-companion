@@ -13,6 +13,8 @@ TOOLS_DIR  = Path(__file__).resolve().parent
 SITE_DIR   = TOOLS_DIR.parent
 DATA_DIR   = SITE_DIR / 'data'
 OUTPUT_DIR = SITE_DIR / 'pokemon'
+MOVE_BUCKETS = ('levelup', 'egg', 'tm', 'tutor')
+CUSTOM_SPRITE_DIR = SITE_DIR / 'sprites' / 'pokemon'
 
 TYPE_COLORS = {
     'Normal':('#A8A878','#fff'),'Fire':('#F08030','#fff'),'Water':('#6890F0','#fff'),
@@ -24,12 +26,136 @@ TYPE_COLORS = {
 }
 STAT_COLORS = {'HP':'#FC6C6D','Atk':'#F5A073','Def':'#F5D782','SpA':'#86BFFF','SpD':'#96D9D6','Spe':'#F85888'}
 
-# ── CUSTOM SPRITE REGISTRY ────────────────────────────────────────
-# Add pokemon names here when you place custom sprites in sprites/pokemon/.
-# CUSTOM_SPRITES      → has sprites/pokemon/{name}.png
-# CUSTOM_SPRITES_SHINY → has sprites/pokemon/{name}-shiny.png
-CUSTOM_SPRITES: set = set()
-CUSTOM_SPRITES_SHINY: set = set()
+# ── CUSTOM SPRITE REGISTRY (auto-discovered) ──────────────────────
+# Any file named:
+#   sprites/pokemon/{name}.png
+#   sprites/pokemon/{name}-shiny.png
+# is picked up automatically.
+def discover_custom_sprites():
+    normal = set()
+    shiny = set()
+    if not CUSTOM_SPRITE_DIR.exists():
+        return normal, shiny
+    for sprite_file in CUSTOM_SPRITE_DIR.glob('*.png'):
+        stem = sprite_file.stem.lower()
+        if stem in {'readme', 'placeholder'}:
+            continue
+        if stem.endswith('-shiny'):
+            base_name = stem[:-6]
+            if base_name:
+                shiny.add(base_name)
+            continue
+        normal.add(stem)
+    return normal, shiny
+
+
+CUSTOM_SPRITES, CUSTOM_SPRITES_SHINY = discover_custom_sprites()
+
+LOCAL_SPRITE_NAME_MAP = {
+    'basculegion-female': 'basculegion-f',
+    'basculegion-male': 'basculegion',
+    'basculin-blue-striped': 'basculin-bluestriped',
+    'basculin-white-striped': 'basculin-whitestriped',
+    'basculin-red-striped': 'basculin',
+    'darmanitan-galar-zen': 'darmanitan-galarzen',
+    'enamorus-incarnate': 'enamorus',
+    'indeedee-female': 'indeedee-f',
+    'indeedee-male': 'indeedee',
+    'maushold-family-of-four': 'maushold-four',
+    'maushold-family-of-three': 'maushold-four',
+    'meowstic-female': 'meowstic-f',
+    'meowstic-male': 'meowstic',
+    'mimikyu-disguised': 'mimikyu',
+    'morpeko-full-belly': 'morpeko',
+    'morpeko-hangry': 'morpeko',
+    'necrozma-dawn': 'necrozma-dawnwings',
+    'necrozma-dusk': 'necrozma-duskmane',
+    'ogerpon': 'ogerpon-teal',
+    'ogerpon-cornerstone-mask': 'ogerpon-cornerstone',
+    'ogerpon-hearthflame-mask': 'ogerpon-hearthflame',
+    'ogerpon-wellspring-mask': 'ogerpon-wellspring',
+    'oinkologne-female': 'oinkologne-f',
+    'oinkologne-male': 'oinkologne',
+    'oricorio-pom-pom': 'oricorio-pompom',
+    'palafin-hero': 'palafin',
+    'palafin-zero': 'palafin',
+    'squawkabilly-blue-plumage': 'squawkabilly-blue',
+    'squawkabilly-green-plumage': 'squawkabilly',
+    'squawkabilly-white-plumage': 'squawkabilly-white',
+    'squawkabilly-yellow-plumage': 'squawkabilly-yellow',
+    'tatsugiri-curly': 'tatsugiri',
+    'tatsugiri-droopy': 'tatsugiri',
+    'tatsugiri-stretchy': 'tatsugiri',
+    'tauros-paldea-aqua-breed': 'tauros-paldea-aqua',
+    'tauros-paldea-blaze-breed': 'tauros-paldea-blaze',
+    'tauros-paldea-combat-breed': 'tauros-paldea-combat',
+    'toxtricity-amped': 'toxtricity',
+    'toxtricity-amped-gmax': 'toxtricity-gmax',
+    'toxtricity-low-key': 'toxtricity-lowkey',
+    'toxtricity-low-key-gmax': 'toxtricity-gmax',
+    'urshifu-rapid-strike': 'urshifu-rapidstrike',
+    'urshifu-rapid-strike-gmax': 'urshifu-rapidstrikegmax',
+    'urshifu-single-strike': 'urshifu',
+    'urshifu-single-strike-gmax': 'urshifu-gmax',
+    'zygarde-50': 'zygarde',
+}
+
+
+def normalize_moves_block(moves):
+    moves = moves if isinstance(moves, dict) else {}
+    return {bucket: list(moves.get(bucket, [])) for bucket in MOVE_BUCKETS}
+
+
+def copy_move_bucket(bucket):
+    copied = []
+    for entry in bucket:
+        if isinstance(entry, dict):
+            copied.append(dict(entry))
+        else:
+            copied.append(entry)
+    return copied
+
+
+def resolve_primary_species_entry(current, candidate, species_name):
+    if current is None:
+        return candidate
+    current_exact = current['name'] == species_name
+    candidate_exact = candidate['name'] == species_name
+    if candidate_exact and not current_exact:
+        return candidate
+    if candidate_exact == current_exact and candidate['id'] < current['id']:
+        return candidate
+    return current
+
+
+def inherit_form_moves(rows):
+    source_by_species = {}
+    for row in rows:
+        species_name = row.get('species_name', row['name'])
+        source_by_species[species_name] = resolve_primary_species_entry(
+            source_by_species.get(species_name), row, species_name
+        )
+
+    inherited_rows = 0
+    for row in rows:
+        species_name = row.get('species_name', row['name'])
+        source = source_by_species.get(species_name)
+        row_moves = normalize_moves_block(row.get('moves'))
+        if source is row:
+            row['moves'] = row_moves
+            continue
+
+        source_moves = normalize_moves_block(source.get('moves'))
+        changed = False
+        for bucket in MOVE_BUCKETS:
+            if not row_moves[bucket] and source_moves[bucket]:
+                row_moves[bucket] = copy_move_bucket(source_moves[bucket])
+                changed = True
+        row['moves'] = row_moves
+        if changed:
+            inherited_rows += 1
+
+    return inherited_rows
 
 def type_badge(t, size=12):
     bg, fg = TYPE_COLORS.get(t, ('#888','#fff'))
@@ -255,6 +381,73 @@ def sd_sprite(name, species_name):
     suffix     = name[len(species_name):]  # e.g. '' or '-mega' or '-wash'
     return species_id + suffix
 
+def custom_sprite_candidates(name, species_name):
+    candidates = []
+    seen = set()
+
+    def add(value):
+        value = (value or '').strip().lower()
+        if not value or value in seen:
+            return
+        seen.add(value)
+        candidates.append(value)
+
+    add(name)
+    mapped = LOCAL_SPRITE_NAME_MAP.get(name)
+    if mapped:
+        add(mapped)
+    add(species_name)
+    add(sd_sprite(name, species_name))
+
+    if name.endswith('-breed'):
+        add(name[:-6])
+
+    for base in list(candidates):
+        if base.endswith('-female'):
+            add(base.replace('-female', '-f'))
+        if base.endswith('-male'):
+            add(base.replace('-male', '-m'))
+            add(base.replace('-male', ''))
+        if base.endswith('-blue-striped'):
+            add(base.replace('-blue-striped', '-bluestriped'))
+        if base.endswith('-white-striped'):
+            add(base.replace('-white-striped', '-whitestriped'))
+        if base.endswith('-zen-mode'):
+            add(base.replace('-zen-mode', '-zen'))
+            add(base.replace('-zen-mode', 'zen'))
+        if base.endswith('-disguised'):
+            add(base.replace('-disguised', ''))
+        if base.endswith('-hangry'):
+            add(base.replace('-hangry', ''))
+        if base.endswith('-full-belly'):
+            add(base.replace('-full-belly', ''))
+        if base.endswith('-incarnate'):
+            add(base.replace('-incarnate', ''))
+        if base.endswith('-plumage'):
+            add(base.replace('-plumage', ''))
+        if base.endswith('-mask'):
+            add(base.replace('-mask', ''))
+        if base.endswith('-family-of-four'):
+            add(base.replace('-family-of-four', '-four'))
+        if base.endswith('-family-of-three'):
+            add(base.replace('-family-of-three', '-three'))
+            add(base.replace('-family-of-three', '-four'))
+        if base.endswith('-low-key'):
+            add(base.replace('-low-key', '-lowkey'))
+        if base.endswith('-rapid-strike'):
+            add(base.replace('-rapid-strike', '-rapidstrike'))
+        if base.endswith('-rapid-strike-gmax'):
+            add(base.replace('-rapid-strike-gmax', '-rapidstrikegmax'))
+
+    return candidates
+
+
+def resolve_custom_sprite_key(name, species_name, pool):
+    for candidate in custom_sprite_candidates(name, species_name):
+        if candidate in pool:
+            return candidate
+    return None
+
 def sprite_urls(name, species_name):
     """Return (normal_url, shiny_url, fallback_url) for a Pokémon sprite.
     Paths are relative to the pokemon/ directory (i.e. pages at pokemon/NAME.html).
@@ -265,14 +458,17 @@ def sprite_urls(name, species_name):
     sd_s  = f'https://play.pokemonshowdown.com/sprites/gen5-shiny/{sid}.png'
     sd_fb = f'https://play.pokemonshowdown.com/sprites/dex/{sid}.png'
 
-    if name in CUSTOM_SPRITES:
-        normal   = f'../sprites/pokemon/{name}.png'
+    custom_normal = resolve_custom_sprite_key(name, species_name, CUSTOM_SPRITES)
+    custom_shiny = resolve_custom_sprite_key(name, species_name, CUSTOM_SPRITES_SHINY)
+
+    if custom_normal:
+        normal   = f'../sprites/pokemon/{custom_normal}.png'
         fallback = sd_n          # Showdown gen5 as first fallback
     else:
         normal   = sd_n
         fallback = sd_fb         # Showdown dex as first fallback
 
-    shiny = f'../sprites/pokemon/{name}-shiny.png' if name in CUSTOM_SPRITES_SHINY else sd_s
+    shiny = f'../sprites/pokemon/{custom_shiny}-shiny.png' if custom_shiny else sd_s
     return normal, shiny, fallback
 
 # ── EVO CHAIN (header, with mega/gmax injection) ─────────────────
@@ -1350,6 +1546,10 @@ def main():
     id_lookup = {p['name']: p['id'] for p in merged}
     for sn in species_forms_map:
         species_forms_map[sn].sort(key=lambda n: id_lookup.get(n, 99999))
+
+    inherited_forms = inherit_form_moves(merged)
+    if inherited_forms:
+        print(f"  Inherited base movepools for {inherited_forms} form entries")
 
     targets = sys.argv[1:]
     if targets:

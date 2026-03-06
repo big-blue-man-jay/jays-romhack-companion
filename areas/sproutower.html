@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>[AREA NAME] — Jay's Romhack Reference</title>
+<title>Sprout Tower — Jay's Romhack Reference</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -148,7 +148,7 @@
 
   .section { border-radius: 12px; overflow: hidden; border: 1px solid; }
   .section-enc { background: var(--enc-bg); border-color: var(--enc-border); }
-  .section-trainer { background: var(--trainer-bg); border-color: var(--trainer-border); }
+  .section-trainer { background: var(--trainer-bg); border-color: var(--trainer-border); overflow: visible; }
   .section-item { background: var(--item-bg); border-color: var(--item-border); }
 
   .section-header {
@@ -174,46 +174,194 @@
   .section-body { padding: 20px; }
 
   /* ENCOUNTERS */
-  .enc-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 16px;
+  .enc-browser {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
 
-  .enc-time {
+  .enc-type-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .enc-type-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--enc-border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .enc-type-btn:hover,
+  .enc-type-btn.active {
+    color: var(--main);
+    border-color: rgba(201,168,106,0.45);
+    background: rgba(201,168,106,0.1);
+  }
+
+  .enc-floor-browser {
+    margin-top: 12px;
+    padding: 0 14px 14px;
+  }
+
+  .enc-floor-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .enc-floor-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--enc-border);
+    background: rgba(255,255,255,0.025);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .enc-floor-btn:hover,
+  .enc-floor-btn.active {
+    color: var(--main);
+    border-color: rgba(201,168,106,0.45);
+    background: rgba(201,168,106,0.1);
+  }
+
+  .enc-floor-panel {
+    display: none;
+  }
+
+  .enc-floor-panel.active {
+    display: block;
+  }
+
+  .enc-floor-label {
+    margin-bottom: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .enc-floor-panel .enc-table {
+    width: 100%;
+  }
+
+  .enc-mode-panel {
+    display: none;
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--enc-border);
     border-radius: 8px;
     overflow: hidden;
   }
 
-  .enc-time-header {
-    padding: 8px 14px;
+  .enc-mode-panel.active { display: block; }
+
+  .enc-mode-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--enc-border);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .enc-mode-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    color: var(--main);
+  }
+
+  .enc-mode-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .enc-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .enc-table th,
+  .enc-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+    text-align: center;
+  }
+
+  .enc-table tr:last-child td { border-bottom: none; }
+
+  .enc-table th {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.025);
+  }
+
+  .enc-table tbody tr:hover td { background: transparent; }
+
+  .enc-col-slot {
+    width: 58px;
+    color: var(--text-muted);
     font-family: 'DM Mono', monospace;
     font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    background: rgba(255,255,255,0.04);
-    border-bottom: 1px solid var(--enc-border);
+    text-align: center;
   }
 
-  .time-morning { color: #f0a030; }
-  .time-day { color: #70c0f0; }
-  .time-night { color: #8090d0; }
+  .enc-sprite { width: 44px; height: 44px; image-rendering: pixelated; flex-shrink: 0; }
 
-  .enc-slot {
+  .enc-mon-cell {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    padding: 7px 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    transition: background 0.15s;
+    min-height: 40px;
   }
-  .enc-slot:last-child { border-bottom: none; }
-  .enc-slot:hover { background: rgba(255,255,255,0.04); }
 
-  .enc-sprite { width: 56px; height: 56px; image-rendering: pixelated; flex-shrink: 0; }
-  .enc-name { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; flex: 1; }
+  .enc-mon-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .enc-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-meta-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .enc-detail {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
 
   .enc-pct {
     font-family: 'DM Mono', monospace;
@@ -223,10 +371,464 @@
     font-weight: 500;
   }
 
+  .enc-empty-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .enc-empty-state {
+    padding: 16px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .enc-table .enc-cell-c2 {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .enc-entry-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .enc-entry-row {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+  }
+
+  .enc-entry-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .enc-style-lab {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .enc-style-lab.dual {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .enc-style-card {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    overflow: hidden;
+  }
+
+  .enc-style-card-head {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .enc-style-card-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    letter-spacing: 0.4px;
+    color: var(--main);
+  }
+
+  .enc-style-card-note {
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .enc-style-demo {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .enc-style-row {
+    padding: 12px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .enc-style-row:first-child { border-top: none; }
+
+  .enc-style-slot {
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  .enc-cell-a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 10px 10px;
+    border: 1px solid rgba(124, 158, 197, 0.18);
+    border-radius: 12px;
+    background: linear-gradient(180deg, rgba(124, 158, 197, 0.12), rgba(255,255,255,0.015));
+    text-align: center;
+  }
+
+  .enc-cell-a .enc-sprite {
+    width: 44px;
+    height: 44px;
+    padding: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .enc-cell-a-body {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .enc-cell-a-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-cell-a-sub {
+    margin-top: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .enc-cell-a .enc-pct {
+    width: 100%;
+    border-radius: 6px;
+    padding: 5px 8px;
+  }
+
+  .enc-cell-b {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.04);
+    border-radius: 8px;
+    background: rgba(0,0,0,0.12);
+    text-align: left;
+  }
+
+  .enc-cell-b-top {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .enc-cell-b-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-cell-b-meta {
+    margin-top: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .enc-cell-b-rate {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--main);
+  }
+
+  .enc-cell-b-track {
+    height: 6px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+
+  .enc-cell-b-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(201,168,106,0.9), rgba(201,168,106,0.45));
+  }
+
+  .enc-cell-b2 {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) 58px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid rgba(124, 158, 197, 0.18);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(124, 158, 197, 0.1), rgba(255,255,255,0.015));
+    text-align: left;
+  }
+
+  .enc-cell-b2 .enc-sprite {
+    width: 44px;
+    height: 44px;
+    padding: 4px;
+    border-radius: 10px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .enc-cell-b2-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-cell-b2-meta {
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .enc-cell-b2-track {
+    margin-top: 7px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.05);
+    overflow: hidden;
+  }
+
+  .enc-cell-b2-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(124,158,197,0.95), rgba(124,158,197,0.45));
+  }
+
+  .enc-cell-b2-rate {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    padding-left: 10px;
+    border-left: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .enc-cell-b2-value {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--main);
+  }
+
+  .enc-cell-b2-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .enc-cell-c {
+    position: relative;
+    padding: 12px 12px 12px 58px;
+    border: 1px solid rgba(201,168,106,0.2);
+    border-radius: 14px;
+    background:
+      linear-gradient(90deg, rgba(201,168,106,0.16) 0, rgba(201,168,106,0.16) 42px, transparent 42px),
+      linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+    text-align: left;
+    min-height: 58px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .enc-cell-c .enc-sprite {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    width: 38px;
+    height: 38px;
+    transform: translateY(-50%);
+  }
+
+  .enc-cell-c-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .enc-cell-c-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-cell-c .enc-pct {
+    border-radius: 999px;
+    padding: 5px 7px;
+    min-width: 40px;
+    text-align: center;
+  }
+
+  .enc-cell-c-meta {
+    margin-top: 5px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .enc-cell-c2 {
+    --enc-accent-rgb: 201, 168, 106;
+    --enc-accent-solid: #c9a86a;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px 8px 8px;
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.22);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(var(--enc-accent-rgb), 0.1), rgba(255,255,255,0.015));
+    text-align: left;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .enc-cell-c2 .enc-sprite {
+    width: 48px;
+    height: 48px;
+    padding: 3px;
+    border-radius: 50%;
+    background: rgba(var(--enc-accent-rgb), 0.14);
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.18);
+  }
+
+  .enc-cell-c2-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-level-tag {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 4px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .enc-cell-c2-meta {
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    display: none;
+  }
+
+  .enc-cell-c2 .enc-pct {
+    min-width: 44px;
+    text-align: center;
+    border-radius: 999px;
+    padding: 6px 8px;
+    font-weight: 700;
+    background: rgba(var(--enc-accent-rgb), 0.16);
+    color: var(--enc-accent-solid);
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.18);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .enc-cell-c2.enc-linkable {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .enc-cell-c2.enc-linkable:hover {
+    transform: translateY(-1px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 6px 14px rgba(0,0,0,0.12);
+  }
+
+  .enc-cell-c2.enc-linkable:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px rgba(var(--enc-accent-rgb), 0.24),
+      inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .enc-accent-walk {
+    --enc-accent-rgb: 118, 176, 98;
+    --enc-accent-solid: #76b062;
+  }
+
+  .enc-accent-surf {
+    --enc-accent-rgb: 98, 176, 220;
+    --enc-accent-solid: #62b0dc;
+  }
+
+  .enc-accent-fish {
+    --enc-accent-rgb: 76, 112, 190;
+    --enc-accent-solid: #4c70be;
+  }
+
+  .enc-accent-static {
+    --enc-accent-rgb: 146, 112, 196;
+    --enc-accent-solid: #9270c4;
+  }
+
   .rarity-common { background: rgba(76,175,80,0.15); color: var(--common); }
   .rarity-uncommon { background: rgba(245,200,66,0.15); color: var(--uncommon); }
   .rarity-rare { background: rgba(224,82,82,0.15); color: var(--rare); }
   .rarity-ultra { background: rgba(156,111,224,0.15); color: var(--ultra); }
+  .enc-pct.rarity-common,
+  .enc-pct.rarity-uncommon,
+  .enc-pct.rarity-rare,
+  .enc-pct.rarity-ultra {
+    border-width: 1px;
+    border-style: solid;
+  }
+  .enc-cell-c2 .enc-pct.rarity-common {
+    background: rgba(76,175,80,0.24);
+    color: #9ce1a8;
+    border-color: rgba(76,175,80,0.34);
+  }
+  .enc-cell-c2 .enc-pct.rarity-uncommon {
+    background: rgba(245,200,66,0.24);
+    color: #f3d979;
+    border-color: rgba(245,200,66,0.34);
+  }
+  .enc-cell-c2 .enc-pct.rarity-rare {
+    background: rgba(224,82,82,0.22);
+    color: #f0a0a0;
+    border-color: rgba(224,82,82,0.32);
+  }
+  .enc-cell-c2 .enc-pct.rarity-ultra {
+    background: rgba(156,111,224,0.24);
+    color: #d1b7ff;
+    border-color: rgba(156,111,224,0.34);
+  }
 
   /* TRAINERS */
   .trainer-grid { display: flex; flex-direction: column; gap: 20px; }
@@ -235,7 +837,8 @@
     background: rgba(255,255,255,0.03);
     border: 1px solid var(--trainer-border);
     border-radius: 10px;
-    overflow: hidden;
+    overflow: visible;
+    position: relative;
   }
 
   .trainer-card-header {
@@ -267,6 +870,22 @@
     object-fit: contain;
   }
 
+  .trainer-sprite-fallback {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed var(--trainer-border);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
   .trainer-info { flex: 1; }
   .trainer-name { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--text-muted); margin-bottom: 4px; }
   .trainer-class { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
@@ -282,7 +901,9 @@
     color: var(--main);
   }
 
-  .paste-link {
+  .export-wrap { position: relative; }
+
+  .export-trigger {
     font-family: 'DM Mono', monospace;
     font-size: 10px;
     padding: 3px 8px;
@@ -290,14 +911,55 @@
     background: rgba(142,156,170,0.1);
     border: 1px solid rgba(142,156,170,0.3);
     color: var(--main);
-    text-decoration: none;
     transition: all 0.2s;
+    cursor: pointer;
   }
-  .paste-link:hover { background: rgba(142,156,170,0.2); }
+
+  .export-trigger:hover,
+  .export-trigger.open { background: rgba(142,156,170,0.2); }
+
+  .export-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 178px;
+    background: var(--surface);
+    border: 1px solid var(--trainer-border);
+    border-radius: 8px;
+    padding: 6px;
+    display: none;
+    z-index: 50;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.32);
+  }
+
+  .export-menu.open { display: block; }
+
+  .export-menu-btn {
+    width: 100%;
+    display: block;
+    text-align: left;
+    padding: 7px 8px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .export-menu-btn:hover {
+    background: rgba(142,156,170,0.12);
+    color: var(--main);
+  }
 
   .trainer-team {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
+    overflow: hidden;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
 
   .pokemon-slot {
@@ -334,8 +996,11 @@
     padding: 2px 6px;
     background: rgba(142,156,170,0.1);
     border-radius: 3px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
   }
+  .poke-item-sprite { width: 14px; height: 14px; image-rendering: pixelated; flex: 0 0 auto; }
 
   .poke-ability { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); margin-bottom: 8px; }
 
@@ -436,6 +1101,20 @@
   .items-table tr:last-child td { border-bottom: none; }
   .items-table tr:hover td { background: rgba(255,255,255,0.03); }
 
+  .item-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .item-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
   .item-name { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--main); }
   .item-how { font-size: 13px; color: var(--text); }
   .item-req { font-size: 12px; color: var(--text-muted); font-style: italic; }
@@ -450,6 +1129,130 @@
   .item-ground { background: rgba(174,184,194,0.12); color: var(--main); border: 1px solid rgba(174,184,194,0.25); }
   .item-hidden { background: rgba(142,156,170,0.1); color: var(--accent); border: 1px solid rgba(142,156,170,0.25); }
   .item-gift { background: rgba(174,184,194,0.1); color: var(--highlight); border: 1px solid rgba(174,184,194,0.25); }
+
+  .area-export-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,12,16,0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 240;
+  }
+
+  .area-export-overlay.open { display: flex; }
+
+  .area-export-modal {
+    width: min(760px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--trainer-border);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.42);
+    overflow: hidden;
+  }
+
+  .area-export-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--trainer-border);
+  }
+
+  .area-export-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--main);
+  }
+
+  .area-export-close {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .area-export-close:hover { color: var(--text); }
+
+  .area-export-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .area-export-text {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    border: 1px solid var(--trainer-border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    color: var(--text);
+    padding: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    outline: none;
+  }
+
+  .area-export-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .area-export-btn {
+    padding: 7px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--trainer-border);
+    background: rgba(142,156,170,0.08);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .area-export-btn:hover {
+    border-color: var(--accent);
+    background: rgba(142,156,170,0.14);
+  }
+
+  .area-export-btn.primary {
+    border-color: rgba(142,156,170,0.4);
+    color: var(--main);
+  }
+
+  .area-export-toast {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--trainer-border);
+    background: rgba(27,32,40,0.96);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.32);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 250;
+  }
+
+  .area-export-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
 
   /* LIGHT MODE */
   body.light {
@@ -488,7 +1291,11 @@
   body.light .trainer-card { background: rgba(255,255,255,0.6); }
   body.light .trainer-name { color: #7a5a30; }
   body.light .trainer-badge { background: rgba(201,168,106,0.15); border-color: rgba(201,168,106,0.4); color: #8a6a30; }
-  body.light .paste-link { background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.4); color: #a07830; }
+  body.light .export-trigger { background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.4); color: #a07830; }
+  body.light .export-trigger:hover,
+  body.light .export-trigger.open { background: rgba(201,168,106,0.2); }
+  body.light .export-menu { box-shadow: 0 10px 22px rgba(70,52,24,0.16); }
+  body.light .export-menu-btn:hover { background: rgba(201,168,106,0.12); color: #8a6a30; }
   body.light .poke-ability { color: #507090; }
   body.light .poke-item { background: rgba(201,168,106,0.12); color: #a07830; }
   body.light .poke-move { background: rgba(0,0,0,0.05); color: #6a5a48; }
@@ -496,19 +1303,93 @@
   body.light .item-ground { background: rgba(180,140,60,0.12); color: #9a7030; border-color: rgba(180,140,60,0.3); }
   body.light .item-hidden { background: rgba(80,100,160,0.1); color: #507090; border-color: rgba(80,100,160,0.25); }
   body.light .item-gift { background: rgba(60,140,80,0.1); color: #4a7a50; border-color: rgba(60,140,80,0.25); }
+  body.light .area-export-modal { box-shadow: 0 16px 36px rgba(70,52,24,0.18); }
+  body.light .area-export-text { background: rgba(255,255,255,0.72); }
+  body.light .area-export-toast { background: rgba(255,255,255,0.96); }
   body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
   body.light .menu-link { color: #4A4032; }
   body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
   body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
   body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
   body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
-  body.light .enc-time { border-color: #E2CFA8; }
-  body.light .enc-time-header { background: rgba(0,0,0,0.03); border-color: #E2CFA8; }
-  body.light .enc-slot:hover { background: rgba(0,0,0,0.03); }
+  body.light .enc-type-btn { background: rgba(0,0,0,0.02); border-color: #E2CFA8; color: #6b5a3d; }
+  body.light .enc-type-btn:hover,
+  body.light .enc-type-btn.active { background: rgba(201,168,106,0.14); border-color: #C9A86A; color: #8a6830; }
+  body.light .enc-floor-btn { background: rgba(0,0,0,0.02); border-color: #E2CFA8; color: #6b5a3d; }
+  body.light .enc-floor-btn:hover,
+  body.light .enc-floor-btn.active { background: rgba(201,168,106,0.14); border-color: #C9A86A; color: #8a6830; }
+  body.light .enc-mode-panel { border-color: #E2CFA8; }
+  body.light .enc-mode-head { background: rgba(0,0,0,0.03); border-color: #E2CFA8; }
+  body.light .enc-table th,
+  body.light .enc-table td { border-color: rgba(0,0,0,0.05); }
+  body.light .enc-table tbody tr:hover td { background: transparent; }
+  body.light .enc-entry-key { color: #7a6830; }
+  body.light .enc-style-card { border-color: rgba(0,0,0,0.06); background: rgba(0,0,0,0.015); }
+  body.light .enc-style-card-head { border-color: rgba(0,0,0,0.05); background: rgba(0,0,0,0.02); }
+  body.light .enc-style-row { border-color: rgba(0,0,0,0.05); }
+  body.light .enc-cell-a,
+  body.light .enc-cell-b,
+  body.light .enc-cell-b2,
+  body.light .enc-cell-c,
+  body.light .enc-cell-c2 { border-color: rgba(0,0,0,0.05); background: rgba(0,0,0,0.02); }
+  body.light .enc-cell-a {
+    background: linear-gradient(180deg, rgba(201,168,106,0.12), rgba(0,0,0,0.015));
+    border-color: rgba(201,168,106,0.22);
+  }
+  body.light .enc-cell-a .enc-sprite { background: rgba(255,255,255,0.3); }
+  body.light .enc-cell-b { background: rgba(255,255,255,0.35); }
+  body.light .enc-cell-b-track { background: rgba(0,0,0,0.06); }
+  body.light .enc-cell-b2 {
+    background: linear-gradient(135deg, rgba(124,158,197,0.08), rgba(255,255,255,0.18));
+    border-color: rgba(124,158,197,0.18);
+  }
+  body.light .enc-cell-b2 .enc-sprite { background: rgba(255,255,255,0.34); }
+  body.light .enc-cell-b2-track { background: rgba(0,0,0,0.06); }
+  body.light .enc-cell-b2-rate { border-color: rgba(0,0,0,0.06); }
+  body.light .enc-cell-c {
+    background:
+      linear-gradient(90deg, rgba(201,168,106,0.18) 0, rgba(201,168,106,0.18) 42px, rgba(255,255,255,0.2) 42px),
+      rgba(255,255,255,0.08);
+    border-color: rgba(201,168,106,0.25);
+  }
+  body.light .enc-cell-c2 {
+    background: linear-gradient(90deg, rgba(var(--enc-accent-rgb), 0.12), rgba(255,255,255,0.2));
+    border-color: rgba(var(--enc-accent-rgb), 0.24);
+  }
+  body.light .enc-cell-c2 .enc-sprite { background: rgba(var(--enc-accent-rgb), 0.12); }
+  body.light .enc-cell-c2 .enc-pct {
+    background: rgba(var(--enc-accent-rgb), 0.12);
+    border-color: rgba(var(--enc-accent-rgb), 0.18);
+  }
+  body.light .enc-level-tag {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.05);
+    color: #6f6658;
+  }
   body.light .rarity-common { background: rgba(90,140,90,0.12); }
   body.light .rarity-uncommon { background: rgba(154,122,48,0.12); }
   body.light .rarity-rare { background: rgba(160,64,64,0.1); }
   body.light .rarity-ultra { background: rgba(112,96,160,0.1); }
+  body.light .enc-cell-c2 .enc-pct.rarity-common {
+    background: rgba(90,140,90,0.16);
+    color: #4f8b59;
+    border-color: rgba(90,140,90,0.26);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-uncommon {
+    background: rgba(154,122,48,0.16);
+    color: #8c6d22;
+    border-color: rgba(154,122,48,0.26);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-rare {
+    background: rgba(160,64,64,0.14);
+    color: #a65454;
+    border-color: rgba(160,64,64,0.22);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-ultra {
+    background: rgba(112,96,160,0.16);
+    color: #6d58a6;
+    border-color: rgba(112,96,160,0.24);
+  }
   body.light .pokemon-slot { border-color: #E2CFA8; }
   body.light .items-table td { border-color: rgba(0,0,0,0.05); }
   body.light .items-table tr:hover td { background: rgba(0,0,0,0.02); }
@@ -661,7 +1542,7 @@
 
 <div class="location-hero">
   <div class="location-hero-inner">
-    <div class="location-name">[Sprout Tower]</div>
+    <div class="location-name">Sprout Tower</div>
     <div class="biome-tags">
       <span class="biome-tag">[Tower]</span>
       <span class="biome-tag">[Urban]</span>
@@ -678,170 +1559,738 @@
       Wild Encounters
     </div>
     <div class="section-body">
-      <div class="enc-grid">
+      <div class="enc-browser">
+        <div class="enc-type-tabs">
+          <button class="enc-type-btn active" type="button" data-enc-target="walking" onclick="switchEncounterMode(this)">Walking</button>
+          <button class="enc-type-btn" type="button" data-enc-target="surf" onclick="switchEncounterMode(this)">Surfing</button>
+          <button class="enc-type-btn" type="button" data-enc-target="fishing" onclick="switchEncounterMode(this)">Fishing</button>
+          <button class="enc-type-btn" type="button" data-enc-target="static" onclick="switchEncounterMode(this)">Static / Gift</button>
+        </div>
 
-        <div class="enc-time">
-          <div class="enc-time-header time-morning">☀ Morning</div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 1]</span>
-            <span class="enc-pct rarity-common">[X%]</span>
+        <div class="enc-mode-panel active" data-enc-panel="walking">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Walking Encounters</div>
           </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 2]</span>
-            <span class="enc-pct rarity-common">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 3]</span>
-            <span class="enc-pct rarity-common">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 4]</span>
-            <span class="enc-pct rarity-uncommon">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 5]</span>
-            <span class="enc-pct rarity-uncommon">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 6]</span>
-            <span class="enc-pct rarity-uncommon">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 7]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 8]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 9]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 10]</span>
-            <span class="enc-pct rarity-ultra">[X%]</span>
+          <div class="enc-floor-browser">
+            <div class="enc-floor-tabs">
+              <button class="enc-floor-btn active" type="button" data-enc-floor-target="2f" onclick="switchEncounterFloor(this)">2F</button>
+              <button class="enc-floor-btn" type="button" data-enc-floor-target="3f" onclick="switchEncounterFloor(this)">3F</button>
+            </div>
+
+            <div class="enc-floor-panel active" data-enc-floor-panel="2f">
+              <div class="enc-floor-label">Sprout Tower 2F</div>
+              <table class="enc-table">
+                <thead>
+                  <tr>
+                    <th class="enc-col-slot">Slot</th>
+                    <th>Morning</th>
+                    <th>Day</th>
+                    <th>Night</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="enc-col-slot">1</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata.png" alt="Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata.png" alt="Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk" data-species="rattata-alola">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata-alola.png" alt="Alolan Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Alolan Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">2</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">3</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/hoothoot.png" alt="Hoothoot">
+                        <div>
+                          <div class="enc-cell-c2-name">Hoothoot</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/hoothoot.png" alt="Hoothoot">
+                        <div>
+                          <div class="enc-cell-c2-name">Hoothoot</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/murkrow.png" alt="Murkrow">
+                        <div>
+                          <div class="enc-cell-c2-name">Murkrow</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">4</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">5</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/drowzee.png" alt="Drowzee">
+                        <div>
+                          <div class="enc-cell-c2-name">Drowzee</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/drowzee.png" alt="Drowzee">
+                        <div>
+                          <div class="enc-cell-c2-name">Drowzee</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/misdreavus.png" alt="Misdreavus">
+                        <div>
+                          <div class="enc-cell-c2-name">Misdreavus</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">6</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bramblin.png" alt="Bramblin">
+                        <div>
+                          <div class="enc-cell-c2-name">Bramblin</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bramblin.png" alt="Bramblin">
+                        <div>
+                          <div class="enc-cell-c2-name">Bramblin</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">7</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/phantump.png" alt="Phantump">
+                        <div>
+                          <div class="enc-cell-c2-name">Phantump</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">8</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/meditite.png" alt="Meditite">
+                        <div>
+                          <div class="enc-cell-c2-name">Meditite</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/meditite.png" alt="Meditite">
+                        <div>
+                          <div class="enc-cell-c2-name">Meditite</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/shuppet.png" alt="Shuppet">
+                        <div>
+                          <div class="enc-cell-c2-name">Shuppet</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">9</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/ralts.png" alt="Ralts">
+                        <div>
+                          <div class="enc-cell-c2-name">Ralts</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/ralts.png" alt="Ralts">
+                        <div>
+                          <div class="enc-cell-c2-name">Ralts</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/ralts.png" alt="Ralts">
+                        <div>
+                          <div class="enc-cell-c2-name">Ralts</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">10</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="enc-floor-panel" data-enc-floor-panel="3f">
+              <div class="enc-floor-label">Sprout Tower 3F</div>
+              <table class="enc-table">
+                <thead>
+                  <tr>
+                    <th class="enc-col-slot">Slot</th>
+                    <th>Morning</th>
+                    <th>Day</th>
+                    <th>Night</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="enc-col-slot">1</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata.png" alt="Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata.png" alt="Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk" data-species="rattata-alola">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata-alola.png" alt="Alolan Rattata">
+                        <div>
+                          <div class="enc-cell-c2-name">Alolan Rattata</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">22%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">2</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">17%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">3</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/hoothoot.png" alt="Hoothoot">
+                        <div>
+                          <div class="enc-cell-c2-name">Hoothoot</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/hoothoot.png" alt="Hoothoot">
+                        <div>
+                          <div class="enc-cell-c2-name">Hoothoot</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/murkrow.png" alt="Murkrow">
+                        <div>
+                          <div class="enc-cell-c2-name">Murkrow</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">14%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">4</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bellsprout.png" alt="Bellsprout">
+                        <div>
+                          <div class="enc-cell-c2-name">Bellsprout</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">12%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">5</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/drowzee.png" alt="Drowzee">
+                        <div>
+                          <div class="enc-cell-c2-name">Drowzee</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/drowzee.png" alt="Drowzee">
+                        <div>
+                          <div class="enc-cell-c2-name">Drowzee</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/misdreavus.png" alt="Misdreavus">
+                        <div>
+                          <div class="enc-cell-c2-name">Misdreavus</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">11%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">6</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bramblin.png" alt="Bramblin">
+                        <div>
+                          <div class="enc-cell-c2-name">Bramblin</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bramblin.png" alt="Bramblin">
+                        <div>
+                          <div class="enc-cell-c2-name">Bramblin</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chingling.png" alt="Chingling">
+                        <div>
+                          <div class="enc-cell-c2-name">Chingling</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">9%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">7</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly">
+                        <div>
+                          <div class="enc-cell-c2-name">Gastly</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/phantump.png" alt="Phantump">
+                        <div>
+                          <div class="enc-cell-c2-name">Phantump</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">6%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">8</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/meditite.png" alt="Meditite">
+                        <div>
+                          <div class="enc-cell-c2-name">Meditite</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/meditite.png" alt="Meditite">
+                        <div>
+                          <div class="enc-cell-c2-name">Meditite</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/shuppet.png" alt="Shuppet">
+                        <div>
+                          <div class="enc-cell-c2-name">Shuppet</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">5%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">9</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/spearow.png" alt="Spearow">
+                        <div>
+                          <div class="enc-cell-c2-name">Spearow</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/spearow.png" alt="Spearow">
+                        <div>
+                          <div class="enc-cell-c2-name">Spearow</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/noibat.png" alt="Noibat">
+                        <div>
+                          <div class="enc-cell-c2-name">Noibat</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">3%</span>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="enc-col-slot">10</td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="enc-cell-c2 enc-accent-walk">
+                        <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/abra.png" alt="Abra">
+                        <div>
+                          <div class="enc-cell-c2-name">Abra</div>
+                          <span class="enc-level-tag">Lv. 6-9</span>
+                        </div>
+                        <span class="enc-pct">1%</span>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
 
-        <div class="enc-time">
-          <div class="enc-time-header time-day">◆ Day</div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/zigzagoon.png" alt="Zigzagoon Sprite">
-            <span class="enc-name">[Zigzagoon]</span>
-            <span class="enc-pct rarity-common">[20%]</span>
+        <div class="enc-mode-panel" data-enc-panel="surf">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Surfing Encounters</div>
           </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata.png" alt="Rattata Sprite">
-            <span class="enc-name">[Rattata]</span>
-            <span class="enc-pct rarity-common">[20%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly Sprite">
-            <span class="enc-name">[Gastly]</span>
-            <span class="enc-pct rarity-common">[10%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/bramblin.png" alt="Bramblin Sprite">
-            <span class="enc-name">[Bramblin]</span>
-            <span class="enc-pct rarity-uncommon">[10%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/hoothoot.png" alt="Hoothoot Sprite">
-            <span class="enc-name">[Hoothoot]</span>
-            <span class="enc-pct rarity-uncommon">[4%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 6]</span>
-            <span class="enc-pct rarity-uncommon">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 7]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 8]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 9]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/meditite.png" alt="Meditite Sprite">
-            <span class="enc-name">[Meditite]</span>
-            <span class="enc-pct rarity-ultra">[1%]</span>
-          </div>
+          <div class="enc-empty-state">No surfing encounters in Sprout Tower.</div>
         </div>
 
-        <div class="enc-time">
-          <div class="enc-time-header time-night">☽ Night</div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/zigzagoon-galar.png" alt="Zigzagoon-Galar Sprite">
-            <span class="enc-name">[Zigzagoon-Galar]</span>
-            <span class="enc-pct rarity-common">[20%]</span>
+        <div class="enc-mode-panel" data-enc-panel="fishing">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Fishing Encounters</div>
           </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/rattata-alola.png" alt="Rattata-Alola Sprite">
-            <span class="enc-name">[Rattata-Alola]</span>
-            <span class="enc-pct rarity-common">[20%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gastly.png" alt="Gastly Sprite">
-            <span class="enc-name">[Gastly]</span>
-            <span class="enc-pct rarity-common">[10%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/misdreavus.png" alt="Misdreavus Sprite">
-            <span class="enc-name">[Misdreavus]</span>
-            <span class="enc-pct rarity-uncommon">[10%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/murkrow.png" alt="Murkrow Sprite">
-            <span class="enc-name">[Murkrow]</span>
-            <span class="enc-pct rarity-uncommon">[10%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 6]</span>
-            <span class="enc-pct rarity-uncommon">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 7]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 8]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="" alt="">
-            <span class="enc-name">[Pokemon 9]</span>
-            <span class="enc-pct rarity-rare">[X%]</span>
-          </div>
-          <div class="enc-slot">
-            <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/inkay.png" alt="Inkay Sprite">
-            <span class="enc-name">[Inkay]</span>
-            <span class="enc-pct rarity-ultra">[1%]</span>
-          </div>
+          <div class="enc-empty-state">No fishing encounters in Sprout Tower.</div>
         </div>
 
+        <div class="enc-mode-panel" data-enc-panel="static">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Static / Gift Encounters</div>
+          </div>
+          <div class="enc-empty-state">No static or gift encounters in Sprout Tower.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -859,17 +2308,26 @@
         <div class="trainer-card">
           <div class="trainer-card-header">
             <div class="trainer-sprite-wrap">
-              <!-- Replace src with correct Bulbagarden Archives URL -->
-              <img class="trainer-sprite" src="" alt="[Trainer Class]">
+              <!-- Reuse shared class sprites from ../sprites/trainers/classes/ -->
+              <img class="trainer-sprite" src="../sprites/trainers/classes/elder.png" alt="Elder Li" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">LI</div>
             </div>
             <div class="trainer-info">
-              <div class="trainer-name">[TRAINER NAME]</div>
-              <div class="trainer-class">[Class] · [Location]</div>
+              <div class="trainer-name">ELDER LI</div>
+              <div class="trainer-class">Elder · Sprout Tower</div>
               <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <span class="trainer-badge" style="background:rgba(224,82,82,0.2);border-color:rgba(224,82,82,0.4);color:#e08080;">Mandatory</span>
                 <!-- Add Level Cap and Mandatory tags only when relevant -->
                 <!-- <span class="trainer-badge">Level Cap: X</span> -->
                 <!-- <span class="trainer-badge" style="background:rgba(224,82,82,0.2);border-color:rgba(224,82,82,0.4);color:#e08080;">Mandatory</span> -->
-                <a href="[POKEPAST URL]" class="paste-link" target="_blank">Pokepast ↗</a>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -877,38 +2335,642 @@
             <!-- POKEMON SLOT — fill in, leave empty slots as <div class="pokemon-slot empty"></div> -->
             <div class="pokemon-slot">
               <div class="pokemon-slot-header">
-                <img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/[DEX#].png" alt="[Pokemon]">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="morgrem" alt="Morgrem">
                 <div class="poke-info">
-                  <div class="poke-name">[Pokemon]</div>
-                  <div class="poke-level">Lv. [X]</div>
+                  <div class="poke-name">Morgrem</div>
+                  <div class="poke-level">Lv. 12</div>
                 </div>
               </div>
-              <div class="poke-item">[Item]</div>
-              <div class="poke-ability">Ability: [Ability]</div>
-              <div class="poke-nature">Nature: [Nature]</div>
+              <div class="poke-item">Big Root</div>
+              <div class="poke-ability">Ability: Prankster</div>
+              <div class="poke-nature">Nature: Modest</div>
               <table class="stat-table">
                 <thead>
                   <tr><th></th><th>IVs</th><th>Stats</th></tr>
                 </thead>
                 <tbody>
-                  <tr><td>HP</td><td>[IV]</td><td>[Stat]</td></tr>
-                  <tr><td>Atk</td><td>[IV]</td><td>[Stat]</td></tr>
-                  <tr><td>Def</td><td>[IV]</td><td>[Stat]</td></tr>
-                  <!-- Boosted stat: <td><span class="stat-boosted">↑[Stat]</span></td> -->
-                  <!-- Lowered stat: <td><span class="stat-lowered">↓[Stat]</span></td> -->
-                  <tr><td>SpA</td><td>[IV]</td><td>[Stat]</td></tr>
-                  <tr><td>SpD</td><td>[IV]</td><td>[Stat]</td></tr>
-                  <tr><td>Spe</td><td>[IV]</td><td>[Stat]</td></tr>
+                  <tr><td>HP</td><td>31</td><td>41</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓17</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>19</td></tr>
+                  <tr><td>SpA</td><td>31</td><td><span class="stat-boosted">↑28</span></td></tr>
+                  <tr><td>SpD</td><td>31</td><td>21</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>25</td></tr>
                 </tbody>
               </table>
               <div class="poke-moves">
-                <span class="poke-move">[Move 1]</span>
-                <span class="poke-move">[Move 2]</span>
-                <span class="poke-move">[Move 3]</span>
-                <span class="poke-move">[Move 4]</span>
+                <span class="poke-move">Parting Shot</span>
+                <span class="poke-move">Dark Pulse</span>
+                <span class="poke-move">Draining Kiss</span>
+                <span class="poke-move">Taunt</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 13</div>
+                </div>
+              </div>
+              <div class="poke-item">Sitrus Berry</div>
+              <div class="poke-ability">Ability: Gluttony</div>
+              <div class="poke-nature">Nature: Modest</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>40</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓21</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>18</td></tr>
+                  <tr><td>SpA</td><td>31</td><td><span class="stat-boosted">↑29</span></td></tr>
+                  <tr><td>SpD</td><td>31</td><td>16</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>19</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Acid Spray</span>
+                <span class="poke-move">Giga Drain</span>
+                <span class="poke-move">Ingrain</span>
+                <span class="poke-move">Infestation</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="hoothoot" alt="Hoothoot">
+                <div class="poke-info">
+                  <div class="poke-name">Hoothoot</div>
+                  <div class="poke-level">Lv. 12</div>
+                </div>
+              </div>
+              <div class="poke-item">Throat Spray</div>
+              <div class="poke-ability">Ability: Tinted Lens</div>
+              <div class="poke-nature">Nature: Timid</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>40</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓10</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>15</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>17</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>22</td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑22</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Rest</span>
+                <span class="poke-move">Snore</span>
+                <span class="poke-move">Air Cutter</span>
+                <span class="poke-move">Agility</span>
               </div>
             </div>
             <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <!-- Reuse shared class sprites from ../sprites/trainers/classes/ -->
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Neal" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">NL</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE NEAL</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <span class="trainer-badge">Double Battle A</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 11</div>
+                </div>
+              </div>
+              <div class="poke-item">Oran Berry</div>
+              <div class="poke-ability">Ability: Gluttony</div>
+              <div class="poke-nature">Nature: Naive</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>35</td></tr>
+                  <tr><td>Atk</td><td>31</td><td>24</td></tr>
+                  <tr><td>Def</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>23</td></tr>
+                  <tr><td>SpD</td><td>31</td><td><span class="stat-lowered">↓13</span></td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑18</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Tickle</span>
+                <span class="poke-move">Leech Life</span>
+                <span class="poke-move">Clear Smog</span>
+                <span class="poke-move">Mega Drain</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="helioptile" alt="Helioptile">
+                <div class="poke-info">
+                  <div class="poke-name">Helioptile</div>
+                  <div class="poke-level">Lv. 12</div>
+                </div>
+              </div>
+              <div class="poke-item">Chople Berry</div>
+              <div class="poke-ability">Ability: Dry Skin</div>
+              <div class="poke-nature">Nature: Hardy</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>36</td></tr>
+                  <tr><td>Atk</td><td>0</td><td>14</td></tr>
+                  <tr><td>Def</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>23</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>19</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>25</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Ally Switch</span>
+                <span class="poke-move">Razor Wind</span>
+                <span class="poke-move">Charge Beam</span>
+                <span class="poke-move">Glare</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Troy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">TR</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE TROY</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <span class="trainer-badge">Double Battle A</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="baltoy" alt="Baltoy">
+                <div class="poke-info">
+                  <div class="poke-name">Baltoy</div>
+                  <div class="poke-level">Lv. 10</div>
+                </div>
+              </div>
+              <div class="poke-item">Berry Juice</div>
+              <div class="poke-ability">Ability: Levitate</div>
+              <div class="poke-nature">Nature: Calm</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>31</td></tr>
+                  <tr><td>Atk</td><td>31</td><td><span class="stat-lowered">↓14</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>19</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpD</td><td>31</td><td><span class="stat-boosted">↑24</span></td></tr>
+                  <tr><td>Spe</td><td>31</td><td>19</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Stealth Rock</span>
+                <span class="poke-move">Rapid Spin</span>
+                <span class="poke-move">Ally Switch</span>
+                <span class="poke-move">Mud-Slap</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 13</div>
+                </div>
+              </div>
+              <div class="poke-item">Petaya Berry</div>
+              <div class="poke-ability">Ability: Gluttony</div>
+              <div class="poke-nature">Nature: Timid</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>40</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓21</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>18</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>27</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>16</td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑20</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Belch</span>
+                <span class="poke-move">Mega Drain</span>
+                <span class="poke-move">Protect</span>
+                <span class="poke-move">Hidden Power [Rock]</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Jin" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">JN</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE JIN</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="slowpoke" alt="Slowpoke">
+                <div class="poke-info">
+                  <div class="poke-name">Slowpoke</div>
+                  <div class="poke-level">Lv. 10</div>
+                </div>
+              </div>
+              <div class="poke-item">Red Card</div>
+              <div class="poke-ability">Ability: Regenerator</div>
+              <div class="poke-nature">Nature: Hardy</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>41</td></tr>
+                  <tr><td>Atk</td><td>0</td><td>18</td></tr>
+                  <tr><td>Def</td><td>31</td><td>21</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>16</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>11</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Light Screen</span>
+                <span class="poke-move">Teleport</span>
+                <span class="poke-move">Psywave</span>
+                <span class="poke-move">Chilling Water</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 12</div>
+                </div>
+              </div>
+              <div class="poke-item">Oran Berry</div>
+              <div class="poke-ability">Ability: Chlorophyll</div>
+              <div class="poke-nature">Nature: Careful</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>37</td></tr>
+                  <tr><td>Atk</td><td>31</td><td>26</td></tr>
+                  <tr><td>Def</td><td>31</td><td>17</td></tr>
+                  <tr><td>SpA</td><td>31</td><td><span class="stat-lowered">↓22</span></td></tr>
+                  <tr><td>SpD</td><td>31</td><td><span class="stat-boosted">↑16</span></td></tr>
+                  <tr><td>Spe</td><td>31</td><td>18</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Bide</span>
+                <span class="poke-move">Curse</span>
+                <span class="poke-move">Strength Sap</span>
+                <span class="poke-move">Thief</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Edmond" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">ED</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE EDMOND</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 12</div>
+                </div>
+              </div>
+              <div class="poke-item">Iapapa Berry</div>
+              <div class="poke-ability">Ability: Gluttony</div>
+              <div class="poke-nature">Nature: Jolly</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>37</td></tr>
+                  <tr><td>Atk</td><td>31</td><td>26</td></tr>
+                  <tr><td>Def</td><td>31</td><td>17</td></tr>
+                  <tr><td>SpA</td><td>31</td><td><span class="stat-lowered">↓22</span></td></tr>
+                  <tr><td>SpD</td><td>31</td><td>15</td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑19</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Sleep Powder</span>
+                <span class="poke-move">Encore</span>
+                <span class="poke-move">Razor Leaf</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="misdreavus" alt="Misdreavus">
+                <div class="poke-info">
+                  <div class="poke-name">Misdreavus</div>
+                  <div class="poke-level">Lv. 11</div>
+                </div>
+              </div>
+              <div class="poke-item">Oran Berry</div>
+              <div class="poke-ability">Ability: Levitate</div>
+              <div class="poke-nature">Nature: Timid</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>37</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓16</span></td></tr>
+                  <tr><td>Def</td><td>31</td><td>21</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>27</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>27</td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑29</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Nightmare</span>
+                <span class="poke-move">Snore</span>
+                <span class="poke-move">Rest</span>
+                <span class="poke-move">Hex</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Nico" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">NC</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE NICO</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="slugma" alt="Slugma">
+                <div class="poke-info">
+                  <div class="poke-name">Slugma</div>
+                  <div class="poke-level">Lv. 10</div>
+                </div>
+              </div>
+              <div class="poke-item">Heat Rock</div>
+              <div class="poke-ability">Ability: Weak Armor</div>
+              <div class="poke-nature">Nature: Hardy</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>31</td></tr>
+                  <tr><td>Atk</td><td>0</td><td>13</td></tr>
+                  <tr><td>Def</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>22</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>16</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>12</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Memento</span>
+                <span class="poke-move">Sunny Day</span>
+                <span class="poke-move">Smog</span>
+                <span class="poke-move">Ember</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 12</div>
+                </div>
+              </div>
+              <div class="poke-item">Eviolite</div>
+              <div class="poke-ability">Ability: Chlorophyll</div>
+              <div class="poke-nature">Nature: Hardy</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>37</td></tr>
+                  <tr><td>Atk</td><td>0</td><td>23</td></tr>
+                  <tr><td>Def</td><td>31</td><td>17</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>25</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>15</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>18</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Mega Drain</span>
+                <span class="poke-move">Acid Spray</span>
+                <span class="poke-move">Ingrain</span>
+              </div>
+            </div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+            <div class="pokemon-slot empty"></div>
+          </div>
+        </div>
+
+        <div class="trainer-card">
+          <div class="trainer-card-header">
+            <div class="trainer-sprite-wrap">
+              <img class="trainer-sprite" src="../sprites/trainers/classes/sage.png" alt="Sage Chow" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+              <div class="trainer-sprite-fallback">CH</div>
+            </div>
+            <div class="trainer-info">
+              <div class="trainer-name">SAGE CHOW</div>
+              <div class="trainer-class">Sage · Sprout Tower</div>
+              <div class="trainer-meta">
+                <span class="trainer-badge">Level Cap: 13</span>
+                <div class="export-wrap">
+                  <button class="export-trigger" type="button" onclick="toggleTrainerExport(this)">Export ▾</button>
+                  <div class="export-menu">
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'showdown')">Showdown</button>
+                    <button class="export-menu-btn" type="button" onclick="handleTrainerExport(this, 'calculator')">Battle Calculator</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="trainer-team">
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="bellsprout" alt="Bellsprout">
+                <div class="poke-info">
+                  <div class="poke-name">Bellsprout</div>
+                  <div class="poke-level">Lv. 11</div>
+                </div>
+              </div>
+              <div class="poke-item">Aguav Berry</div>
+              <div class="poke-ability">Ability: Gluttony</div>
+              <div class="poke-nature">Nature: Hardy</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>35</td></tr>
+                  <tr><td>Atk</td><td>31</td><td>24</td></tr>
+                  <tr><td>Def</td><td>31</td><td>16</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>23</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>15</td></tr>
+                  <tr><td>Spe</td><td>31</td><td>17</td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Trailblaze</span>
+                <span class="poke-move">Leech Life</span>
+                <span class="poke-move">Double-Edge</span>
+              </div>
+            </div>
+            <div class="pokemon-slot">
+              <div class="pokemon-slot-header">
+                <img class="poke-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/.png" data-species="ponyta" alt="Ponyta">
+                <div class="poke-info">
+                  <div class="poke-name">Ponyta</div>
+                  <div class="poke-level">Lv. 10</div>
+                </div>
+              </div>
+              <div class="poke-item">Oran Berry</div>
+              <div class="poke-ability">Ability: Flash Fire</div>
+              <div class="poke-nature">Nature: Timid</div>
+              <table class="stat-table">
+                <thead>
+                  <tr><th></th><th>IVs</th><th>Stats</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>HP</td><td>31</td><td>33</td></tr>
+                  <tr><td>Atk</td><td>0</td><td><span class="stat-lowered">↓19</span></td></tr>
+                  <tr><td>Def</td><td>30</td><td>19</td></tr>
+                  <tr><td>SpA</td><td>31</td><td>21</td></tr>
+                  <tr><td>SpD</td><td>31</td><td>21</td></tr>
+                  <tr><td>Spe</td><td>31</td><td><span class="stat-boosted">↑28</span></td></tr>
+                </tbody>
+              </table>
+              <div class="poke-moves">
+                <span class="poke-move">Incinerate</span>
+                <span class="poke-move">Hidden Power [Ice]</span>
+                <span class="poke-move">Will-O-Wisp</span>
+                <span class="poke-move">Morning Sun</span>
+              </div>
+            </div>
             <div class="pokemon-slot empty"></div>
             <div class="pokemon-slot empty"></div>
             <div class="pokemon-slot empty"></div>
@@ -936,12 +2998,60 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Add one <tr> per item. Type badges: item-ground / item-hidden / item-gift -->
           <tr>
-            <td><span class="item-name">[Item Name]</span></td>
-            <td class="item-how">[How to get]</td>
-            <td class="item-req">[Requirements or None]</td>
-            <td><span class="item-type-badge item-ground">[Type]</span></td>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Parlyz Heal">
+                <span class="item-name">Parlyz Heal</span>
+              </div>
+            </td>
+            <td class="item-how">Found on 1F in the east area of the floor</td>
+            <td class="item-req">Access from 2F</td>
+            <td><span class="item-type-badge item-ground">Ground</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="X Accuracy">
+                <span class="item-name">X Accuracy</span>
+              </div>
+            </td>
+            <td class="item-how">Found on 2F in the northwest area of the floor</td>
+            <td class="item-req">Access from 1F</td>
+            <td><span class="item-type-badge item-ground">Ground</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Potion">
+                <span class="item-name">Potion</span>
+              </div>
+            </td>
+            <td class="item-how">Found on 3F, west of the ladder to 2F</td>
+            <td class="item-req">None</td>
+            <td><span class="item-type-badge item-ground">Ground</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Escape Rope">
+                <span class="item-name">Escape Rope</span>
+              </div>
+            </td>
+            <td class="item-how">Found on 3F, east of Elder Li</td>
+            <td class="item-req">None</td>
+            <td><span class="item-type-badge item-ground">Ground</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="TM70 Flash">
+                <span class="item-name">TM70 (Flash)</span>
+              </div>
+            </td>
+            <td class="item-how">Received from Elder Li on 3F after defeating him</td>
+            <td class="item-req">Defeat Elder Li</td>
+            <td><span class="item-type-badge item-gift">Gift</span></td>
           </tr>
         </tbody>
       </table>
@@ -949,10 +3059,27 @@
   </div>
 
 </div>
+<div class="area-export-overlay" id="areaExportOverlay" onclick="if(event.target===this)closeAreaExportModal()">
+  <div class="area-export-modal">
+    <div class="area-export-header">
+      <div class="area-export-title" id="areaExportTitle">Trainer Export</div>
+      <button class="area-export-close" type="button" onclick="closeAreaExportModal()">✕</button>
+    </div>
+    <div class="area-export-body">
+      <textarea class="area-export-text" id="areaExportText" readonly spellcheck="false"></textarea>
+      <div class="area-export-actions">
+        <button class="area-export-btn" type="button" onclick="closeAreaExportModal()">Close</button>
+        <button class="area-export-btn primary" type="button" onclick="copyAreaExportText()">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="area-export-toast" id="areaExportToast"></div>
 <script>
   const track = document.getElementById('toggleTrack');
   const label = document.getElementById('themeLabel');
   const menu = document.getElementById('menuOverlay');
+  let areaExportToastTimer = null;
 
   function toggleTheme() {
     document.body.classList.toggle('light');
@@ -970,10 +3097,596 @@
     menu.classList.remove('open');
   }
 
+  function closeTrainerExportMenus() {
+    document.querySelectorAll('.export-trigger.open').forEach(btn => btn.classList.remove('open'));
+    document.querySelectorAll('.export-menu.open').forEach(drop => drop.classList.remove('open'));
+  }
+
+  function toggleTrainerExport(button) {
+    const wrap = button.closest('.export-wrap');
+    const menuEl = wrap ? wrap.querySelector('.export-menu') : null;
+    const shouldOpen = !!menuEl && !menuEl.classList.contains('open');
+    closeTrainerExportMenus();
+    if (shouldOpen && menuEl) {
+      menuEl.classList.add('open');
+      button.classList.add('open');
+    }
+  }
+
+  function isPlaceholderText(value) {
+    const text = String(value || '').trim();
+    return !text || /^\[[^\]]+\]$/.test(text) || text === '—';
+  }
+
+  function parseNumber(value) {
+    const match = String(value || '').match(/\d+/);
+    return match ? Number(match[0]) : null;
+  }
+
+  function parseStatKey(labelText) {
+    const labelMap = { hp: 'hp', atk: 'atk', def: 'def', spa: 'spa', spd: 'spd', spe: 'spe' };
+    return labelMap[String(labelText || '').trim().toLowerCase()] || '';
+  }
+
+  function buildTrainerExportData(card) {
+    const trainerName = card?.querySelector('.trainer-name')?.textContent.trim() || 'Trainer';
+    const slots = [...(card?.querySelectorAll('.pokemon-slot:not(.empty)') || [])];
+    const team = [];
+
+    slots.forEach(slot => {
+      const species = slot.querySelector('.poke-name')?.textContent.trim() || '';
+      if (isPlaceholderText(species)) {
+        return;
+      }
+
+      const level = parseNumber(slot.querySelector('.poke-level')?.textContent);
+      const itemText = slot.querySelector('.poke-item')?.textContent.replace(/^Item:\s*/i, '').trim() || '';
+      const abilityText = slot.querySelector('.poke-ability')?.textContent.replace(/^Ability:\s*/i, '').trim() || '';
+      const natureText = slot.querySelector('.poke-nature')?.textContent.replace(/^Nature:\s*/i, '').trim() || '';
+      const moves = [...slot.querySelectorAll('.poke-move')]
+        .map(move => move.textContent.trim())
+        .filter(move => !isPlaceholderText(move));
+
+      const ivs = {};
+      const stats = {};
+      slot.querySelectorAll('.stat-table tbody tr').forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 3) {
+          return;
+        }
+        const key = parseStatKey(cells[0].textContent);
+        if (!key) {
+          return;
+        }
+        const iv = parseNumber(cells[1].textContent);
+        const stat = parseNumber(cells[2].textContent);
+        if (iv !== null) {
+          ivs[key] = iv;
+        }
+        if (stat !== null) {
+          stats[key] = stat;
+        }
+      });
+
+      const mon = { name: species, moves };
+      if (level !== null) mon.level = level;
+      if (!isPlaceholderText(itemText)) mon.item = itemText;
+      if (!isPlaceholderText(abilityText)) mon.ability = abilityText;
+      if (!isPlaceholderText(natureText)) mon.nature = natureText;
+      if (Object.keys(ivs).length) mon.ivs = ivs;
+      if (Object.keys(stats).length) mon.stats = stats;
+      team.push(mon);
+    });
+
+    return { trainerName, team };
+  }
+
+  function formatIvLine(ivs) {
+    if (!ivs || !Object.keys(ivs).length) {
+      return '';
+    }
+    const order = [['hp', 'HP'], ['atk', 'Atk'], ['def', 'Def'], ['spa', 'SpA'], ['spd', 'SpD'], ['spe', 'Spe']];
+    const parts = order
+      .filter(([key]) => Number.isFinite(ivs[key]))
+      .map(([key, statLabel]) => `${ivs[key]} ${statLabel}`);
+    return parts.length ? `IVs: ${parts.join(' / ')}` : '';
+  }
+
+  function buildShowdownExport(team) {
+    return team.map(mon => {
+      const lines = [];
+      lines.push(mon.item ? `${mon.name} @ ${mon.item}` : mon.name);
+      if (mon.ability) lines.push(`Ability: ${mon.ability}`);
+      if (Number.isFinite(mon.level)) lines.push(`Level: ${mon.level}`);
+      if (mon.nature) lines.push(`${mon.nature} Nature`);
+      const ivLine = formatIvLine(mon.ivs);
+      if (ivLine) lines.push(ivLine);
+      (mon.moves || []).forEach(move => lines.push(`- ${move}`));
+      return lines.join('\n');
+    }).join('\n\n');
+  }
+
+  function openAreaExportModal(text, title) {
+    document.getElementById('areaExportTitle').textContent = title || 'Trainer Export';
+    const box = document.getElementById('areaExportText');
+    box.value = text;
+    document.getElementById('areaExportOverlay').classList.add('open');
+    box.focus();
+    box.select();
+  }
+
+  function closeAreaExportModal() {
+    document.getElementById('areaExportOverlay').classList.remove('open');
+  }
+
+  async function copyAreaExportText() {
+    const box = document.getElementById('areaExportText');
+    box.focus();
+    box.select();
+    try {
+      await navigator.clipboard.writeText(box.value);
+      showAreaExportToast('Showdown export copied.');
+    } catch (err) {
+      document.execCommand('copy');
+      showAreaExportToast('Showdown export selected for copy.');
+    }
+  }
+
+  function showAreaExportToast(message) {
+    const toast = document.getElementById('areaExportToast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(areaExportToastTimer);
+    areaExportToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  async function handleTrainerExport(button, mode) {
+    const card = button.closest('.trainer-card');
+    const exportData = buildTrainerExportData(card);
+    closeTrainerExportMenus();
+
+    if (!exportData.team.length) {
+      showAreaExportToast('This trainer has no exportable Pokemon yet.');
+      return;
+    }
+
+    const showdownText = buildShowdownExport(exportData.team);
+    if (mode === 'showdown') {
+      openAreaExportModal(showdownText, `${exportData.trainerName} · Showdown Export`);
+      return;
+    }
+
+    if (mode === 'calculator') {
+      localStorage.setItem('calc_area_import_payload', JSON.stringify({
+        label: exportData.trainerName,
+        side: 'def',
+        data: exportData.team,
+        source: 'area-sheet',
+        at: Date.now()
+      }));
+      showAreaExportToast('Queued for Battle Calculator. Open or refresh that tab.');
+    }
+  }
+
+  const AREA_REGIONAL_PREFIX_MAP = {
+    alolan: 'alola',
+    galarian: 'galar',
+    paldean: 'paldea',
+    hisuian: 'hisui'
+  };
+
+  function normalizeAreaSpeciesSlug(value) {
+    let slug = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/[’']/g, '')
+      .replace(/\./g, '')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!slug) {
+      return '';
+    }
+
+    const prefixMatch = slug.match(/^(alolan|galarian|paldean|hisuian)-(.+)$/);
+    if (prefixMatch) {
+      slug = `${prefixMatch[2]}-${AREA_REGIONAL_PREFIX_MAP[prefixMatch[1]]}`;
+    }
+
+    slug = slug.replace(/-(alolan|galarian|paldean|hisuian)$/, (_, prefix) => {
+      return `-${AREA_REGIONAL_PREFIX_MAP[prefix] || prefix}`;
+    });
+
+    return slug;
+  }
+
+  const AREA_LOCAL_SPRITE_ALIASES = {
+    'basculegion-female': 'basculegion-f',
+    'basculegion-male': 'basculegion',
+    'basculin-blue-striped': 'basculin-bluestriped',
+    'basculin-white-striped': 'basculin-whitestriped',
+    'basculin-red-striped': 'basculin',
+    'darmanitan-galar-zen': 'darmanitan-galarzen',
+    'enamorus-incarnate': 'enamorus',
+    'indeedee-female': 'indeedee-f',
+    'indeedee-male': 'indeedee',
+    'maushold-family-of-four': 'maushold-four',
+    'maushold-family-of-three': 'maushold-four',
+    'meowstic-female': 'meowstic-f',
+    'meowstic-male': 'meowstic',
+    'tauros-paldea-aqua-breed': 'tauros-paldea-aqua',
+    'tauros-paldea-blaze-breed': 'tauros-paldea-blaze',
+    'tauros-paldea-combat-breed': 'tauros-paldea-combat'
+  };
+
+  function getAreaLocalSpriteSlugs(speciesSlug) {
+    const slug = normalizeAreaSpeciesSlug(speciesSlug);
+    if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+      return [];
+    }
+    const localSlugs = new Set([slug]);
+    if (slug.endsWith('-breed')) {
+      localSlugs.add(slug.replace(/-breed$/, ''));
+    }
+    if (slug.endsWith('-female')) {
+      localSlugs.add(slug.replace(/-female$/, '-f'));
+    }
+    if (slug.endsWith('-male')) {
+      localSlugs.add(slug.replace(/-male$/, '-m'));
+      localSlugs.add(slug.replace(/-male$/, ''));
+    }
+    if (slug.endsWith('-zen-mode')) {
+      localSlugs.add(slug.replace(/-zen-mode$/, '-zen'));
+      localSlugs.add(slug.replace(/-zen-mode$/, 'zen'));
+    }
+    if (slug.endsWith('-blue-striped')) {
+      localSlugs.add(slug.replace(/-blue-striped$/, '-bluestriped'));
+    }
+    if (slug.endsWith('-white-striped')) {
+      localSlugs.add(slug.replace(/-white-striped$/, '-whitestriped'));
+    }
+    if (AREA_LOCAL_SPRITE_ALIASES[slug]) {
+      localSlugs.add(AREA_LOCAL_SPRITE_ALIASES[slug]);
+    }
+    return Array.from(localSlugs);
+  }
+
+  function setAreaPokemonSpriteSource(img, speciesSlug) {
+    const slug = normalizeAreaSpeciesSlug(speciesSlug);
+    if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+      img.style.display = 'none';
+      return;
+    }
+
+    const sources = [
+      `https://play.pokemonshowdown.com/sprites/gen5/${slug}.png`,
+      ...getAreaLocalSpriteSlugs(slug).map(local => `../sprites/pokemon/${local}.png`),
+      `https://play.pokemonshowdown.com/sprites/dex/${slug}.png`
+    ];
+
+    let index = 0;
+    img.style.display = '';
+    img.onerror = function () {
+      index += 1;
+      if (index >= sources.length) {
+        this.onerror = null;
+        this.style.display = 'none';
+        return;
+      }
+      this.src = sources[index];
+    };
+    img.src = sources[index];
+  }
+
+  function initAreaPokemonSprites() {
+    document.querySelectorAll('.pokemon-slot .poke-sprite').forEach(img => {
+      const explicit = img.dataset.species || '';
+      const fallbackName = img.closest('.pokemon-slot')?.querySelector('.poke-name')?.textContent || '';
+      const raw = !isPlaceholderText(explicit) ? explicit : (!isPlaceholderText(fallbackName) ? fallbackName : '');
+      const slug = normalizeAreaSpeciesSlug(raw);
+      if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+        img.style.display = 'none';
+        return;
+      }
+      img.alt = fallbackName && !isPlaceholderText(fallbackName) ? fallbackName : raw;
+      setAreaPokemonSpriteSource(img, slug);
+    });
+  }
+
+  function inferEncounterSpeciesSlug(img) {
+    const explicit = img.dataset.species || img.closest('[data-species]')?.dataset.species || '';
+    if (!isPlaceholderText(explicit)) {
+      const directSlug = normalizeAreaSpeciesSlug(explicit);
+      if (directSlug && !/^\[.*\]$/.test(directSlug) && directSlug !== 'substitute') return directSlug;
+    }
+
+    const src = String(img.getAttribute('src') || '');
+    const match = src.match(/\/gen5\/([^/?#]+)\.png/i);
+    if (match?.[1]) {
+      const srcSlug = String(match[1]).toLowerCase();
+      if (srcSlug !== 'substitute') {
+        return srcSlug;
+      }
+    }
+
+    const alt = String(img.getAttribute('alt') || '');
+    if (!isPlaceholderText(alt)) {
+      const altSlug = normalizeAreaSpeciesSlug(alt);
+      if (altSlug && !/^\[.*\]$/.test(altSlug) && altSlug !== 'substitute') return altSlug;
+    }
+    return '';
+  }
+
+  function initAreaEncounterSprites() {
+    document.querySelectorAll('.section-enc .enc-sprite').forEach(img => {
+      const slug = inferEncounterSpeciesSlug(img);
+      if (!slug) {
+        img.style.display = 'none';
+        return;
+      }
+      setAreaPokemonSpriteSource(img, slug);
+    });
+  }
+
+  const AREA_ITEM_SLUG_ALIASES = {
+    'grn-apricorn': 'green-apricorn',
+    'ylw-apricorn': 'yellow-apricorn',
+    'pnk-apricorn': 'pink-apricorn',
+    'blk-apricorn': 'black-apricorn',
+    'wht-apricorn': 'white-apricorn',
+    'blu-apricorn': 'blue-apricorn',
+    'pokeball': 'poke-ball'
+  };
+
+  function normalizeAreaItemSlug(value) {
+    let slug = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/^item:\s*/i, '')
+      .replace(/[’']/g, '')
+      .replace(/[()]/g, ' ')
+      .replace(/\./g, '')
+      .replace(/[×]/g, 'x')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!slug) {
+      return '';
+    }
+
+    slug = slug
+      .replace(/^(\d+)-x-/, '')
+      .replace(/-x-?(\d+)$/, '')
+      .replace(/-x(\d+)$/, '');
+
+    const tmMatch = slug.match(/^tm-?0*(\d+)(?:-.+)?$/);
+    if (tmMatch) {
+      return `tm${tmMatch[1]}`;
+    }
+
+    const hmMatch = slug.match(/^hm-?0*(\d+)(?:-.+)?$/);
+    if (hmMatch) {
+      return `hm${hmMatch[1]}`;
+    }
+
+    return AREA_ITEM_SLUG_ALIASES[slug] || slug;
+  }
+
+  function setAreaItemIconSource(icon, slug) {
+    if (!slug || /^\[.*\]$/.test(slug)) {
+      icon.style.display = 'none';
+      return;
+    }
+
+    const sources = [];
+    if (slug === 'throat-spray') {
+      sources.push('../sprites/items/throat-spray.png');
+    }
+    if (slug === 'silver-coin') {
+      sources.push('../sprites/items/silver_coin.png');
+    }
+    sources.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${slug}.png`);
+    sources.push(`https://play.pokemonshowdown.com/sprites/itemicons/${slug.replace(/-/g, '')}.png`);
+
+    let index = 0;
+    icon.style.display = '';
+    icon.onerror = function () {
+      index += 1;
+      if (index >= sources.length) {
+        this.onerror = null;
+        this.style.display = 'none';
+        return;
+      }
+      this.src = sources[index];
+    };
+    icon.src = sources[index];
+  }
+
+  function initAreaItemSprites() {
+    document.querySelectorAll('.pokemon-slot .poke-item').forEach(itemNode => {
+      const raw = itemNode.textContent.replace(/^Item:\s*/i, '').trim();
+      if (!raw || isPlaceholderText(raw) || itemNode.querySelector('.poke-item-sprite')) {
+        return;
+      }
+      const slug = normalizeAreaItemSlug(raw);
+      if (!slug || /^\[.*\]$/.test(slug)) {
+        return;
+      }
+      const icon = document.createElement('img');
+      icon.className = 'poke-item-sprite';
+      icon.alt = raw;
+      setAreaItemIconSource(icon, slug);
+      itemNode.prepend(icon);
+    });
+  }
+
+  function initAreaListedItemSprites() {
+    document.querySelectorAll('.items-table .item-cell').forEach(cell => {
+      if (cell.querySelector('.item-sprite-poke')) {
+        return;
+      }
+      const nameNode = cell.querySelector('.item-name');
+      if (!nameNode) {
+        return;
+      }
+      const raw = nameNode.textContent.trim();
+      if (!raw || isPlaceholderText(raw)) {
+        const placeholderIcon = cell.querySelector('.item-sprite');
+        if (placeholderIcon) {
+          placeholderIcon.style.display = 'none';
+        }
+        return;
+      }
+      let icon = cell.querySelector('.item-sprite');
+      if (!icon) {
+        icon = document.createElement('img');
+        icon.className = 'item-sprite';
+        cell.prepend(icon);
+      }
+      icon.style.display = '';
+      const explicit = icon.dataset.item || '';
+      const source = !isPlaceholderText(explicit) ? explicit : raw;
+      const slug = normalizeAreaItemSlug(source);
+      if (!slug || /^\[.*\]$/.test(slug)) {
+        return;
+      }
+      icon.alt = raw;
+      setAreaItemIconSource(icon, slug);
+    });
+  }
+
+  function switchEncounterMode(button) {
+    const browser = button.closest('.enc-browser');
+    if (!browser) {
+      return;
+    }
+    const target = button.dataset.encTarget;
+    if (!target) {
+      return;
+    }
+    browser.querySelectorAll('.enc-type-btn').forEach(btn => {
+      btn.classList.toggle('active', btn === button);
+    });
+    browser.querySelectorAll('.enc-mode-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.encPanel === target);
+    });
+  }
+
+  function initEncounterModes() {
+    document.querySelectorAll('.enc-browser').forEach(browser => {
+      const active = browser.querySelector('.enc-type-btn.active') || browser.querySelector('.enc-type-btn');
+      if (active) {
+        switchEncounterMode(active);
+      }
+    });
+  }
+
+  function switchEncounterFloor(button) {
+    const browser = button.closest('.enc-floor-browser');
+    if (!browser) {
+      return;
+    }
+    const target = button.dataset.encFloorTarget;
+    if (!target) {
+      return;
+    }
+    browser.querySelectorAll('.enc-floor-btn').forEach(btn => {
+      btn.classList.toggle('active', btn === button);
+    });
+    browser.querySelectorAll('.enc-floor-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.encFloorPanel === target);
+    });
+  }
+
+  function initEncounterFloorTabs() {
+    document.querySelectorAll('.enc-floor-browser').forEach(browser => {
+      const active = browser.querySelector('.enc-floor-btn.active') || browser.querySelector('.enc-floor-btn');
+      if (active) {
+        switchEncounterFloor(active);
+      }
+    });
+  }
+
+  function getEncounterRarityClassFromText(value) {
+    const match = String(value || '').trim().match(/^(\d+(?:\.\d+)?)%$/);
+    if (!match) {
+      return '';
+    }
+    const rate = Number(match[1]);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      return '';
+    }
+    if (rate >= 30) {
+      return 'rarity-common';
+    }
+    if (rate >= 15) {
+      return 'rarity-uncommon';
+    }
+    if (rate >= 5) {
+      return 'rarity-rare';
+    }
+    return 'rarity-ultra';
+  }
+
+  function initEncounterChanceBadges() {
+    document.querySelectorAll('.section-enc .enc-pct').forEach(badge => {
+      badge.classList.remove('rarity-common', 'rarity-uncommon', 'rarity-rare', 'rarity-ultra');
+      const rarityClass = getEncounterRarityClassFromText(badge.textContent);
+      if (rarityClass) {
+        badge.classList.add(rarityClass);
+      }
+    });
+  }
+
+  function getEncounterCapsuleHref(capsule) {
+    const explicit = capsule.dataset.species || '';
+    const name = capsule.querySelector('.enc-cell-c2-name')?.textContent || '';
+    const raw = !isPlaceholderText(explicit) ? explicit : (!isPlaceholderText(name) ? name : '');
+    const slug = normalizeAreaSpeciesSlug(raw);
+    if (!slug || /^\[.*\]$/.test(slug)) {
+      return '../pokedex.html';
+    }
+    return `../pokemon/${slug}.html`;
+  }
+
+  function initEncounterCapsuleLinks() {
+    document.querySelectorAll('.enc-cell-c2').forEach(capsule => {
+      const href = getEncounterCapsuleHref(capsule);
+      const name = capsule.querySelector('.enc-cell-c2-name')?.textContent || '';
+      capsule.classList.add('enc-linkable');
+      capsule.setAttribute('role', 'link');
+      capsule.tabIndex = 0;
+      capsule.title = !isPlaceholderText(name) ? `Open ${name} entry` : 'Open Pokedex';
+      capsule.addEventListener('click', () => {
+        window.location.href = href;
+      });
+      capsule.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = href;
+        }
+      });
+    });
+  }
+
   // Close menu when clicking outside
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
       menu.classList.remove('open');
+    }
+    if (!e.target.closest('.export-wrap')) {
+      closeTrainerExportMenus();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeTrainerExportMenus();
+      closeAreaExportModal();
     }
   });
 
@@ -983,6 +3696,15 @@
     track.classList.add('active');
     label.textContent = 'Light';
   }
+
+  initAreaPokemonSprites();
+  initAreaItemSprites();
+  initAreaListedItemSprites();
+  initAreaEncounterSprites();
+  initEncounterModes();
+  initEncounterFloorTabs();
+  initEncounterChanceBadges();
+  initEncounterCapsuleLinks();
 </script>
 </body>
 </html>

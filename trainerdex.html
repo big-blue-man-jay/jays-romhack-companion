@@ -773,6 +773,18 @@
     color: var(--text-muted);
     line-height: 1.65;
   }
+  .reward-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .reward-inline-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    flex-shrink: 0;
+  }
   .team-split-stack {
     display: flex;
     flex-direction: column;
@@ -839,12 +851,12 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 10px 8px 12px;
+    padding: 11px 10px 13px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    min-height: 172px;
+    gap: 7px;
+    min-height: 0;
   }
   .team-preview-card.is-lead {
     border-color: rgba(201,168,106,0.45);
@@ -899,11 +911,11 @@
   }
   .team-preview-name {
     font-family: 'DM Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--highlight);
     line-height: 1.35;
     text-align: center;
-    min-height: 28px;
+    min-height: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -929,8 +941,8 @@
   .team-preview-detail-line {
     width: 100%;
     display: grid;
-    grid-template-columns: 38px minmax(0, 1fr);
-    gap: 6px;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 8px;
     align-items: start;
   }
   .team-preview-detail-label {
@@ -944,14 +956,40 @@
   .team-preview-detail-value {
     font-size: 10px;
     color: var(--text);
-    line-height: 1.45;
+    line-height: 1.5;
     word-break: break-word;
   }
   .team-preview-detail-value.mono {
     font-family: 'DM Mono', monospace;
-    font-size: 8px;
+    font-size: 9px;
     color: var(--text-muted);
     letter-spacing: 0.1px;
+  }
+  .team-preview-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .team-preview-stat-cell {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.025);
+    padding: 4px 3px;
+    text-align: center;
+  }
+  .team-preview-stat-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 7px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+  .team-preview-stat-num {
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    color: var(--text);
+    line-height: 1.2;
   }
   .team-preview-move-list {
     margin: 0;
@@ -976,6 +1014,8 @@
     gap: 3px;
     justify-content: center;
     flex-wrap: wrap;
+    min-height: 16px;
+    align-items: center;
   }
   .team-preview-badge {
     font-family: 'DM Mono', monospace;
@@ -1016,6 +1056,12 @@
     border-color: rgba(255,255,255,0.08);
     background: rgba(255,255,255,0.03);
   }
+  .team-preview-badge.ghost {
+    visibility: hidden;
+    border-color: transparent;
+    background: transparent;
+    pointer-events: none;
+  }
 
   body.light {
     --bg: #FCF8F1;
@@ -1045,6 +1091,7 @@
   body.light .detail-portrait-half { background: rgba(0,0,0,0.03); }
   body.light .team-preview-card { background: #F5EBDD; }
   body.light .team-preview-sprite-shell { background: rgba(0,0,0,0.03); border-color: #D4C4A8; }
+  body.light .team-preview-stat-cell { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.06); }
   body.light .trainer-emblem,
   body.light .trainer-emblem-pair { background: rgba(0,0,0,0.03); }
   body.light .trainer-emblem-half + .trainer-emblem-half { border-left-color: #D4C4A8; }
@@ -1432,6 +1479,559 @@ const TRAINERDEX_SOURCE = [
         moves: ['Pyro Ball', 'Will-O-Wisp', 'U-turn', 'Court Change']
       }
     ]
+  },
+  {
+    id: 'sage-neal',
+    displayId: 6,
+    name: 'Sage Neal',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Double'],
+    reward: 'None',
+    notes: 'One half of Double Battle A in Sprout Tower.',
+    battleLink: {
+      battleId: 'sprout-tower-double-a',
+      partnerId: 'sage-troy',
+      side: 'right',
+      sharedLabel: 'Sage Neal + Sage Troy'
+    },
+    team: [
+      {
+        slot: 1,
+        name: 'Bellsprout',
+        level: 11,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Oran Berry',
+        ability: 'Gluttony',
+        nature: 'Naive',
+        moves: ['Tickle', 'Leech Life', 'Clear Smog', 'Mega Drain']
+      },
+      {
+        slot: 2,
+        name: 'Helioptile',
+        level: 12,
+        baseStats: { hp: 44, atk: 38, def: 33, spa: 61, spd: 43, spe: 70 },
+        item: 'Chople Berry',
+        ability: 'Dry Skin',
+        nature: 'Hardy',
+        ivs: { atk: 0 },
+        moves: ['Ally Switch', 'Razor Wind', 'Charge Beam', 'Glare']
+      }
+    ]
+  },
+  {
+    id: 'sage-troy',
+    displayId: 5,
+    name: 'Sage Troy',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Double'],
+    reward: 'None',
+    notes: 'Lead side of Double Battle A in Sprout Tower.',
+    battleLink: {
+      battleId: 'sprout-tower-double-a',
+      partnerId: 'sage-neal',
+      side: 'left',
+      sharedLabel: 'Sage Neal + Sage Troy'
+    },
+    team: [
+      {
+        slot: 1,
+        name: 'Baltoy',
+        level: 10,
+        baseStats: { hp: 40, atk: 40, def: 55, spa: 40, spd: 70, spe: 55 },
+        item: 'Berry Juice',
+        ability: 'Levitate',
+        nature: 'Calm',
+        moves: ['Stealth Rock', 'Rapid Spin', 'Ally Switch', 'Mud-Slap']
+      },
+      {
+        slot: 2,
+        name: 'Bellsprout',
+        level: 13,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Petaya Berry',
+        ability: 'Gluttony',
+        nature: 'Timid',
+        ivs: { atk: 0 },
+        moves: ['Belch', 'Mega Drain', 'Protect', 'Hidden Power [Rock]']
+      }
+    ]
+  },
+  {
+    id: 'sage-jin',
+    displayId: 7,
+    name: 'Sage Jin',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Optional', 'Single'],
+    reward: 'None',
+    notes: 'Status-heavy control fight with Regenerator Slowpoke support.',
+    team: [
+      {
+        slot: 1,
+        name: 'Slowpoke',
+        level: 10,
+        baseStats: { hp: 90, atk: 65, def: 65, spa: 40, spd: 40, spe: 15 },
+        item: 'Red Card',
+        ability: 'Regenerator',
+        nature: 'Hardy',
+        ivs: { atk: 0 },
+        moves: ['Light Screen', 'Teleport', 'Psywave', 'Chilling Water']
+      },
+      {
+        slot: 2,
+        name: 'Bellsprout',
+        level: 12,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Oran Berry',
+        ability: 'Chlorophyll',
+        nature: 'Careful',
+        moves: ['Bide', 'Curse', 'Strength Sap', 'Thief']
+      }
+    ]
+  },
+  {
+    id: 'sage-edmond',
+    displayId: 8,
+    name: 'Sage Edmond',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Single'],
+    reward: 'None',
+    notes: 'Sleep and recovery pressure with Misdreavus back-up.',
+    team: [
+      {
+        slot: 1,
+        name: 'Bellsprout',
+        level: 12,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Iapapa Berry',
+        ability: 'Gluttony',
+        nature: 'Jolly',
+        moves: ['Sleep Powder', 'Encore', 'Razor Leaf']
+      },
+      {
+        slot: 2,
+        name: 'Misdreavus',
+        level: 11,
+        baseStats: { hp: 60, atk: 60, def: 60, spa: 85, spd: 85, spe: 85 },
+        item: 'Oran Berry',
+        ability: 'Levitate',
+        nature: 'Timid',
+        ivs: { atk: 0 },
+        moves: ['Nightmare', 'Snore', 'Rest', 'Hex']
+      }
+    ]
+  },
+  {
+    id: 'sage-nico',
+    displayId: 9,
+    name: 'Sage Nico',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Optional', 'Single'],
+    reward: 'None',
+    notes: 'Sun support from Slugma into a bulkier Bellsprout follow-up.',
+    team: [
+      {
+        slot: 1,
+        name: 'Slugma',
+        level: 10,
+        baseStats: { hp: 40, atk: 40, def: 40, spa: 70, spd: 40, spe: 20 },
+        item: 'Heat Rock',
+        ability: 'Weak Armor',
+        nature: 'Hardy',
+        ivs: { atk: 0 },
+        moves: ['Memento', 'Sunny Day', 'Smog', 'Ember']
+      },
+      {
+        slot: 2,
+        name: 'Bellsprout',
+        level: 12,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Eviolite',
+        ability: 'Chlorophyll',
+        nature: 'Hardy',
+        ivs: { atk: 0 },
+        moves: ['Mega Drain', 'Acid Spray', 'Ingrain']
+      }
+    ]
+  },
+  {
+    id: 'sage-chow',
+    displayId: 10,
+    name: 'Sage Chow',
+    trainerClass: 'Sage',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1',
+    sprite: 'sprites/trainers/classes/sage.png',
+    tags: ['Single'],
+    reward: 'None',
+    notes: 'A more aggressive early pair with mixed chip and burn pressure.',
+    team: [
+      {
+        slot: 1,
+        name: 'Bellsprout',
+        level: 11,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Aguav Berry',
+        ability: 'Gluttony',
+        nature: 'Hardy',
+        moves: ['Trailblaze', 'Leech Life', 'Double-Edge']
+      },
+      {
+        slot: 2,
+        name: 'Ponyta',
+        level: 10,
+        baseStats: { hp: 50, atk: 85, def: 55, spa: 65, spd: 65, spe: 90 },
+        item: 'Oran Berry',
+        ability: 'Flash Fire',
+        nature: 'Timid',
+        ivs: { atk: 0, def: 30 },
+        moves: ['Incinerate', 'Hidden Power [Ice]', 'Will-O-Wisp', 'Morning Sun']
+      }
+    ]
+  },
+  {
+    id: 'elder-li',
+    displayId: 11,
+    name: 'Elder Li',
+    trainerClass: 'Elder',
+    area: 'Sprout Tower',
+    chapter: 'Chapter 1 · Lv Cap 13',
+    sprite: 'sprites/trainers/classes/elder.png',
+    tags: ['Boss', 'Story', 'Single'],
+    reward: 'None',
+    notes: 'Sprout Tower boss fight. Elder Li is a mandatory three-mon battle that closes out the tower before Violet Gym.',
+    team: [
+      {
+        slot: 1,
+        name: 'Morgrem',
+        level: 12,
+        baseStats: { hp: 65, atk: 60, def: 45, spa: 75, spd: 55, spe: 70 },
+        item: 'Big Root',
+        ability: 'Prankster',
+        nature: 'Modest',
+        teraType: 'Dark',
+        ivs: { atk: 0 },
+        moves: ['Parting Shot', 'Dark Pulse', 'Draining Kiss', 'Taunt']
+      },
+      {
+        slot: 2,
+        name: 'Bellsprout',
+        level: 13,
+        baseStats: { hp: 50, atk: 75, def: 35, spa: 70, spd: 30, spe: 40 },
+        item: 'Sitrus Berry',
+        ability: 'Gluttony',
+        nature: 'Modest',
+        teraType: 'Grass',
+        ivs: { atk: 0 },
+        moves: ['Acid Spray', 'Giga Drain', 'Ingrain', 'Infestation']
+      },
+      {
+        slot: 3,
+        name: 'Hoothoot',
+        level: 12,
+        baseStats: { hp: 60, atk: 30, def: 30, spa: 36, spd: 56, spe: 50 },
+        item: 'Throat Spray',
+        ability: 'Tinted Lens',
+        nature: 'Timid',
+        teraType: 'Normal',
+        ivs: { atk: 0 },
+        moves: ['Rest', 'Snore', 'Air Cutter', 'Agility']
+      }
+    ]
+  },
+  {
+    id: 'bird-keeper-abe',
+    displayId: 12,
+    name: 'Bird Keeper Abe',
+    trainerClass: 'Bird Keeper',
+    area: 'Violet Gym',
+    chapter: 'Badge 1 · Lv Cap 15',
+    sprite: 'sprites/trainers/classes/birdkeeper.png',
+    tags: ['Single'],
+    reward: 'None',
+    notes: 'Defensive stall opener built around SubSeed Skiploom pressure.',
+    team: [
+      {
+        slot: 1,
+        name: 'Skiploom',
+        level: 13,
+        baseStats: { hp: 55, atk: 45, def: 50, spa: 45, spd: 65, spe: 80 },
+        item: 'Leftovers',
+        ability: 'Infiltrator',
+        nature: 'Hardy',
+        teraType: 'Grass',
+        ivs: { atk: 0 },
+        moves: ['Leech Seed', 'Infestation', 'Substitute', 'Protect']
+      }
+    ]
+  },
+  {
+    id: 'bird-keeper-rod',
+    displayId: 13,
+    name: 'Bird Keeper Rod',
+    trainerClass: 'Bird Keeper',
+    area: 'Violet Gym',
+    chapter: 'Badge 1 · Lv Cap 15',
+    sprite: 'sprites/trainers/classes/birdkeeper.png',
+    tags: ['Single'],
+    reward: 'None',
+    notes: 'A mixed pair with floating Numel support and Mantyke sustain.',
+    team: [
+      {
+        slot: 1,
+        name: 'Mantyke',
+        level: 13,
+        baseStats: { hp: 45, atk: 20, def: 50, spa: 60, spd: 120, spe: 50 },
+        item: 'Wacan Berry',
+        ability: 'Water Absorb',
+        nature: 'Modest',
+        teraType: 'Water',
+        ivs: { atk: 0 },
+        moves: ['Bubble Beam', 'Air Cutter', 'Agility', 'Aqua Ring']
+      },
+      {
+        slot: 2,
+        name: 'Numel',
+        level: 12,
+        baseStats: { hp: 60, atk: 60, def: 40, spa: 65, spd: 45, spe: 35 },
+        item: 'Air Balloon',
+        ability: 'Oblivious',
+        nature: 'Relaxed',
+        teraType: 'Fire',
+        moves: ['Bulldoze', 'Flame Charge', 'Yawn', 'Curse']
+      }
+    ]
+  },
+  {
+    id: 'battle-girl-katie',
+    displayId: 14,
+    name: 'Battle Girl Kelsie',
+    trainerClass: 'Battle Girl',
+    area: 'Route 31',
+    chapter: 'Badge 1 · Lv Cap 15',
+    sprite: 'sprites/trainers/classes/battle-girl.png',
+    tags: ['Route', 'Optional', 'Single'],
+    reward: '1 x Silver Coin',
+    notes: 'Fast pivot pressure from Mienfoo into a heavier Meditite hit.',
+    team: [
+      {
+        slot: 1,
+        name: 'Mienfoo',
+        level: 14,
+        baseStats: { hp: 45, atk: 85, def: 50, spa: 55, spd: 50, spe: 65 },
+        item: 'Eviolite',
+        ability: 'Regenerator',
+        nature: 'Jolly',
+        teraType: 'Fighting',
+        evs: { def: 196, spd: 36, spe: 236 },
+        moves: ['High Jump Kick', 'Knock Off', 'U-turn', 'Fake Out']
+      },
+      {
+        slot: 2,
+        name: 'Meditite',
+        level: 14,
+        baseStats: { hp: 30, atk: 40, def: 55, spa: 40, spd: 55, spe: 60 },
+        item: 'Leftovers',
+        ability: 'Pure Power',
+        nature: 'Adamant',
+        teraType: 'Fighting',
+        moves: ['Dynamic Punch', 'Mind Reader', 'Protect', 'Aerial Ace']
+      }
+    ]
+  },
+  {
+    id: 'gym-leader-falkner',
+    displayId: 15,
+    name: 'Gym Leader Falkner',
+    trainerClass: 'Gym Leader',
+    area: 'Violet Gym',
+    chapter: 'Badge 1 · Lv Cap 15',
+    sprite: 'sprites/trainers/classes/falkner.png',
+    tags: ['Boss', 'Story', 'Single'],
+    reward: 'Zephyr Badge',
+    notes: 'This is a 3 v 4 gym fight. The player brings 3 Pokemon, so prepare a tighter trio that can handle Falkner’s four-mon roster and layered speed control.',
+    team: [
+      {
+        slot: 1,
+        name: 'Natu',
+        level: 13,
+        baseStats: { hp: 40, atk: 50, def: 45, spa: 70, spd: 45, spe: 70 },
+        item: 'Leftovers',
+        ability: 'Magic Bounce',
+        nature: 'Bold',
+        teraType: 'Psychic',
+        ivs: { atk: 0, spa: 30 },
+        moves: ['Tailwind', 'Hidden Power [Grass]', 'Teleport', 'Air Cutter']
+      },
+      {
+        slot: 2,
+        name: 'Doduo',
+        level: 15,
+        baseStats: { hp: 35, atk: 85, def: 45, spa: 35, spd: 35, spe: 75 },
+        item: 'Wiki Berry',
+        ability: 'Tangled Feet',
+        nature: 'Adamant',
+        teraType: 'Normal',
+        moves: ['Endeavor', 'Double Hit', 'Acrobatics', 'Swords Dance']
+      },
+      {
+        slot: 3,
+        name: 'Murkrow',
+        level: 14,
+        baseStats: { hp: 60, atk: 85, def: 42, spa: 85, spd: 42, spe: 91 },
+        item: 'Black Glasses',
+        ability: 'Prankster',
+        nature: 'Calm',
+        teraType: 'Dark',
+        moves: ['Tailwind', 'Taunt', 'U-turn', 'Snarl']
+      },
+      {
+        slot: 4,
+        name: 'Togetic',
+        level: 15,
+        baseStats: { hp: 55, atk: 40, def: 85, spa: 80, spd: 105, spe: 40 },
+        item: 'Eviolite',
+        ability: 'Serene Grace',
+        nature: 'Calm',
+        teraType: 'Fairy',
+        ivs: { atk: 0 },
+        moves: ['Water Pulse', 'Fairy Wind', 'Air Cutter', 'Soft-Boiled']
+      }
+    ]
+  },
+  {
+    id: 'youngster-joey',
+    displayId: 16,
+    name: 'Youngster Joey',
+    trainerClass: 'Youngster',
+    area: 'Route 30',
+    chapter: 'Chapter 1 · Lv Cap 10',
+    sprite: 'sprites/trainers/classes/youngster.png',
+    tags: ['Route', 'Story', 'Single'],
+    reward: 'None',
+    notes: 'Early route story fight centered on status and immediate chip from a single boosted Rattata.',
+    team: [
+      {
+        slot: 1,
+        name: 'Rattata',
+        level: 5,
+        baseStats: { hp: 30, atk: 56, def: 35, spa: 25, spd: 35, spe: 72 },
+        item: 'Oran Berry',
+        ability: 'Hustle',
+        nature: 'Jolly',
+        teraType: 'Normal',
+        moves: ['Thunder Wave', 'Super Fang', 'Quick Attack', 'Body Slam']
+      }
+    ]
+  },
+  {
+    id: 'bug-catcher-mikey',
+    displayId: 17,
+    name: 'Bug Catcher Mikey',
+    trainerClass: 'Bug Catcher',
+    area: 'Route 31',
+    chapter: 'Chapter 1 · Lv Cap 10',
+    sprite: 'sprites/trainers/classes/bug-catcher.png',
+    tags: ['Route', 'Boss', 'Single'],
+    reward: 'None',
+    notes: 'A full bug-team route boss with webs, chip, and a setup Butterfree finisher.',
+    team: [
+      {
+        slot: 1,
+        name: 'Spinarak',
+        level: 8,
+        baseStats: { hp: 40, atk: 60, def: 40, spa: 40, spd: 40, spe: 30 },
+        item: 'Oran Berry',
+        ability: 'Swarm',
+        nature: 'Careful',
+        teraType: 'Bug',
+        moves: ['Sticky Web', 'Bug Bite', 'Toxic Thread', 'Acid Spray']
+      },
+      {
+        slot: 2,
+        name: 'Kakuna',
+        level: 9,
+        baseStats: { hp: 45, atk: 25, def: 50, spa: 25, spd: 25, spe: 35 },
+        item: 'Rocky Helmet',
+        ability: 'Shed Skin',
+        nature: 'Hardy',
+        teraType: 'Bug',
+        moves: ['Bug Bite', 'Tackle', 'Harden']
+      },
+      {
+        slot: 3,
+        name: 'Nincada',
+        level: 8,
+        baseStats: { hp: 31, atk: 45, def: 90, spa: 30, spd: 30, spe: 40 },
+        item: 'Assault Vest',
+        ability: 'Compound Eyes',
+        nature: 'Hardy',
+        teraType: 'Bug',
+        moves: ['Fury Cutter', 'Fury Swipes', 'Aerial Ace']
+      },
+      {
+        slot: 4,
+        name: 'Butterfree',
+        level: 10,
+        baseStats: { hp: 60, atk: 45, def: 50, spa: 90, spd: 80, spe: 70 },
+        item: 'Oran Berry',
+        ability: 'Tinted Lens',
+        nature: 'Bold',
+        teraType: 'Bug',
+        ivs: { atk: 0 },
+        moves: ['Struggle Bug', 'Gust', 'Quiver Dance', 'Roost']
+      }
+    ]
+  },
+  {
+    id: 'youngster-albert',
+    displayId: 18,
+    name: 'Youngster Albert',
+    trainerClass: 'Youngster',
+    area: 'Route 30',
+    chapter: 'Chapter 1 · Lv Cap 10',
+    sprite: 'sprites/trainers/classes/youngster.png',
+    tags: ['Route', 'Optional', 'Single'],
+    reward: 'None',
+    notes: 'Optional Route 30 fight with item-based pressure from Galarian Zigzagoon.',
+    team: [
+      {
+        slot: 1,
+        name: 'Patrat',
+        level: 5,
+        baseStats: { hp: 45, atk: 55, def: 39, spa: 35, spd: 39, spe: 42 },
+        item: '',
+        ability: 'Analytic',
+        nature: 'Brave',
+        teraType: 'Normal',
+        moves: ['Revenge', 'Hyper Fang', 'Tearful Look']
+      },
+      {
+        slot: 2,
+        name: 'Zigzagoon-Galar',
+        level: 6,
+        baseStats: { hp: 38, atk: 30, def: 41, spa: 30, spd: 41, spe: 60 },
+        item: 'Flame Orb',
+        ability: 'Quick Feet',
+        nature: 'Adamant',
+        teraType: 'Dark',
+        moves: ['Fling', 'Thief', 'Tackle']
+      }
+    ]
   }
 ];
 
@@ -1473,6 +2073,48 @@ const TYPE_COLORS = {
   Steel: ['#B8B8D0', '#333'],
   Fairy: ['#EE99AC', '#fff']
 };
+
+const POKEMON_TYPE_MAP = {
+  blaziken: ['Fire', 'Fighting'],
+  roaringmoon: ['Dragon', 'Dark'],
+  typhlosionhisui: ['Fire', 'Ghost'],
+  tornadus: ['Flying'],
+  kyurem: ['Dragon', 'Ice'],
+  corviknight: ['Flying', 'Steel'],
+  tinglu: ['Dark', 'Ground'],
+  dondozo: ['Water'],
+  slowkinggalar: ['Poison', 'Psychic'],
+  cinderace: ['Fire'],
+  bellsprout: ['Grass', 'Poison'],
+  helioptile: ['Electric', 'Normal'],
+  baltoy: ['Ground', 'Psychic'],
+  slowpoke: ['Water', 'Psychic'],
+  misdreavus: ['Ghost'],
+  slugma: ['Fire'],
+  ponyta: ['Fire'],
+  morgrem: ['Dark', 'Fairy'],
+  hoothoot: ['Normal', 'Flying'],
+  skiploom: ['Grass', 'Flying'],
+  mantyke: ['Water', 'Flying'],
+  numel: ['Fire', 'Ground'],
+  mienfoo: ['Fighting'],
+  meditite: ['Fighting', 'Psychic'],
+  natu: ['Psychic', 'Flying'],
+  doduo: ['Normal', 'Flying'],
+  murkrow: ['Dark', 'Flying'],
+  togetic: ['Fairy', 'Flying'],
+  rattata: ['Normal'],
+  spinarak: ['Bug', 'Poison'],
+  kakuna: ['Bug', 'Poison'],
+  nincada: ['Bug', 'Ground'],
+  butterfree: ['Bug', 'Flying'],
+  patrat: ['Normal'],
+  zigzagoongalar: ['Dark', 'Normal']
+};
+
+const REWARD_ICON_MAP = [
+  { match: 'silver coin', src: 'sprites/items/silver_coin.png', alt: 'Silver Coin' }
+];
 
 function escapeHtml(value) {
   return String(value)
@@ -1547,6 +2189,24 @@ function toggleSearchHints(value) {
 function renderChips(values) {
   if (!values || !values.length) return '<span class="meta-chip">None</span>';
   return values.map(value => `<span class="meta-chip">${escapeHtml(value)}</span>`).join('');
+}
+
+function getRewardIcon(rewardText) {
+  const normalized = String(rewardText || '').trim().toLowerCase();
+  if (!normalized || normalized === 'none') return null;
+  return REWARD_ICON_MAP.find(entry => normalized.includes(entry.match)) || null;
+}
+
+function renderRewardContent(rewardText) {
+  const text = String(rewardText || 'None').trim() || 'None';
+  const icon = getRewardIcon(text);
+  if (!icon) return escapeHtml(text);
+  return `
+    <span class="reward-inline">
+      <img class="reward-inline-icon" src="${escapeHtml(icon.src)}" alt="${escapeHtml(icon.alt)}" onerror="this.style.display='none'">
+      <span>${escapeHtml(text)}</span>
+    </span>
+  `;
 }
 
 function getTrainerMonogram(trainer) {
@@ -1691,6 +2351,137 @@ function getPokemonSpriteId(name) {
     .replace(/[^a-z0-9]+/g, '');
 }
 
+const LOCAL_SPRITE_ALIASES = {
+  'basculegion-female': 'basculegion-f',
+  'basculegion-male': 'basculegion',
+  'basculin-blue-striped': 'basculin-bluestriped',
+  'basculin-white-striped': 'basculin-whitestriped',
+  'basculin-red-striped': 'basculin',
+  'darmanitan-galar-zen': 'darmanitan-galarzen',
+  'enamorus-incarnate': 'enamorus',
+  'indeedee-female': 'indeedee-f',
+  'indeedee-male': 'indeedee',
+  'maushold-family-of-four': 'maushold-four',
+  'maushold-family-of-three': 'maushold-four',
+  'meowstic-female': 'meowstic-f',
+  'meowstic-male': 'meowstic',
+  'mimikyu-disguised': 'mimikyu',
+  'morpeko-full-belly': 'morpeko',
+  'morpeko-hangry': 'morpeko',
+  'necrozma-dawn': 'necrozma-dawnwings',
+  'necrozma-dusk': 'necrozma-duskmane',
+  'ogerpon': 'ogerpon-teal',
+  'ogerpon-cornerstone-mask': 'ogerpon-cornerstone',
+  'ogerpon-hearthflame-mask': 'ogerpon-hearthflame',
+  'ogerpon-wellspring-mask': 'ogerpon-wellspring',
+  'oinkologne-female': 'oinkologne-f',
+  'oinkologne-male': 'oinkologne',
+  'oricorio-pom-pom': 'oricorio-pompom',
+  'palafin-hero': 'palafin',
+  'palafin-zero': 'palafin',
+  'squawkabilly-blue-plumage': 'squawkabilly-blue',
+  'squawkabilly-green-plumage': 'squawkabilly',
+  'squawkabilly-white-plumage': 'squawkabilly-white',
+  'squawkabilly-yellow-plumage': 'squawkabilly-yellow',
+  'tatsugiri-curly': 'tatsugiri',
+  'tatsugiri-droopy': 'tatsugiri',
+  'tatsugiri-stretchy': 'tatsugiri',
+  'tauros-paldea-aqua-breed': 'tauros-paldea-aqua',
+  'tauros-paldea-blaze-breed': 'tauros-paldea-blaze',
+  'tauros-paldea-combat-breed': 'tauros-paldea-combat',
+  'toxtricity-amped': 'toxtricity',
+  'toxtricity-amped-gmax': 'toxtricity-gmax',
+  'toxtricity-low-key': 'toxtricity-lowkey',
+  'toxtricity-low-key-gmax': 'toxtricity-gmax',
+  'urshifu-rapid-strike': 'urshifu-rapidstrike',
+  'urshifu-rapid-strike-gmax': 'urshifu-rapidstrikegmax',
+  'urshifu-single-strike': 'urshifu',
+  'urshifu-single-strike-gmax': 'urshifu-gmax',
+  'zygarde-50': 'zygarde'
+};
+
+const REGIONAL_PREFIX_MAP = {
+  alolan: 'alola',
+  galarian: 'galar',
+  paldean: 'paldea',
+  hisuian: 'hisui'
+};
+
+function getPokemonSpeciesSlug(name) {
+  let slug = String(name || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\[[^\]]+\]/g, '')
+    .replace(/[’']/g, '')
+    .replace(/♀/g, '-female')
+    .replace(/♂/g, '-male')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  if (!slug) {
+    return '';
+  }
+
+  const prefixMatch = slug.match(/^(alolan|galarian|paldean|hisuian)-(.+)$/);
+  if (prefixMatch) {
+    slug = `${prefixMatch[2]}-${REGIONAL_PREFIX_MAP[prefixMatch[1]]}`;
+  }
+
+  slug = slug.replace(/-(alolan|galarian|paldean|hisuian)$/, (_, prefix) => {
+    return `-${REGIONAL_PREFIX_MAP[prefix] || prefix}`;
+  });
+
+  return slug;
+}
+
+function getPokemonLocalSpriteCandidates(name) {
+  const slug = getPokemonSpeciesSlug(name);
+  if (!slug) return [];
+  const candidates = new Set([slug]);
+  if (slug.endsWith('-breed')) {
+    candidates.add(slug.replace(/-breed$/, ''));
+  }
+  if (slug.endsWith('-female')) {
+    candidates.add(slug.replace(/-female$/, '-f'));
+  }
+  if (slug.endsWith('-male')) {
+    candidates.add(slug.replace(/-male$/, '-m'));
+    candidates.add(slug.replace(/-male$/, ''));
+  }
+  if (slug.endsWith('-zen-mode')) {
+    candidates.add(slug.replace(/-zen-mode$/, '-zen'));
+    candidates.add(slug.replace(/-zen-mode$/, 'zen'));
+  }
+  if (slug.endsWith('-blue-striped')) {
+    candidates.add(slug.replace(/-blue-striped$/, '-bluestriped'));
+  }
+  if (slug.endsWith('-white-striped')) {
+    candidates.add(slug.replace(/-white-striped$/, '-whitestriped'));
+  }
+  if (LOCAL_SPRITE_ALIASES[slug]) {
+    candidates.add(LOCAL_SPRITE_ALIASES[slug]);
+  }
+  return Array.from(candidates).map(candidate => `sprites/pokemon/${candidate}.png`);
+}
+
+function applyTeamPreviewSpriteFallback(img) {
+  const pending = (img.dataset.fallbacks || '').split('|').filter(Boolean);
+  if (!pending.length) {
+    img.style.display = 'none';
+    const fallback = img.nextElementSibling;
+    if (fallback) fallback.style.display = 'flex';
+    img.onerror = null;
+    return;
+  }
+  img.src = pending.shift();
+  img.dataset.fallbacks = pending.join('|');
+}
+
+function getPokemonTypes(name) {
+  return POKEMON_TYPE_MAP[getPokemonSpriteId(name)] || [];
+}
+
 function compactPreviewText(value, fallback, maxLength) {
   const text = String(value || '').trim();
   if (!text) return fallback;
@@ -1734,7 +2525,7 @@ const NATURE_EFFECTS = {
   Quirky: {}
 };
 
-function formatStatSpread(spread, fallback) {
+function formatStatSpread(spread, fallback, separator = ' / ') {
   if (!spread || typeof spread !== 'object') return fallback;
   const parts = SPREAD_STAT_ORDER
     .map(([key, label]) => {
@@ -1744,7 +2535,7 @@ function formatStatSpread(spread, fallback) {
       return `${Math.trunc(value)} ${label}`;
     })
     .filter(Boolean);
-  return parts.length ? parts.join(' / ') : fallback;
+  return parts.length ? parts.join(separator) : fallback;
 }
 
 function renderTeamDetailLine(label, value, options = {}) {
@@ -1772,6 +2563,29 @@ function renderTeamMoveList(moves) {
           ${filtered.map(move => `<li>${escapeHtml(move)}</li>`).join('')}
         </ul>
       </div>
+    </div>
+  `;
+}
+
+function renderTeamStatGrid(label, spread) {
+  if (!spread || typeof spread !== 'object') return '';
+  const cells = SPREAD_STAT_ORDER
+    .map(([key, statLabel]) => {
+      const value = Number(spread[key]);
+      if (!Number.isFinite(value)) return '';
+      return `
+        <div class="team-preview-stat-cell">
+          <div class="team-preview-stat-key">${escapeHtml(statLabel)}</div>
+          <div class="team-preview-stat-num">${escapeHtml(String(Math.trunc(value)))}</div>
+        </div>
+      `;
+    })
+    .filter(Boolean);
+  if (!cells.length) return '';
+  return `
+    <div class="team-preview-detail-line">
+      <div class="team-preview-detail-label">${escapeHtml(label)}</div>
+      <div class="team-preview-stat-grid">${cells.join('')}</div>
     </div>
   `;
 }
@@ -1813,14 +2627,39 @@ function calculateDisplayedStats(mon) {
 
 function renderCalculatedStats(mon) {
   const stats = calculateDisplayedStats(mon);
-  if (!stats) return '';
-  return renderTeamDetailLine('Stats', formatStatSpread(stats, ''), { mono: true });
+  return renderTeamStatGrid('Stats', stats);
+}
+
+function getIvDisplay(mon) {
+  const reduced = {};
+  let hasDeviation = false;
+
+  SPREAD_STAT_ORDER.forEach(([key]) => {
+    const value = Number(mon?.ivs?.[key]);
+    const safeValue = Number.isFinite(value) ? Math.max(0, Math.trunc(value)) : 31;
+    if (safeValue !== 31) {
+      reduced[key] = safeValue;
+      hasDeviation = true;
+    }
+  });
+
+  if (!hasDeviation) {
+    return 'Perfect';
+  }
+
+  return formatStatSpread(reduced, '', ', ');
 }
 
 function getTypeBadgeStyle(type) {
   const colors = TYPE_COLORS[String(type || '').trim()];
   if (!colors) return '';
   return `background:${colors[0]};color:${colors[1]};border-color:${colors[0]};`;
+}
+
+function renderPokemonTypeBadges(name) {
+  return getPokemonTypes(name).map(type => (
+    `<span class="team-preview-badge" style="${getTypeBadgeStyle(type)}">${escapeHtml(type)}</span>`
+  )).join('');
 }
 
 function getTeamSlotCount(team, minimum = 6) {
@@ -1859,24 +2698,30 @@ function renderTeamPreviewSprite(mon) {
     `;
   }
 
+  const spriteSlug = getPokemonSpeciesSlug(mon.name);
   const spriteId = getPokemonSpriteId(mon.name);
-  if (!spriteId) {
+  if (!spriteSlug && !spriteId) {
     return `
       <div class="team-preview-sprite-shell">
         <div class="team-preview-fallback">${escapeHtml(getPokemonMonogram(mon.name))}</div>
       </div>
     `;
   }
+  const baseSlug = spriteSlug || spriteId;
+  const fallbacks = [
+    ...getPokemonLocalSpriteCandidates(mon.name),
+    `https://play.pokemonshowdown.com/sprites/dex/${baseSlug}.png`
+  ];
 
   return `
     <div class="team-preview-sprite-shell">
       <img
         class="team-preview-sprite"
-        src="https://play.pokemonshowdown.com/sprites/gen5/${spriteId}.png"
-        data-fallback="https://play.pokemonshowdown.com/sprites/dex/${spriteId}.png"
+        src="https://play.pokemonshowdown.com/sprites/gen5/${baseSlug}.png"
+        data-fallbacks="${fallbacks.join('|')}"
         alt="${escapeHtml(mon.name)}"
         loading="lazy"
-        onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src=this.dataset.fallback}else{this.style.display='none';this.nextElementSibling.style.display='flex'}"
+        onerror="applyTeamPreviewSpriteFallback(this)"
       >
       <div class="team-preview-fallback" style="display:none">${escapeHtml(getPokemonMonogram(mon.name))}</div>
     </div>
@@ -1903,28 +2748,25 @@ function renderTeamPreviewCards(team, minimum = 6, options = {}) {
       `;
     }
 
-    const metaText = mon.ownerName
-      ? compactPreviewText(mon.ownerName, 'Linked Side', 18)
-      : compactPreviewText([mon.ability, mon.nature].filter(Boolean).join(' · '), 'Set Details', 24);
     const isLead = leadSlots.has(Number(mon.slot));
     const detailLines = [
       mon.ownerName ? renderTeamDetailLine('Side', mon.ownerName) : '',
       renderTeamDetailLine('Ability', mon.ability || 'No Ability'),
       renderTeamDetailLine('Nature', mon.nature || 'No Nature'),
       renderTeamDetailLine('Item', mon.item || 'No Item'),
-      renderTeamDetailLine('Tera', mon.teraType || ''),
       renderCalculatedStats(mon),
-      renderTeamDetailLine('EVs', formatStatSpread(mon.evs, ''), { mono: true }),
-      renderTeamDetailLine('IVs', formatStatSpread(mon.ivs, ''), { mono: true }),
+      renderTeamDetailLine('EVs', formatStatSpread(mon.evs, '', ', '), { mono: true }),
+      renderTeamDetailLine('IVs', getIvDisplay(mon), { mono: true }),
       renderTeamMoveList(mon.moves || [])
     ].filter(Boolean).join('');
     const badgeParts = [
       isLead ? '<span class="team-preview-badge lead">Lead</span>' : '',
-      mon.teraType
-        ? `<span class="team-preview-badge tera" style="${getTypeBadgeStyle(mon.teraType)}">${escapeHtml(compactPreviewText(mon.teraType, 'Tera', 12))}</span>`
-        : '',
+      renderPokemonTypeBadges(mon.name),
       mon.shiny ? '<span class="team-preview-badge shiny">Shiny</span>' : ''
     ].filter(Boolean);
+    const renderedBadges = badgeParts.length
+      ? badgeParts.join('')
+      : '<span class="team-preview-badge ghost" aria-hidden="true">Lead</span>';
     return `
       <article class="team-preview-card${isLead ? ' is-lead' : ''}">
         <div class="team-preview-top">
@@ -1933,8 +2775,7 @@ function renderTeamPreviewCards(team, minimum = 6, options = {}) {
         </div>
         ${renderTeamPreviewSprite(mon)}
         <div class="team-preview-name">${escapeHtml(mon.name || '[Pokemon]')}</div>
-        <div class="team-preview-meta">${escapeHtml(metaText)}</div>
-        ${badgeParts.length ? `<div class="team-preview-badges">${badgeParts.join('')}</div>` : ''}
+        <div class="team-preview-badges">${renderedBadges}</div>
         <div class="team-preview-detail-stack">${detailLines}</div>
       </article>
     `;
@@ -2135,7 +2976,7 @@ function renderTrainerList(trainers) {
       </td>
       <td>${escapeHtml(trainer.displayArea || trainer.area || 'Unknown Area')}<br><span class="list-class">${escapeHtml(trainer.displayChapter || trainer.chapter || 'Unsorted')}</span></td>
       <td>${renderChips(trainer.displayTags || trainer.tags || [])}</td>
-      <td>${escapeHtml(trainer.displayReward || trainer.reward || 'None')}</td>
+      <td>${renderRewardContent(trainer.displayReward || trainer.reward || 'None')}</td>
       <td>${trainer.displayTeamCount || 0}</td>
     </tr>
   `).join('');
@@ -2186,7 +3027,7 @@ function openTrainer(id) {
 
       <div class="detail-block">
         <div class="detail-block-title">Reward</div>
-        <div class="detail-text">${escapeHtml(trainer.reward || 'None')}</div>
+        <div class="detail-text">${renderRewardContent(trainer.reward || 'None')}</div>
       </div>
 
       <div class="detail-block">
@@ -2239,6 +3080,7 @@ function init() {
   const protoNote = document.getElementById('protoNote');
 
   TRAINERDEX = TRAINERDEX_SOURCE
+    .filter(trainer => !/placeholder/i.test(String(trainer.id || '')))
     .map((trainer, index) => ({ ...trainer, displayId: normalizeDisplayId(trainer.displayId, index + 1) }))
     .sort((a, b) => compareDisplayIds(a.displayId, b.displayId));
 

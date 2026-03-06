@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cherrygrove City — Jay's Romhack Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --enc-bg: #1A2028;
+    --enc-border: #2A3540;
+    --trainer-bg: #1B2028;
+    --trainer-border: #2D3840;
+    --item-bg: #1C2128;
+    --item-border: #2E3840;
+    --common: #6aab78;
+    --uncommon: #b8a860;
+    --rare: #b06868;
+    --ultra: #8878b8;
+    --biome-path: #8E9CAA;
+    --biome-prairie: #7a9e80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(142,156,170,0.3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .header-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  /* LOCATION HERO */
+  .location-hero {
+    padding: 32px 32px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .location-hero-inner {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  .location-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--text);
+    letter-spacing: 1px;
+    line-height: 1.4;
+    text-shadow: none;
+  }
+
+  .biome-tags {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .biome-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    background: rgba(174,184,194,0.1);
+    color: var(--main);
+    border: 1px solid rgba(174,184,194,0.2);
+  }
+
+  .biome-path { background: rgba(142,156,170,0.1); color: var(--accent); border: 1px solid rgba(142,156,170,0.25); }
+  .biome-prairie { background: rgba(174,184,194,0.1); color: var(--main); border: 1px solid rgba(174,184,194,0.2); }
+
+  .nav-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+
+  .page-body {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .section { border-radius: 12px; overflow: hidden; border: 1px solid; }
+  .section-enc { background: var(--enc-bg); border-color: var(--enc-border); }
+  .section-trainer { background: var(--trainer-bg); border-color: var(--trainer-border); overflow: visible; }
+  .section-item { background: var(--item-bg); border-color: var(--item-border); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+  }
+
+  .section-enc .section-header { border-color: var(--enc-border); color: var(--main); }
+  .section-trainer .section-header { border-color: var(--trainer-border); color: var(--main); }
+  .section-item .section-header { border-color: var(--item-border); color: var(--main); }
+
+  .section-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .section-enc .section-dot { background: var(--main); box-shadow: 0 0 8px rgba(174,184,194,0.5); }
+  .section-trainer .section-dot { background: var(--accent); box-shadow: 0 0 8px rgba(142,156,170,0.5); }
+  .section-item .section-dot { background: var(--highlight); box-shadow: 0 0 8px rgba(200,210,219,0.5); }
+
+  .section-body { padding: 20px; }
+
+  /* ENCOUNTERS */
+  .enc-browser {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .enc-type-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .enc-type-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--enc-border);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .enc-type-btn:hover,
+  .enc-type-btn.active {
+    color: var(--main);
+    border-color: rgba(201,168,106,0.45);
+    background: rgba(201,168,106,0.1);
+  }
+
+  .enc-mode-panel {
+    display: none;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--enc-border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .enc-mode-panel.active { display: block; }
+
+  .enc-mode-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--enc-border);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .enc-mode-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    color: var(--main);
+  }
+
+  .enc-mode-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .enc-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .enc-table th,
+  .enc-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: top;
+    text-align: center;
+  }
+
+  .enc-table tr:last-child td { border-bottom: none; }
+
+  .enc-table th {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.025);
+  }
+
+  .enc-table tbody tr:hover td { background: transparent; }
+
+  .enc-col-slot {
+    width: 58px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .enc-sprite { width: 44px; height: 44px; image-rendering: pixelated; flex-shrink: 0; }
+
+  .enc-mon-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 40px;
+  }
+
+  .enc-mon-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .enc-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-meta-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .enc-detail {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .enc-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  .enc-empty-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .enc-empty-state {
+    padding: 16px 14px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .enc-table .enc-cell-c2 {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .enc-entry-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .enc-entry-row {
+    display: grid;
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+  }
+
+  .enc-entry-key {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    text-align: right;
+  }
+
+  .enc-cell-c2 {
+    --enc-accent-rgb: 201, 168, 106;
+    --enc-accent-solid: #c9a86a;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px 8px 8px;
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.22);
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(var(--enc-accent-rgb), 0.1), rgba(255,255,255,0.015));
+    text-align: left;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .enc-cell-c2 .enc-sprite {
+    width: 48px;
+    height: 48px;
+    padding: 3px;
+    border-radius: 50%;
+    background: rgba(var(--enc-accent-rgb), 0.14);
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.18);
+  }
+
+  .enc-cell-c2-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .enc-level-tag {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 4px;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    line-height: 1;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .enc-cell-c2-meta {
+    margin-top: 3px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    display: none;
+  }
+
+  .enc-cell-c2 .enc-pct {
+    min-width: 44px;
+    text-align: center;
+    border-radius: 999px;
+    padding: 6px 8px;
+    font-weight: 700;
+    background: rgba(var(--enc-accent-rgb), 0.16);
+    color: var(--enc-accent-solid);
+    border: 1px solid rgba(var(--enc-accent-rgb), 0.18);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .enc-cell-c2.enc-linkable {
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+
+  .enc-cell-c2.enc-linkable:hover {
+    transform: translateY(-1px);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 6px 14px rgba(0,0,0,0.12);
+  }
+
+  .enc-cell-c2.enc-linkable:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px rgba(var(--enc-accent-rgb), 0.24),
+      inset 0 1px 0 rgba(255,255,255,0.03);
+  }
+
+  .enc-accent-walk {
+    --enc-accent-rgb: 118, 176, 98;
+    --enc-accent-solid: #76b062;
+  }
+
+  .enc-accent-surf {
+    --enc-accent-rgb: 98, 176, 220;
+    --enc-accent-solid: #62b0dc;
+  }
+
+  .enc-accent-fish {
+    --enc-accent-rgb: 76, 112, 190;
+    --enc-accent-solid: #4c70be;
+  }
+
+  .enc-accent-static {
+    --enc-accent-rgb: 146, 112, 196;
+    --enc-accent-solid: #9270c4;
+  }
+
+  .rarity-common { background: rgba(76,175,80,0.15); color: var(--common); }
+  .rarity-uncommon { background: rgba(245,200,66,0.15); color: var(--uncommon); }
+  .rarity-rare { background: rgba(224,82,82,0.15); color: var(--rare); }
+  .rarity-ultra { background: rgba(156,111,224,0.15); color: var(--ultra); }
+  .enc-pct.rarity-common,
+  .enc-pct.rarity-uncommon,
+  .enc-pct.rarity-rare,
+  .enc-pct.rarity-ultra {
+    border-width: 1px;
+    border-style: solid;
+  }
+  .enc-cell-c2 .enc-pct.rarity-common {
+    background: rgba(76,175,80,0.24);
+    color: #9ce1a8;
+    border-color: rgba(76,175,80,0.34);
+  }
+  .enc-cell-c2 .enc-pct.rarity-uncommon {
+    background: rgba(245,200,66,0.24);
+    color: #f3d979;
+    border-color: rgba(245,200,66,0.34);
+  }
+  .enc-cell-c2 .enc-pct.rarity-rare {
+    background: rgba(224,82,82,0.22);
+    color: #f0a0a0;
+    border-color: rgba(224,82,82,0.32);
+  }
+  .enc-cell-c2 .enc-pct.rarity-ultra {
+    background: rgba(156,111,224,0.24);
+    color: #d1b7ff;
+    border-color: rgba(156,111,224,0.34);
+  }
+
+  /* TRAINERS */
+  .trainer-grid { display: flex; flex-direction: column; gap: 20px; }
+
+  .trainer-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--trainer-border);
+    border-radius: 10px;
+    overflow: visible;
+    position: relative;
+  }
+
+  .trainer-card-header {
+    padding: 12px 16px;
+    background: rgba(142,156,170,0.08);
+    border-bottom: 1px solid var(--trainer-border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .trainer-sprite-wrap {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+    background: rgba(142,156,170,0.08);
+    border: 1px solid var(--trainer-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .trainer-sprite {
+    width: 56px;
+    height: 56px;
+    image-rendering: pixelated;
+    object-fit: contain;
+  }
+
+  .trainer-sprite-fallback {
+    width: 56px;
+    height: 56px;
+    border-radius: 6px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.04);
+    border: 1px dashed var(--trainer-border);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .trainer-info { flex: 1; }
+  .trainer-name { font-family: 'Press Start 2P', monospace; font-size: 9px; color: var(--text-muted); margin-bottom: 4px; }
+  .trainer-class { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+  .trainer-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+
+  .trainer-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(142,156,170,0.12);
+    border: 1px solid rgba(142,156,170,0.3);
+    color: var(--main);
+  }
+
+  .export-wrap { position: relative; }
+
+  .export-trigger {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: rgba(142,156,170,0.1);
+    border: 1px solid rgba(142,156,170,0.3);
+    color: var(--main);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .export-trigger:hover,
+  .export-trigger.open { background: rgba(142,156,170,0.2); }
+
+  .export-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 178px;
+    background: var(--surface);
+    border: 1px solid var(--trainer-border);
+    border-radius: 8px;
+    padding: 6px;
+    display: none;
+    z-index: 50;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.32);
+  }
+
+  .export-menu.open { display: block; }
+
+  .export-menu-btn {
+    width: 100%;
+    display: block;
+    text-align: left;
+    padding: 7px 8px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .export-menu-btn:hover {
+    background: rgba(142,156,170,0.12);
+    color: var(--main);
+  }
+
+  .trainer-team {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    overflow: hidden;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  .pokemon-slot {
+    padding: 14px 16px;
+    border-right: 1px solid var(--trainer-border);
+    border-bottom: 1px solid var(--trainer-border);
+  }
+  .pokemon-slot:nth-child(6n) { border-right: none; }
+  .pokemon-slot.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    opacity: 0.25;
+  }
+  .pokemon-slot.empty::after {
+    content: '—';
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--border);
+  }
+
+  .pokemon-slot-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .poke-sprite { width: 48px; height: 48px; image-rendering: pixelated; }
+  .poke-info { flex: 1; }
+  .poke-name { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+  .poke-level { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .poke-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--main);
+    margin-bottom: 8px;
+    padding: 2px 6px;
+    background: rgba(142,156,170,0.1);
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .poke-item-sprite { width: 14px; height: 14px; image-rendering: pixelated; flex: 0 0 auto; }
+
+  .poke-ability { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); margin-bottom: 8px; }
+
+  .poke-moves { display: flex; flex-direction: column; gap: 3px; }
+  .poke-move {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.05);
+    color: var(--text-muted);
+    display: inline-block;
+  }
+
+  .poke-nature {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .stat-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+  }
+
+  .stat-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: center;
+    padding: 2px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stat-table th:first-child { text-align: left; }
+
+  .stat-table td {
+    text-align: center;
+    padding: 2px 4px;
+    color: var(--text-muted);
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .stat-table td:first-child {
+    text-align: left;
+    color: var(--text-muted);
+  }
+
+  .stat-boosted {
+    font-weight: 700;
+    color: var(--bg) !important;
+    background: var(--highlight);
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  .stat-lowered {
+    font-weight: 700;
+    color: var(--bg) !important;
+    background: var(--main);
+    border-radius: 3px;
+    padding: 1px 4px;
+  }
+
+  body.light .stat-boosted {
+    color: var(--bg) !important;
+    background: var(--border);
+  }
+
+  body.light .stat-lowered {
+    color: var(--highlight) !important;
+    background: var(--text);
+  }
+
+  /* ITEMS */
+  .items-table { width: 100%; border-collapse: collapse; }
+
+  .items-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--item-border);
+  }
+
+  .items-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  .items-table tr:last-child td { border-bottom: none; }
+  .items-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  .item-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .item-sprite {
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .item-sprite-poke {
+    width: 40px;
+    height: 40px;
+    image-rendering: pixelated;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .item-name { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--main); }
+  .item-how { font-size: 13px; color: var(--text); }
+  .item-req { font-size: 12px; color: var(--text-muted); font-style: italic; }
+  .item-trade-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  .item-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  .item-ground { background: rgba(174,184,194,0.12); color: var(--main); border: 1px solid rgba(174,184,194,0.25); }
+  .item-hidden { background: rgba(142,156,170,0.1); color: var(--accent); border: 1px solid rgba(142,156,170,0.25); }
+  .item-gift { background: rgba(174,184,194,0.1); color: var(--highlight); border: 1px solid rgba(174,184,194,0.25); }
+  .item-trade { background: rgba(200,210,219,0.1); color: var(--highlight); border: 1px solid rgba(200,210,219,0.25); }
+
+  .area-export-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,12,16,0.78);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 240;
+  }
+
+  .area-export-overlay.open { display: flex; }
+
+  .area-export-modal {
+    width: min(760px, 100%);
+    background: var(--surface);
+    border: 1px solid var(--trainer-border);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.42);
+    overflow: hidden;
+  }
+
+  .area-export-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--trainer-border);
+  }
+
+  .area-export-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--main);
+  }
+
+  .area-export-close {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    cursor: pointer;
+  }
+
+  .area-export-close:hover { color: var(--text); }
+
+  .area-export-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .area-export-text {
+    width: 100%;
+    min-height: 260px;
+    resize: vertical;
+    border: 1px solid var(--trainer-border);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.02);
+    color: var(--text);
+    padding: 12px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    line-height: 1.7;
+    outline: none;
+  }
+
+  .area-export-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .area-export-btn {
+    padding: 7px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--trainer-border);
+    background: rgba(142,156,170,0.08);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .area-export-btn:hover {
+    border-color: var(--accent);
+    background: rgba(142,156,170,0.14);
+  }
+
+  .area-export-btn.primary {
+    border-color: rgba(142,156,170,0.4);
+    color: var(--main);
+  }
+
+  .area-export-toast {
+    position: fixed;
+    bottom: 18px;
+    right: 18px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--trainer-border);
+    background: rgba(27,32,40,0.96);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.32);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.15s, transform 0.15s;
+    z-index: 250;
+  }
+
+  .area-export-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* LIGHT MODE */
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #F3DEC2;
+    --enc-bg: #F8F3EB;
+    --enc-border: #E2CFA8;
+    --trainer-bg: #F8F2EC;
+    --trainer-border: #E2CFA8;
+    --item-bg: #F9F4EC;
+    --item-border: #E2CFA8;
+    --common: #5a8c5a;
+    --uncommon: #9a7a30;
+    --rare: #a04040;
+    --ultra: #7060a0;
+    --biome-path: #C9A86A;
+    --biome-prairie: #6a8a50;
+  }
+  body.light .page-header { background: #F5EBDD; border-color: #E7D8C1; }
+  body.light .romhack-title { color: #C9A86A; text-shadow: none; }
+  body.light .section-enc .section-header { color: #4a7a50; }
+  body.light .section-trainer .section-header { color: #7a5a30; }
+  body.light .section-item .section-header { color: #8a6020; }
+  body.light .section-enc .section-dot { background: #4a7a50; box-shadow: 0 0 8px rgba(74,122,80,0.4); }
+  body.light .section-trainer .section-dot { background: #7a5a30; box-shadow: 0 0 8px rgba(122,90,48,0.4); }
+  body.light .section-item .section-dot { background: #8a6020; box-shadow: 0 0 8px rgba(138,96,32,0.4); }
+  body.light .trainer-card-header { background: rgba(201,168,106,0.12); }
+  body.light .trainer-sprite-wrap { background: rgba(201,168,106,0.1); border-color: #E2CFA8; }
+  body.light .trainer-card { background: rgba(255,255,255,0.6); }
+  body.light .trainer-name { color: #7a5a30; }
+  body.light .trainer-badge { background: rgba(201,168,106,0.15); border-color: rgba(201,168,106,0.4); color: #8a6a30; }
+  body.light .export-trigger { background: rgba(201,168,106,0.12); border-color: rgba(201,168,106,0.4); color: #a07830; }
+  body.light .export-trigger:hover,
+  body.light .export-trigger.open { background: rgba(201,168,106,0.2); }
+  body.light .export-menu { box-shadow: 0 10px 22px rgba(70,52,24,0.16); }
+  body.light .export-menu-btn:hover { background: rgba(201,168,106,0.12); color: #8a6a30; }
+  body.light .poke-ability { color: #507090; }
+  body.light .poke-item { background: rgba(201,168,106,0.12); color: #a07830; }
+  body.light .poke-move { background: rgba(0,0,0,0.05); color: #6a5a48; }
+  body.light .item-name { color: #9a7030; }
+  body.light .item-ground { background: rgba(180,140,60,0.12); color: #9a7030; border-color: rgba(180,140,60,0.3); }
+  body.light .item-hidden { background: rgba(80,100,160,0.1); color: #507090; border-color: rgba(80,100,160,0.25); }
+  body.light .item-gift { background: rgba(60,140,80,0.1); color: #4a7a50; border-color: rgba(60,140,80,0.25); }
+  body.light .area-export-modal { box-shadow: 0 16px 36px rgba(70,52,24,0.18); }
+  body.light .area-export-text { background: rgba(255,255,255,0.72); }
+  body.light .area-export-toast { background: rgba(255,255,255,0.96); }
+  body.light .menu-overlay { background: #F5EBDD; box-shadow: 0 8px 32px rgba(74,64,50,0.15); }
+  body.light .menu-link { color: #4A4032; }
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .menu-btn { background: #EDE0CC; border-color: #E7D8C1; color: #4A4032; }
+  body.light .menu-btn:hover { border-color: #C9A86A; color: #C9A86A; }
+  body.light .theme-toggle { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .enc-type-btn { background: rgba(0,0,0,0.02); border-color: #E2CFA8; color: #6b5a3d; }
+  body.light .enc-type-btn:hover,
+  body.light .enc-type-btn.active { background: rgba(201,168,106,0.14); border-color: #C9A86A; color: #8a6830; }
+  body.light .enc-mode-panel { border-color: #E2CFA8; }
+  body.light .enc-mode-head { background: rgba(0,0,0,0.03); border-color: #E2CFA8; }
+  body.light .enc-table th,
+  body.light .enc-table td { border-color: rgba(0,0,0,0.05); }
+  body.light .enc-table tbody tr:hover td { background: transparent; }
+  body.light .enc-entry-key { color: #7a6830; }
+  body.light .enc-cell-c2 {
+    background: linear-gradient(90deg, rgba(var(--enc-accent-rgb), 0.12), rgba(255,255,255,0.2));
+    border-color: rgba(var(--enc-accent-rgb), 0.24);
+  }
+  body.light .enc-cell-c2 .enc-sprite { background: rgba(var(--enc-accent-rgb), 0.12); }
+  body.light .enc-cell-c2 .enc-pct {
+    background: rgba(var(--enc-accent-rgb), 0.12);
+    border-color: rgba(var(--enc-accent-rgb), 0.18);
+  }
+  body.light .enc-level-tag {
+    background: rgba(0,0,0,0.04);
+    border-color: rgba(0,0,0,0.05);
+    color: #6f6658;
+  }
+  body.light .rarity-common { background: rgba(90,140,90,0.12); }
+  body.light .rarity-uncommon { background: rgba(154,122,48,0.12); }
+  body.light .rarity-rare { background: rgba(160,64,64,0.1); }
+  body.light .rarity-ultra { background: rgba(112,96,160,0.1); }
+  body.light .enc-cell-c2 .enc-pct.rarity-common {
+    background: rgba(90,140,90,0.16);
+    color: #4f8b59;
+    border-color: rgba(90,140,90,0.26);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-uncommon {
+    background: rgba(154,122,48,0.16);
+    color: #8c6d22;
+    border-color: rgba(154,122,48,0.26);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-rare {
+    background: rgba(160,64,64,0.14);
+    color: #a65454;
+    border-color: rgba(160,64,64,0.22);
+  }
+  body.light .enc-cell-c2 .enc-pct.rarity-ultra {
+    background: rgba(112,96,160,0.16);
+    color: #6d58a6;
+    border-color: rgba(112,96,160,0.24);
+  }
+  body.light .pokemon-slot { border-color: #E2CFA8; }
+  body.light .items-table td { border-color: rgba(0,0,0,0.05); }
+  body.light .items-table tr:hover td { background: rgba(0,0,0,0.02); }
+  body.light .biome-path { background: rgba(201,168,106,0.15); color: #8a6830; border: 1px solid rgba(201,168,106,0.35); }
+  body.light .biome-prairie { background: rgba(201,168,106,0.1); color: #7a6830; border: 1px solid rgba(201,168,106,0.25); }
+  body.light .pokemon-slot.empty::after { color: var(--border); }
+
+  /* MENU BUTTON */
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  /* THEME TOGGLE */
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px; height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px; left: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  /* MENU OVERLAY */
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; animation: menuIn 0.15s ease; }
+  @keyframes menuIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--accent); }
+  .menu-icon-sm { font-size: 14px; width: 20px; text-align: center; }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<!-- MENU OVERLAY -->
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="../index.html" class="menu-link">Home</a>
+  <a href="../areadex.html" class="menu-link">Area Sheets</a>
+  <a href="../pokedex.html" class="menu-link">Pokedex</a>
+  <a href="../trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="../itemdex.html" class="menu-link">ItemDex</a>
+  <a href="../progression.html" class="menu-link">Progression</a>
+  <a href="../mechanics.html" class="menu-link">Mechanics</a>
+  <a href="../calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="../tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Jump To</div>
+  <a href="#section-enc" class="menu-link" onclick="closeMenu()">Wild Encounters</a>
+  <a href="#section-trainer" class="menu-link" onclick="closeMenu()">Trainers</a>
+  <a href="#section-item" class="menu-link" onclick="closeMenu()">Items</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Tools</div>
+  <a href="#" class="menu-link">Encounter Spreadsheet</a>
+</div>
+
+<div class="location-hero">
+  <div class="location-hero-inner">
+    <div class="location-name">Cherrygrove City</div>
+    <div class="biome-tags">
+      <span class="biome-tag">Town</span>
+      <span class="biome-tag">Chapter 1</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <!-- ENCOUNTERS -->
+  <div class="section section-enc" id="section-enc">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Wild Encounters
+    </div>
+    <div class="section-body">
+      <div class="enc-browser">
+        <div class="enc-type-tabs">
+          <button class="enc-type-btn active" type="button" data-enc-target="walking" onclick="switchEncounterMode(this)">Walking</button>
+          <button class="enc-type-btn" type="button" data-enc-target="surf" onclick="switchEncounterMode(this)">Surfing</button>
+          <button class="enc-type-btn" type="button" data-enc-target="fishing" onclick="switchEncounterMode(this)">Fishing</button>
+          <button class="enc-type-btn" type="button" data-enc-target="static" onclick="switchEncounterMode(this)">Static / Gift</button>
+        </div>
+
+        <div class="enc-mode-panel active" data-enc-panel="walking">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Walking Encounters</div>
+          </div>
+          <div class="enc-empty-state">No walking encounters in Cherrygrove City.</div>
+        </div>
+
+        <div class="enc-mode-panel" data-enc-panel="surf">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Surfing Encounters</div>
+          </div>
+          <div class="enc-empty-state">No surfing encounters in Cherrygrove City.</div>
+        </div>
+
+        <div class="enc-mode-panel" data-enc-panel="fishing">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Fishing Encounters</div>
+          </div>
+          <table class="enc-table">
+            <thead>
+              <tr>
+                <th class="enc-col-slot">Slot</th>
+                <th>Old Rod</th>
+                <th>Good Rod</th>
+                <th>Super Rod</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="enc-col-slot">1</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/goldeen.png" alt="Goldeen">
+                    <div>
+                      <div class="enc-cell-c2-name">Goldeen</div>
+                      <span class="enc-level-tag">Lv 4-7</span>
+                      <div class="enc-cell-c2-meta">Old Rod</div>
+                    </div>
+                    <span class="enc-pct">40%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/kingler.png" alt="Kingler">
+                    <div>
+                      <div class="enc-cell-c2-name">Kingler</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">22%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">2</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/krabby.png" alt="Krabby">
+                    <div>
+                      <div class="enc-cell-c2-name">Krabby</div>
+                      <span class="enc-level-tag">Lv 4-7</span>
+                      <div class="enc-cell-c2-meta">Old Rod</div>
+                    </div>
+                    <span class="enc-pct">25%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/seaking.png" alt="Seaking">
+                    <div>
+                      <div class="enc-cell-c2-name">Seaking</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">18%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">3</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/tentacool.png" alt="Tentacool">
+                    <div>
+                      <div class="enc-cell-c2-name">Tentacool</div>
+                      <span class="enc-level-tag">Lv 4-7</span>
+                      <div class="enc-cell-c2-meta">Old Rod</div>
+                    </div>
+                    <span class="enc-pct">20%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/tentacruel.png" alt="Tentacruel">
+                    <div>
+                      <div class="enc-cell-c2-name">Tentacruel</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">15%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">4</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/chinchou.png" alt="Chinchou">
+                    <div>
+                      <div class="enc-cell-c2-name">Chinchou</div>
+                      <span class="enc-level-tag">Lv 4-7</span>
+                      <div class="enc-cell-c2-meta">Old Rod</div>
+                    </div>
+                    <span class="enc-pct">15%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/lanturn.png" alt="Lanturn">
+                    <div>
+                      <div class="enc-cell-c2-name">Lanturn</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">12%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">5</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/octillery.png" alt="Octillery">
+                    <div>
+                      <div class="enc-cell-c2-name">Octillery</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">10%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">6</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/cloyster.png" alt="Cloyster">
+                    <div>
+                      <div class="enc-cell-c2-name">Cloyster</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">8%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">7</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/starmie.png" alt="Starmie">
+                    <div>
+                      <div class="enc-cell-c2-name">Starmie</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">7%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">8</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/gyarados.png" alt="Gyarados">
+                    <div>
+                      <div class="enc-cell-c2-name">Gyarados</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">5%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">9</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/qwilfish.png" alt="Qwilfish">
+                    <div>
+                      <div class="enc-cell-c2-name">Qwilfish</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">2%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+              <tr>
+                <td class="enc-col-slot">10</td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+                <td>
+                  <div class="enc-cell-c2 enc-accent-fish">
+                    <img class="enc-sprite" src="https://play.pokemonshowdown.com/sprites/gen5/lapras.png" alt="Lapras">
+                    <div>
+                      <div class="enc-cell-c2-name">Lapras</div>
+                      <span class="enc-level-tag">Lv 30-40</span>
+                      <div class="enc-cell-c2-meta">Good Rod</div>
+                    </div>
+                    <span class="enc-pct">1%</span>
+                  </div>
+                </td>
+                <td style="text-align:center;color:var(--text-muted);">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="enc-mode-panel" data-enc-panel="static">
+          <div class="enc-mode-head">
+            <div class="enc-mode-title">Static / Gift Encounters</div>
+          </div>
+          <div class="enc-empty-state">No static or gift encounters in Cherrygrove City.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRAINERS -->
+  <div class="section section-trainer" id="section-trainer">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Trainers
+    </div>
+    <div class="section-body">
+      <div class="enc-empty-state">No trainer battles in Cherrygrove City.</div>
+    </div>
+  </div>
+
+  <!-- ITEMS -->
+  <div class="section section-item" id="section-item">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Items
+    </div>
+    <div class="section-body">
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>How to Get</th>
+            <th>Requirements</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Running Shoes">
+                <span class="item-name">Running Shoes</span>
+              </div>
+            </td>
+            <td class="item-how">Received from Guide Gent after his town tour</td>
+            <td class="item-req">Complete Cherrygrove tour</td>
+            <td><span class="item-type-badge item-gift">Gift</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Map Card">
+                <span class="item-name">Map Card</span>
+              </div>
+            </td>
+            <td class="item-how">Received from Guide Gent at the entrance to Route 30</td>
+            <td class="item-req">Talk to Guide Gent at Route 30 entrance</td>
+            <td><span class="item-type-badge item-gift">Gift</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Mystic Water">
+                <span class="item-name">Mystic Water</span>
+              </div>
+            </td>
+            <td class="item-how">Received from the man on the offshore island</td>
+            <td class="item-req">Surf</td>
+            <td><span class="item-type-badge item-gift">Gift</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Nugget">
+                <span class="item-name">Nugget</span>
+              </div>
+            </td>
+            <td class="item-how">Hidden east of the Pokemon Center, accessed from Route 30's lower pond</td>
+            <td class="item-req">Surf</td>
+            <td><span class="item-type-badge item-hidden">Hidden</span></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="item-cell">
+                <img class="item-sprite" alt="Nugget">
+                <span class="item-name">Nugget</span>
+              </div>
+            </td>
+            <td class="item-how">Hidden on the cliff north of the offshore island</td>
+            <td class="item-req">Surf + Rock Climb</td>
+            <td><span class="item-type-badge item-hidden">Hidden</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+<div class="area-export-overlay" id="areaExportOverlay" onclick="if(event.target===this)closeAreaExportModal()">
+  <div class="area-export-modal">
+    <div class="area-export-header">
+      <div class="area-export-title" id="areaExportTitle">Trainer Export</div>
+      <button class="area-export-close" type="button" onclick="closeAreaExportModal()">✕</button>
+    </div>
+    <div class="area-export-body">
+      <textarea class="area-export-text" id="areaExportText" readonly spellcheck="false"></textarea>
+      <div class="area-export-actions">
+        <button class="area-export-btn" type="button" onclick="closeAreaExportModal()">Close</button>
+        <button class="area-export-btn primary" type="button" onclick="copyAreaExportText()">Copy</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="area-export-toast" id="areaExportToast"></div>
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu = document.getElementById('menuOverlay');
+  let areaExportToastTimer = null;
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() {
+    menu.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+
+  function closeTrainerExportMenus() {
+    document.querySelectorAll('.export-trigger.open').forEach(btn => btn.classList.remove('open'));
+    document.querySelectorAll('.export-menu.open').forEach(drop => drop.classList.remove('open'));
+  }
+
+  function toggleTrainerExport(button) {
+    const wrap = button.closest('.export-wrap');
+    const menuEl = wrap ? wrap.querySelector('.export-menu') : null;
+    const shouldOpen = !!menuEl && !menuEl.classList.contains('open');
+    closeTrainerExportMenus();
+    if (shouldOpen && menuEl) {
+      menuEl.classList.add('open');
+      button.classList.add('open');
+    }
+  }
+
+  function isPlaceholderText(value) {
+    const text = String(value || '').trim();
+    return !text || /^\[[^\]]+\]$/.test(text) || text === '—';
+  }
+
+  function parseNumber(value) {
+    const match = String(value || '').match(/\d+/);
+    return match ? Number(match[0]) : null;
+  }
+
+  function parseStatKey(labelText) {
+    const labelMap = { hp: 'hp', atk: 'atk', def: 'def', spa: 'spa', spd: 'spd', spe: 'spe' };
+    return labelMap[String(labelText || '').trim().toLowerCase()] || '';
+  }
+
+  function buildTrainerExportData(card) {
+    const trainerName = card?.querySelector('.trainer-name')?.textContent.trim() || 'Trainer';
+    const slots = [...(card?.querySelectorAll('.pokemon-slot:not(.empty)') || [])];
+    const team = [];
+
+    slots.forEach(slot => {
+      const species = slot.querySelector('.poke-name')?.textContent.trim() || '';
+      if (isPlaceholderText(species)) {
+        return;
+      }
+
+      const level = parseNumber(slot.querySelector('.poke-level')?.textContent);
+      const itemText = slot.querySelector('.poke-item')?.textContent.replace(/^Item:\s*/i, '').trim() || '';
+      const abilityText = slot.querySelector('.poke-ability')?.textContent.replace(/^Ability:\s*/i, '').trim() || '';
+      const natureText = slot.querySelector('.poke-nature')?.textContent.replace(/^Nature:\s*/i, '').trim() || '';
+      const moves = [...slot.querySelectorAll('.poke-move')]
+        .map(move => move.textContent.trim())
+        .filter(move => !isPlaceholderText(move));
+
+      const ivs = {};
+      const stats = {};
+      slot.querySelectorAll('.stat-table tbody tr').forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length < 3) {
+          return;
+        }
+        const key = parseStatKey(cells[0].textContent);
+        if (!key) {
+          return;
+        }
+        const iv = parseNumber(cells[1].textContent);
+        const stat = parseNumber(cells[2].textContent);
+        if (iv !== null) {
+          ivs[key] = iv;
+        }
+        if (stat !== null) {
+          stats[key] = stat;
+        }
+      });
+
+      const mon = { name: species, moves };
+      if (level !== null) mon.level = level;
+      if (!isPlaceholderText(itemText)) mon.item = itemText;
+      if (!isPlaceholderText(abilityText)) mon.ability = abilityText;
+      if (!isPlaceholderText(natureText)) mon.nature = natureText;
+      if (Object.keys(ivs).length) mon.ivs = ivs;
+      if (Object.keys(stats).length) mon.stats = stats;
+      team.push(mon);
+    });
+
+    return { trainerName, team };
+  }
+
+  function formatIvLine(ivs) {
+    if (!ivs || !Object.keys(ivs).length) {
+      return '';
+    }
+    const order = [['hp', 'HP'], ['atk', 'Atk'], ['def', 'Def'], ['spa', 'SpA'], ['spd', 'SpD'], ['spe', 'Spe']];
+    const parts = order
+      .filter(([key]) => Number.isFinite(ivs[key]))
+      .map(([key, statLabel]) => `${ivs[key]} ${statLabel}`);
+    return parts.length ? `IVs: ${parts.join(' / ')}` : '';
+  }
+
+  function buildShowdownExport(team) {
+    return team.map(mon => {
+      const lines = [];
+      lines.push(mon.item ? `${mon.name} @ ${mon.item}` : mon.name);
+      if (mon.ability) lines.push(`Ability: ${mon.ability}`);
+      if (Number.isFinite(mon.level)) lines.push(`Level: ${mon.level}`);
+      if (mon.nature) lines.push(`${mon.nature} Nature`);
+      const ivLine = formatIvLine(mon.ivs);
+      if (ivLine) lines.push(ivLine);
+      (mon.moves || []).forEach(move => lines.push(`- ${move}`));
+      return lines.join('\n');
+    }).join('\n\n');
+  }
+
+  function openAreaExportModal(text, title) {
+    document.getElementById('areaExportTitle').textContent = title || 'Trainer Export';
+    const box = document.getElementById('areaExportText');
+    box.value = text;
+    document.getElementById('areaExportOverlay').classList.add('open');
+    box.focus();
+    box.select();
+  }
+
+  function closeAreaExportModal() {
+    document.getElementById('areaExportOverlay').classList.remove('open');
+  }
+
+  async function copyAreaExportText() {
+    const box = document.getElementById('areaExportText');
+    box.focus();
+    box.select();
+    try {
+      await navigator.clipboard.writeText(box.value);
+      showAreaExportToast('Showdown export copied.');
+    } catch (err) {
+      document.execCommand('copy');
+      showAreaExportToast('Showdown export selected for copy.');
+    }
+  }
+
+  function showAreaExportToast(message) {
+    const toast = document.getElementById('areaExportToast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    clearTimeout(areaExportToastTimer);
+    areaExportToastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+
+  async function handleTrainerExport(button, mode) {
+    const card = button.closest('.trainer-card');
+    const exportData = buildTrainerExportData(card);
+    closeTrainerExportMenus();
+
+    if (!exportData.team.length) {
+      showAreaExportToast('This trainer has no exportable Pokemon yet.');
+      return;
+    }
+
+    const showdownText = buildShowdownExport(exportData.team);
+    if (mode === 'showdown') {
+      openAreaExportModal(showdownText, `${exportData.trainerName} · Showdown Export`);
+      return;
+    }
+
+    if (mode === 'calculator') {
+      localStorage.setItem('calc_area_import_payload', JSON.stringify({
+        label: exportData.trainerName,
+        side: 'def',
+        data: exportData.team,
+        source: 'area-sheet',
+        at: Date.now()
+      }));
+      showAreaExportToast('Queued for Battle Calculator. Open or refresh that tab.');
+    }
+  }
+
+  const AREA_REGIONAL_PREFIX_MAP = {
+    alolan: 'alola',
+    galarian: 'galar',
+    paldean: 'paldea',
+    hisuian: 'hisui'
+  };
+
+  function normalizeAreaSpeciesSlug(value) {
+    let slug = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/[’']/g, '')
+      .replace(/\./g, '')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!slug) {
+      return '';
+    }
+
+    const prefixMatch = slug.match(/^(alolan|galarian|paldean|hisuian)-(.+)$/);
+    if (prefixMatch) {
+      slug = `${prefixMatch[2]}-${AREA_REGIONAL_PREFIX_MAP[prefixMatch[1]]}`;
+    }
+
+    slug = slug.replace(/-(alolan|galarian|paldean|hisuian)$/, (_, prefix) => {
+      return `-${AREA_REGIONAL_PREFIX_MAP[prefix] || prefix}`;
+    });
+
+    return slug;
+  }
+
+  const AREA_LOCAL_SPRITE_ALIASES = {
+    'basculegion-female': 'basculegion-f',
+    'basculegion-male': 'basculegion',
+    'basculin-blue-striped': 'basculin-bluestriped',
+    'basculin-white-striped': 'basculin-whitestriped',
+    'basculin-red-striped': 'basculin',
+    'darmanitan-galar-zen': 'darmanitan-galarzen',
+    'enamorus-incarnate': 'enamorus',
+    'indeedee-female': 'indeedee-f',
+    'indeedee-male': 'indeedee',
+    'maushold-family-of-four': 'maushold-four',
+    'maushold-family-of-three': 'maushold-four',
+    'meowstic-female': 'meowstic-f',
+    'meowstic-male': 'meowstic',
+    'tauros-paldea-aqua-breed': 'tauros-paldea-aqua',
+    'tauros-paldea-blaze-breed': 'tauros-paldea-blaze',
+    'tauros-paldea-combat-breed': 'tauros-paldea-combat'
+  };
+
+  function getAreaLocalSpriteSlugs(speciesSlug) {
+    const slug = normalizeAreaSpeciesSlug(speciesSlug);
+    if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+      return [];
+    }
+    const localSlugs = new Set([slug]);
+    if (slug.endsWith('-breed')) {
+      localSlugs.add(slug.replace(/-breed$/, ''));
+    }
+    if (slug.endsWith('-female')) {
+      localSlugs.add(slug.replace(/-female$/, '-f'));
+    }
+    if (slug.endsWith('-male')) {
+      localSlugs.add(slug.replace(/-male$/, '-m'));
+      localSlugs.add(slug.replace(/-male$/, ''));
+    }
+    if (slug.endsWith('-zen-mode')) {
+      localSlugs.add(slug.replace(/-zen-mode$/, '-zen'));
+      localSlugs.add(slug.replace(/-zen-mode$/, 'zen'));
+    }
+    if (slug.endsWith('-blue-striped')) {
+      localSlugs.add(slug.replace(/-blue-striped$/, '-bluestriped'));
+    }
+    if (slug.endsWith('-white-striped')) {
+      localSlugs.add(slug.replace(/-white-striped$/, '-whitestriped'));
+    }
+    if (AREA_LOCAL_SPRITE_ALIASES[slug]) {
+      localSlugs.add(AREA_LOCAL_SPRITE_ALIASES[slug]);
+    }
+    return Array.from(localSlugs);
+  }
+
+  function setAreaPokemonSpriteSource(img, speciesSlug) {
+    const slug = normalizeAreaSpeciesSlug(speciesSlug);
+    if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+      img.style.display = 'none';
+      return;
+    }
+
+    const sources = [
+      `https://play.pokemonshowdown.com/sprites/gen5/${slug}.png`,
+      ...getAreaLocalSpriteSlugs(slug).map(local => `../sprites/pokemon/${local}.png`),
+      `https://play.pokemonshowdown.com/sprites/dex/${slug}.png`
+    ];
+
+    let index = 0;
+    img.style.display = '';
+    img.onerror = function () {
+      index += 1;
+      if (index >= sources.length) {
+        this.onerror = null;
+        this.style.display = 'none';
+        return;
+      }
+      this.src = sources[index];
+    };
+    img.src = sources[index];
+  }
+
+  function initAreaPokemonSprites() {
+    document.querySelectorAll('.pokemon-slot .poke-sprite').forEach(img => {
+      const explicit = img.dataset.species || '';
+      const fallbackName = img.closest('.pokemon-slot')?.querySelector('.poke-name')?.textContent || '';
+      const raw = !isPlaceholderText(explicit) ? explicit : (!isPlaceholderText(fallbackName) ? fallbackName : '');
+      const slug = normalizeAreaSpeciesSlug(raw);
+      if (!slug || /^\[.*\]$/.test(slug) || slug === 'substitute') {
+        img.style.display = 'none';
+        return;
+      }
+      img.alt = fallbackName && !isPlaceholderText(fallbackName) ? fallbackName : raw;
+      setAreaPokemonSpriteSource(img, slug);
+    });
+  }
+
+  function inferEncounterSpeciesSlug(img) {
+    const explicit = img.dataset.species || img.closest('[data-species]')?.dataset.species || '';
+    if (!isPlaceholderText(explicit)) {
+      const directSlug = normalizeAreaSpeciesSlug(explicit);
+      if (directSlug && !/^\[.*\]$/.test(directSlug) && directSlug !== 'substitute') return directSlug;
+    }
+
+    const src = String(img.getAttribute('src') || '');
+    const match = src.match(/\/gen5\/([^/?#]+)\.png/i);
+    if (match?.[1]) {
+      const srcSlug = String(match[1]).toLowerCase();
+      if (srcSlug !== 'substitute') {
+        return srcSlug;
+      }
+    }
+
+    const alt = String(img.getAttribute('alt') || '');
+    if (!isPlaceholderText(alt)) {
+      const altSlug = normalizeAreaSpeciesSlug(alt);
+      if (altSlug && !/^\[.*\]$/.test(altSlug) && altSlug !== 'substitute') return altSlug;
+    }
+    return '';
+  }
+
+  function initAreaEncounterSprites() {
+    document.querySelectorAll('.section-enc .enc-sprite').forEach(img => {
+      const slug = inferEncounterSpeciesSlug(img);
+      if (!slug) {
+        img.style.display = 'none';
+        return;
+      }
+      setAreaPokemonSpriteSource(img, slug);
+    });
+  }
+
+  const AREA_ITEM_SLUG_ALIASES = {
+    'grn-apricorn': 'green-apricorn',
+    'ylw-apricorn': 'yellow-apricorn',
+    'pnk-apricorn': 'pink-apricorn',
+    'blk-apricorn': 'black-apricorn',
+    'wht-apricorn': 'white-apricorn',
+    'blu-apricorn': 'blue-apricorn',
+    'pokeball': 'poke-ball'
+  };
+
+  function normalizeAreaItemSlug(value) {
+    let slug = String(value || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase()
+      .replace(/^item:\s*/i, '')
+      .replace(/[’']/g, '')
+      .replace(/[()]/g, ' ')
+      .replace(/\./g, '')
+      .replace(/[×]/g, 'x')
+      .replace(/\s+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    if (!slug) {
+      return '';
+    }
+
+    slug = slug
+      .replace(/^(\d+)-x-/, '')
+      .replace(/-x-?(\d+)$/, '')
+      .replace(/-x(\d+)$/, '');
+
+    const tmMatch = slug.match(/^tm-?0*(\d+)(?:-.+)?$/);
+    if (tmMatch) {
+      return `tm${tmMatch[1]}`;
+    }
+
+    const hmMatch = slug.match(/^hm-?0*(\d+)(?:-.+)?$/);
+    if (hmMatch) {
+      return `hm${hmMatch[1]}`;
+    }
+
+    return AREA_ITEM_SLUG_ALIASES[slug] || slug;
+  }
+
+  function setAreaItemIconSource(icon, slug) {
+    if (!slug || /^\[.*\]$/.test(slug)) {
+      icon.style.display = 'none';
+      return;
+    }
+
+    const sources = [];
+    if (slug === 'throat-spray') {
+      sources.push('../sprites/items/throat-spray.png');
+    }
+    if (slug === 'silver-coin') {
+      sources.push('../sprites/items/silver_coin.png');
+    }
+    sources.push(`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${slug}.png`);
+    sources.push(`https://play.pokemonshowdown.com/sprites/itemicons/${slug.replace(/-/g, '')}.png`);
+
+    let index = 0;
+    icon.style.display = '';
+    icon.onerror = function () {
+      index += 1;
+      if (index >= sources.length) {
+        this.onerror = null;
+        this.style.display = 'none';
+        return;
+      }
+      this.src = sources[index];
+    };
+    icon.src = sources[index];
+  }
+
+  function initAreaItemSprites() {
+    document.querySelectorAll('.pokemon-slot .poke-item').forEach(itemNode => {
+      const raw = itemNode.textContent.replace(/^Item:\s*/i, '').trim();
+      if (!raw || isPlaceholderText(raw) || itemNode.querySelector('.poke-item-sprite')) {
+        return;
+      }
+      const slug = normalizeAreaItemSlug(raw);
+      if (!slug || /^\[.*\]$/.test(slug)) {
+        return;
+      }
+      const icon = document.createElement('img');
+      icon.className = 'poke-item-sprite';
+      icon.alt = raw;
+      setAreaItemIconSource(icon, slug);
+      itemNode.prepend(icon);
+    });
+  }
+
+  function initAreaListedItemSprites() {
+    document.querySelectorAll('.items-table .item-cell').forEach(cell => {
+      if (cell.querySelector('.item-sprite-poke')) {
+        return;
+      }
+      const nameNode = cell.querySelector('.item-name');
+      if (!nameNode) {
+        return;
+      }
+      const raw = nameNode.textContent.trim();
+      if (!raw || isPlaceholderText(raw)) {
+        const placeholderIcon = cell.querySelector('.item-sprite');
+        if (placeholderIcon) {
+          placeholderIcon.style.display = 'none';
+        }
+        return;
+      }
+      let icon = cell.querySelector('.item-sprite');
+      if (!icon) {
+        icon = document.createElement('img');
+        icon.className = 'item-sprite';
+        cell.prepend(icon);
+      }
+      icon.style.display = '';
+      icon.style.display = '';
+      const explicit = icon.dataset.item || '';
+      const source = !isPlaceholderText(explicit) ? explicit : raw;
+      const slug = normalizeAreaItemSlug(source);
+      if (!slug || /^\[.*\]$/.test(slug)) {
+        return;
+      }
+      icon.alt = raw;
+      setAreaItemIconSource(icon, slug);
+    });
+  }
+
+  function switchEncounterMode(button) {
+    const browser = button.closest('.enc-browser');
+    if (!browser) {
+      return;
+    }
+    const target = button.dataset.encTarget;
+    if (!target) {
+      return;
+    }
+    browser.querySelectorAll('.enc-type-btn').forEach(btn => {
+      btn.classList.toggle('active', btn === button);
+    });
+    browser.querySelectorAll('.enc-mode-panel').forEach(panel => {
+      panel.classList.toggle('active', panel.dataset.encPanel === target);
+    });
+  }
+
+  function initEncounterModes() {
+    document.querySelectorAll('.enc-browser').forEach(browser => {
+      const active = browser.querySelector('.enc-type-btn.active') || browser.querySelector('.enc-type-btn');
+      if (active) {
+        switchEncounterMode(active);
+      }
+    });
+  }
+
+  function getEncounterRarityClassFromText(value) {
+    const match = String(value || '').trim().match(/^(\d+(?:\.\d+)?)%$/);
+    if (!match) {
+      return '';
+    }
+    const rate = Number(match[1]);
+    if (!Number.isFinite(rate) || rate <= 0) {
+      return '';
+    }
+    if (rate >= 30) {
+      return 'rarity-common';
+    }
+    if (rate >= 15) {
+      return 'rarity-uncommon';
+    }
+    if (rate >= 5) {
+      return 'rarity-rare';
+    }
+    return 'rarity-ultra';
+  }
+
+  function initEncounterChanceBadges() {
+    document.querySelectorAll('.section-enc .enc-pct').forEach(badge => {
+      badge.classList.remove('rarity-common', 'rarity-uncommon', 'rarity-rare', 'rarity-ultra');
+      const rarityClass = getEncounterRarityClassFromText(badge.textContent);
+      if (rarityClass) {
+        badge.classList.add(rarityClass);
+      }
+    });
+  }
+
+  function getEncounterCapsuleHref(capsule) {
+    const explicit = capsule.dataset.species || '';
+    const name = capsule.querySelector('.enc-cell-c2-name')?.textContent || '';
+    const raw = !isPlaceholderText(explicit) ? explicit : (!isPlaceholderText(name) ? name : '');
+    const slug = normalizeAreaSpeciesSlug(raw);
+    if (!slug || /^\[.*\]$/.test(slug)) {
+      return '../pokedex.html';
+    }
+    return `../pokemon/${slug}.html`;
+  }
+
+  function initEncounterCapsuleLinks() {
+    document.querySelectorAll('.enc-cell-c2').forEach(capsule => {
+      const href = getEncounterCapsuleHref(capsule);
+      const name = capsule.querySelector('.enc-cell-c2-name')?.textContent || '';
+      capsule.classList.add('enc-linkable');
+      capsule.setAttribute('role', 'link');
+      capsule.tabIndex = 0;
+      capsule.title = !isPlaceholderText(name) ? `Open ${name} entry` : 'Open Pokedex';
+      capsule.addEventListener('click', () => {
+        window.location.href = href;
+      });
+      capsule.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          window.location.href = href;
+        }
+      });
+    });
+  }
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) {
+      menu.classList.remove('open');
+    }
+    if (!e.target.closest('.export-wrap')) {
+      closeTrainerExportMenus();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeTrainerExportMenus();
+      closeAreaExportModal();
+    }
+  });
+
+  // Restore saved theme
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+
+  initAreaPokemonSprites();
+  initAreaItemSprites();
+  initAreaListedItemSprites();
+  initAreaEncounterSprites();
+  initEncounterModes();
+  initEncounterChanceBadges();
+  initEncounterCapsuleLinks();
+</script>
+</body>
+</html>

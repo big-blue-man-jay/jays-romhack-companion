@@ -1,0 +1,826 @@
+[
+  {
+    "species": "absol",
+    "display_name": "Absol"
+  },
+  {
+    "species": "aerodactyl",
+    "display_name": "Aerodactyl"
+  },
+  {
+    "species": "alomomola",
+    "display_name": "Alomomola"
+  },
+  {
+    "species": "arceus",
+    "display_name": "Arceus"
+  },
+  {
+    "species": "archaludon",
+    "display_name": "Archaludon"
+  },
+  {
+    "species": "arctovish",
+    "display_name": "Arctovish"
+  },
+  {
+    "species": "arctozolt",
+    "display_name": "Arctozolt"
+  },
+  {
+    "species": "articuno",
+    "display_name": "Articuno"
+  },
+  {
+    "species": "audino",
+    "display_name": "Audino"
+  },
+  {
+    "species": "azelf",
+    "display_name": "Azelf"
+  },
+  {
+    "species": "blacephalon",
+    "display_name": "Blacephalon"
+  },
+  {
+    "species": "bombirdier",
+    "display_name": "Bombirdier"
+  },
+  {
+    "species": "bouffalant",
+    "display_name": "Bouffalant"
+  },
+  {
+    "species": "brute-bonnet",
+    "display_name": "Brute Bonnet"
+  },
+  {
+    "species": "bruxish",
+    "display_name": "Bruxish"
+  },
+  {
+    "species": "buzzwole",
+    "display_name": "Buzzwole"
+  },
+  {
+    "species": "calyrex",
+    "display_name": "Calyrex"
+  },
+  {
+    "species": "carbink",
+    "display_name": "Carbink"
+  },
+  {
+    "species": "carnivine",
+    "display_name": "Carnivine"
+  },
+  {
+    "species": "castform",
+    "display_name": "Castform"
+  },
+  {
+    "species": "celebi",
+    "display_name": "Celebi"
+  },
+  {
+    "species": "celesteela",
+    "display_name": "Celesteela"
+  },
+  {
+    "species": "chatot",
+    "display_name": "Chatot"
+  },
+  {
+    "species": "chi-yu",
+    "display_name": "Chi Yu"
+  },
+  {
+    "species": "chien-pao",
+    "display_name": "Chien Pao"
+  },
+  {
+    "species": "cobalion",
+    "display_name": "Cobalion"
+  },
+  {
+    "species": "comfey",
+    "display_name": "Comfey"
+  },
+  {
+    "species": "cramorant",
+    "display_name": "Cramorant"
+  },
+  {
+    "species": "cresselia",
+    "display_name": "Cresselia"
+  },
+  {
+    "species": "cryogonal",
+    "display_name": "Cryogonal"
+  },
+  {
+    "species": "cyclizar",
+    "display_name": "Cyclizar"
+  },
+  {
+    "species": "darkrai",
+    "display_name": "Darkrai"
+  },
+  {
+    "species": "dedenne",
+    "display_name": "Dedenne"
+  },
+  {
+    "species": "delibird",
+    "display_name": "Delibird"
+  },
+  {
+    "species": "deoxys",
+    "display_name": "Deoxys"
+  },
+  {
+    "species": "dhelmise",
+    "display_name": "Dhelmise"
+  },
+  {
+    "species": "dialga",
+    "display_name": "Dialga"
+  },
+  {
+    "species": "diancie",
+    "display_name": "Diancie"
+  },
+  {
+    "species": "ditto",
+    "display_name": "Ditto"
+  },
+  {
+    "species": "dondozo",
+    "display_name": "Dondozo"
+  },
+  {
+    "species": "dracovish",
+    "display_name": "Dracovish"
+  },
+  {
+    "species": "dracozolt",
+    "display_name": "Dracozolt"
+  },
+  {
+    "species": "drampa",
+    "display_name": "Drampa"
+  },
+  {
+    "species": "druddigon",
+    "display_name": "Druddigon"
+  },
+  {
+    "species": "duraludon",
+    "display_name": "Duraludon"
+  },
+  {
+    "species": "durant",
+    "display_name": "Durant"
+  },
+  {
+    "species": "eiscue",
+    "display_name": "Eiscue (Noice)"
+  },
+  {
+    "species": "emolga",
+    "display_name": "Emolga"
+  },
+  {
+    "species": "enamorus",
+    "display_name": "Enamorus (Incarnate Forme)"
+  },
+  {
+    "species": "entei",
+    "display_name": "Entei"
+  },
+  {
+    "species": "eternatus",
+    "display_name": "Eternatus"
+  },
+  {
+    "species": "falinks",
+    "display_name": "Falinks"
+  },
+  {
+    "species": "fezandipiti",
+    "display_name": "Fezandipiti"
+  },
+  {
+    "species": "flamigo",
+    "display_name": "Flamigo"
+  },
+  {
+    "species": "flutter-mane",
+    "display_name": "Flutter Mane"
+  },
+  {
+    "species": "furfrou",
+    "display_name": "Furfrou"
+  },
+  {
+    "species": "genesect",
+    "display_name": "Genesect"
+  },
+  {
+    "species": "giratina",
+    "display_name": "Giratina (Altered)"
+  },
+  {
+    "species": "glastrier",
+    "display_name": "Glastrier"
+  },
+  {
+    "species": "gouging-fire",
+    "display_name": "Gouging Fire"
+  },
+  {
+    "species": "great-tusk",
+    "display_name": "Great Tusk"
+  },
+  {
+    "species": "groudon",
+    "display_name": "Groudon"
+  },
+  {
+    "species": "guzzlord",
+    "display_name": "Guzzlord"
+  },
+  {
+    "species": "hawlucha",
+    "display_name": "Hawlucha"
+  },
+  {
+    "species": "heatmor",
+    "display_name": "Heatmor"
+  },
+  {
+    "species": "heatran",
+    "display_name": "Heatran"
+  },
+  {
+    "species": "heracross",
+    "display_name": "Heracross"
+  },
+  {
+    "species": "ho-oh",
+    "display_name": "Ho Oh"
+  },
+  {
+    "species": "hoopa",
+    "display_name": "Hoopa"
+  },
+  {
+    "species": "illumise",
+    "display_name": "Illumise"
+  },
+  {
+    "species": "indeedee",
+    "display_name": "Indeedee (Male)"
+  },
+  {
+    "species": "iron-boulder",
+    "display_name": "Iron Boulder"
+  },
+  {
+    "species": "iron-bundle",
+    "display_name": "Iron Bundle"
+  },
+  {
+    "species": "iron-crown",
+    "display_name": "Iron Crown"
+  },
+  {
+    "species": "iron-hands",
+    "display_name": "Iron Hands"
+  },
+  {
+    "species": "iron-jugulis",
+    "display_name": "Iron Jugulis"
+  },
+  {
+    "species": "iron-leaves",
+    "display_name": "Iron Leaves"
+  },
+  {
+    "species": "iron-moth",
+    "display_name": "Iron Moth"
+  },
+  {
+    "species": "iron-thorns",
+    "display_name": "Iron Thorns"
+  },
+  {
+    "species": "iron-treads",
+    "display_name": "Iron Treads"
+  },
+  {
+    "species": "iron-valiant",
+    "display_name": "Iron Valiant"
+  },
+  {
+    "species": "jirachi",
+    "display_name": "Jirachi"
+  },
+  {
+    "species": "kangaskhan",
+    "display_name": "Kangaskhan"
+  },
+  {
+    "species": "kartana",
+    "display_name": "Kartana"
+  },
+  {
+    "species": "kecleon",
+    "display_name": "Kecleon"
+  },
+  {
+    "species": "keldeo",
+    "display_name": "Keldeo (Ordinary)"
+  },
+  {
+    "species": "klawf",
+    "display_name": "Klawf"
+  },
+  {
+    "species": "klefki",
+    "display_name": "Klefki"
+  },
+  {
+    "species": "komala",
+    "display_name": "Komala"
+  },
+  {
+    "species": "koraidon",
+    "display_name": "Koraidon"
+  },
+  {
+    "species": "kyogre",
+    "display_name": "Kyogre"
+  },
+  {
+    "species": "kyurem",
+    "display_name": "Kyurem"
+  },
+  {
+    "species": "landorus",
+    "display_name": "Landorus (Incarnate Forme)"
+  },
+  {
+    "species": "lapras",
+    "display_name": "Lapras"
+  },
+  {
+    "species": "latias",
+    "display_name": "Latias"
+  },
+  {
+    "species": "latios",
+    "display_name": "Latios"
+  },
+  {
+    "species": "lugia",
+    "display_name": "Lugia"
+  },
+  {
+    "species": "lunatone",
+    "display_name": "Lunatone"
+  },
+  {
+    "species": "luvdisc",
+    "display_name": "Luvdisc"
+  },
+  {
+    "species": "magearna",
+    "display_name": "Magearna"
+  },
+  {
+    "species": "manaphy",
+    "display_name": "Manaphy"
+  },
+  {
+    "species": "maractus",
+    "display_name": "Maractus"
+  },
+  {
+    "species": "marshadow",
+    "display_name": "Marshadow"
+  },
+  {
+    "species": "mawile",
+    "display_name": "Mawile"
+  },
+  {
+    "species": "melmetal",
+    "display_name": "Melmetal"
+  },
+  {
+    "species": "meloetta",
+    "display_name": "Meloetta (Aria Forme)"
+  },
+  {
+    "species": "meltan",
+    "display_name": "Meltan"
+  },
+  {
+    "species": "mesprit",
+    "display_name": "Mesprit"
+  },
+  {
+    "species": "mew",
+    "display_name": "Mew"
+  },
+  {
+    "species": "mewtwo",
+    "display_name": "Mewtwo"
+  },
+  {
+    "species": "miltank",
+    "display_name": "Miltank"
+  },
+  {
+    "species": "mimikyu",
+    "display_name": "Mimikyu (Disguised)"
+  },
+  {
+    "species": "minun",
+    "display_name": "Minun"
+  },
+  {
+    "species": "miraidon",
+    "display_name": "Miraidon"
+  },
+  {
+    "species": "moltres",
+    "display_name": "Moltres"
+  },
+  {
+    "species": "morpeko",
+    "display_name": "Morpeko (Full Belly Mode)"
+  },
+  {
+    "species": "munkidori",
+    "display_name": "Munkidori"
+  },
+  {
+    "species": "necrozma",
+    "display_name": "Necrozma"
+  },
+  {
+    "species": "nihilego",
+    "display_name": "Nihilego"
+  },
+  {
+    "species": "ogerpon",
+    "display_name": "Ogerpon"
+  },
+  {
+    "species": "okidogi",
+    "display_name": "Okidogi"
+  },
+  {
+    "species": "oranguru",
+    "display_name": "Oranguru"
+  },
+  {
+    "species": "oricorio",
+    "display_name": "Oricorio (Baile)"
+  },
+  {
+    "species": "orthworm",
+    "display_name": "Orthworm"
+  },
+  {
+    "species": "pachirisu",
+    "display_name": "Pachirisu"
+  },
+  {
+    "species": "palkia",
+    "display_name": "Palkia"
+  },
+  {
+    "species": "passimian",
+    "display_name": "Passimian"
+  },
+  {
+    "species": "pecharunt",
+    "display_name": "Pecharunt"
+  },
+  {
+    "species": "pheromosa",
+    "display_name": "Pheromosa"
+  },
+  {
+    "species": "phione",
+    "display_name": "Phione"
+  },
+  {
+    "species": "pincurchin",
+    "display_name": "Pincurchin"
+  },
+  {
+    "species": "pinsir",
+    "display_name": "Pinsir"
+  },
+  {
+    "species": "plusle",
+    "display_name": "Plusle"
+  },
+  {
+    "species": "poltchageist",
+    "display_name": "Poltchageist"
+  },
+  {
+    "species": "pyukumuku",
+    "display_name": "Pyukumuku"
+  },
+  {
+    "species": "raging-bolt",
+    "display_name": "Raging Bolt"
+  },
+  {
+    "species": "raikou",
+    "display_name": "Raikou"
+  },
+  {
+    "species": "rayquaza",
+    "display_name": "Rayquaza"
+  },
+  {
+    "species": "regice",
+    "display_name": "Regice"
+  },
+  {
+    "species": "regidrago",
+    "display_name": "Regidrago"
+  },
+  {
+    "species": "regieleki",
+    "display_name": "Regieleki"
+  },
+  {
+    "species": "regigigas",
+    "display_name": "Regigigas"
+  },
+  {
+    "species": "regirock",
+    "display_name": "Regirock"
+  },
+  {
+    "species": "registeel",
+    "display_name": "Registeel"
+  },
+  {
+    "species": "relicanth",
+    "display_name": "Relicanth"
+  },
+  {
+    "species": "reshiram",
+    "display_name": "Reshiram"
+  },
+  {
+    "species": "roaring-moon",
+    "display_name": "Roaring Moon"
+  },
+  {
+    "species": "rotom",
+    "display_name": "Rotom"
+  },
+  {
+    "species": "sableye",
+    "display_name": "Sableye"
+  },
+  {
+    "species": "sandy-shocks",
+    "display_name": "Sandy Shocks"
+  },
+  {
+    "species": "sawk",
+    "display_name": "Sawk"
+  },
+  {
+    "species": "scream-tail",
+    "display_name": "Scream Tail"
+  },
+  {
+    "species": "seviper",
+    "display_name": "Seviper"
+  },
+  {
+    "species": "shaymin",
+    "display_name": "Shaymin (Land)"
+  },
+  {
+    "species": "shuckle",
+    "display_name": "Shuckle"
+  },
+  {
+    "species": "sigilyph",
+    "display_name": "Sigilyph"
+  },
+  {
+    "species": "sinistcha",
+    "display_name": "Sinistcha"
+  },
+  {
+    "species": "skarmory",
+    "display_name": "Skarmory"
+  },
+  {
+    "species": "slither-wing",
+    "display_name": "Slither Wing"
+  },
+  {
+    "species": "smeargle",
+    "display_name": "Smeargle"
+  },
+  {
+    "species": "solrock",
+    "display_name": "Solrock"
+  },
+  {
+    "species": "spectrier",
+    "display_name": "Spectrier"
+  },
+  {
+    "species": "spinda",
+    "display_name": "Spinda"
+  },
+  {
+    "species": "spiritomb",
+    "display_name": "Spiritomb"
+  },
+  {
+    "species": "squawkabilly",
+    "display_name": "Squawkabilly (Green Plumage)"
+  },
+  {
+    "species": "stakataka",
+    "display_name": "Stakataka"
+  },
+  {
+    "species": "stonjourner",
+    "display_name": "Stonjourner"
+  },
+  {
+    "species": "stunfisk",
+    "display_name": "Stunfisk"
+  },
+  {
+    "species": "suicune",
+    "display_name": "Suicune"
+  },
+  {
+    "species": "tapu-bulu",
+    "display_name": "Tapu Bulu"
+  },
+  {
+    "species": "tapu-fini",
+    "display_name": "Tapu Fini"
+  },
+  {
+    "species": "tapu-koko",
+    "display_name": "Tapu Koko"
+  },
+  {
+    "species": "tapu-lele",
+    "display_name": "Tapu Lele"
+  },
+  {
+    "species": "tatsugiri",
+    "display_name": "Tatsugiri (Curly)"
+  },
+  {
+    "species": "tauros",
+    "display_name": "Tauros"
+  },
+  {
+    "species": "terapagos",
+    "display_name": "Terapagos"
+  },
+  {
+    "species": "terrakion",
+    "display_name": "Terrakion"
+  },
+  {
+    "species": "throh",
+    "display_name": "Throh"
+  },
+  {
+    "species": "thundurus",
+    "display_name": "Thundurus (Incarnate Forme)"
+  },
+  {
+    "species": "ting-lu",
+    "display_name": "Ting Lu"
+  },
+  {
+    "species": "togedemaru",
+    "display_name": "Togedemaru"
+  },
+  {
+    "species": "torkoal",
+    "display_name": "Torkoal"
+  },
+  {
+    "species": "tornadus",
+    "display_name": "Tornadus (Incarnate Forme)"
+  },
+  {
+    "species": "tropius",
+    "display_name": "Tropius"
+  },
+  {
+    "species": "turtonator",
+    "display_name": "Turtonator"
+  },
+  {
+    "species": "unown",
+    "display_name": "Unown"
+  },
+  {
+    "species": "uxie",
+    "display_name": "Uxie"
+  },
+  {
+    "species": "veluza",
+    "display_name": "Veluza"
+  },
+  {
+    "species": "victini",
+    "display_name": "Victini"
+  },
+  {
+    "species": "virizion",
+    "display_name": "Virizion"
+  },
+  {
+    "species": "volbeat",
+    "display_name": "Volbeat"
+  },
+  {
+    "species": "volcanion",
+    "display_name": "Volcanion"
+  },
+  {
+    "species": "walking-wake",
+    "display_name": "Walking Wake"
+  },
+  {
+    "species": "wishiwashi",
+    "display_name": "Wishiwashi (Solo)"
+  },
+  {
+    "species": "wo-chien",
+    "display_name": "Wo Chien"
+  },
+  {
+    "species": "xerneas",
+    "display_name": "Xerneas"
+  },
+  {
+    "species": "xurkitree",
+    "display_name": "Xurkitree"
+  },
+  {
+    "species": "yveltal",
+    "display_name": "Yveltal"
+  },
+  {
+    "species": "zacian",
+    "display_name": "Zacian"
+  },
+  {
+    "species": "zamazenta",
+    "display_name": "Zamazenta"
+  },
+  {
+    "species": "zangoose",
+    "display_name": "Zangoose"
+  },
+  {
+    "species": "zapdos",
+    "display_name": "Zapdos"
+  },
+  {
+    "species": "zarude",
+    "display_name": "Zarude"
+  },
+  {
+    "species": "zekrom",
+    "display_name": "Zekrom"
+  },
+  {
+    "species": "zeraora",
+    "display_name": "Zeraora"
+  },
+  {
+    "species": "zygarde",
+    "display_name": "Zygarde (50)"
+  }
+]

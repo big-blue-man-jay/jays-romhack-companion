@@ -12,6 +12,64 @@ TOOLS_DIR = Path(__file__).resolve().parent
 SITE_DIR = TOOLS_DIR.parent
 DATA_DIR = SITE_DIR / 'data'
 OUT_FILE = SITE_DIR / 'pokedex.html'
+MOVE_BUCKETS = ('levelup', 'egg', 'tm', 'tutor')
+
+
+def normalize_moves_block(moves):
+    moves = moves if isinstance(moves, dict) else {}
+    return {bucket: list(moves.get(bucket, [])) for bucket in MOVE_BUCKETS}
+
+
+def copy_move_bucket(bucket):
+    copied = []
+    for entry in bucket:
+        if isinstance(entry, dict):
+            copied.append(dict(entry))
+        else:
+            copied.append(entry)
+    return copied
+
+
+def resolve_primary_species_entry(current, candidate, species_name):
+    if current is None:
+        return candidate
+    current_exact = current['name'] == species_name
+    candidate_exact = candidate['name'] == species_name
+    if candidate_exact and not current_exact:
+        return candidate
+    if candidate_exact == current_exact and candidate['id'] < current['id']:
+        return candidate
+    return current
+
+
+def inherit_form_moves(rows):
+    source_by_species = {}
+    for row in rows:
+        species_name = row.get('species_name', row['name'])
+        source_by_species[species_name] = resolve_primary_species_entry(
+            source_by_species.get(species_name), row, species_name
+        )
+
+    inherited_rows = 0
+    for row in rows:
+        species_name = row.get('species_name', row['name'])
+        source = source_by_species.get(species_name)
+        row_moves = normalize_moves_block(row.get('moves'))
+        if source is row:
+            row['moves'] = row_moves
+            continue
+
+        source_moves = normalize_moves_block(source.get('moves'))
+        changed = False
+        for bucket in MOVE_BUCKETS:
+            if not row_moves[bucket] and source_moves[bucket]:
+                row_moves[bucket] = copy_move_bucket(source_moves[bucket])
+                changed = True
+        row['moves'] = row_moves
+        if changed:
+            inherited_rows += 1
+
+    return inherited_rows
 
 # ── Load + merge data ────────────────────────────────────────────
 print("Loading data…")
@@ -120,6 +178,10 @@ for p in merged:
     sn = p.get('species_name', p['name'])
     p['display_id'] = species_id_map.get(sn, p['id'])
     p['base_name']  = sn   # base species name for sprite fallback
+
+inherited_forms = inherit_form_moves(merged)
+if inherited_forms:
+    print(f"  Inherited base movepools for {inherited_forms} form entries")
 
 # ── Merge egg groups ─────────────────────────────────────────────
 egg_groups_file = DATA_DIR / 'egg_groups.json'

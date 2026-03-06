@@ -315,6 +315,7 @@
   .type-pill.city { background: #6A8FB7; }
   .type-pill.tower { background: #8D6AB7; }
   .type-pill.dungeon { background: #A67A54; }
+  .type-pill.gym { background: #B47D58; }
 
   .subfilter-wrap {
     flex: 1;
@@ -839,7 +840,7 @@
       name: 'Sprout Tower',
       type: 'Tower',
       biome: 'Spiritual',
-      chapter: 'Chapter 1',
+      chapter: 'Chapter 1 · Pre-Falkner',
       status: 'Live',
       summary: 'Early challenge area with monks, tower encounters, and key opening resources.',
       tags: ['Tower', 'Encounters', 'Trainers', 'Items'],
@@ -856,55 +857,2401 @@
       link: 'areas/sproutower.html'
     },
     {
-      id: 'route-29',
+      id: 'new-bark-town',
       displayId: 2,
+      name: 'New Bark Town',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Starter town sheet with mapped Good Rod encounters plus the opening story item rewards.',
+      tags: ['Town', 'Fishing', 'Setup'],
+      counts: {
+        encounters: 'Good Rod (10 slots)',
+        trainers: 'None',
+        items: '2 mapped'
+      },
+      notes: [
+        'Good Rod table is mapped at Lv 30-40 with 10 weighted slots.',
+        'Includes opening progression rewards (Elm aide Potions and Elm Master Ball milestone).',
+        'Walking, surfing, and static/gift sections are intentionally empty for now.'
+      ],
+      link: 'areas/newbarktown.html'
+    },
+    {
+      id: 'route-29',
+      displayId: 3,
       name: 'Route 29',
       type: 'Route',
       biome: 'Grassland',
-      chapter: 'Chapter 1',
-      status: 'Planned',
-      summary: 'Starter outbound route slot for early encounters, item pickups, and first trainer routing.',
-      tags: ['Route', 'Early Game', 'Day/Night'],
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Opening route sheet with full morning/day/night walking tables mapped at Lv 2-4.',
+      tags: ['Route', 'Encounters', 'Early Game'],
       counts: {
-        encounters: 'Starter grass',
-        trainers: 'Early route',
-        items: 'Field pickups'
+        encounters: '3 time sets',
+        trainers: 'None',
+        items: '5 mapped'
       },
       notes: [
-        'Good template slot for your first normal route page.',
-        'Can track day and night differences once the route sheet is written.',
-        'Use it to document tutorial pacing and first catch logic.'
+        'Morning, day, and night walking slots are mapped with 10 entries each.',
+        'Includes time-exclusive slots like Sunkern (morning), Aipom (day), and Gastly (night).',
+        'Surfing, fishing, and static/gift sections are left empty for future mapping.'
       ],
-      link: ''
+      link: 'areas/route29.html'
+    },
+    {
+      id: 'cherrygrove-city',
+      displayId: 4,
+      name: 'Cherrygrove City',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'City fishing sheet with mapped Old Rod and Good Rod encounter pools ready for routing and encounter planning.',
+      tags: ['City', 'Fishing', 'Chapter 1'],
+      counts: {
+        encounters: 'Old Rod + Good Rod',
+        trainers: 'None',
+        items: '5 mapped'
+      },
+      notes: [
+        'Old Rod is mapped at Lv 4-7 with Goldeen, Krabby, Tentacool, and Chinchou.',
+        'Good Rod is mapped at Lv 30-40 with 10 weighted slots from Kingler to Lapras.',
+        'City utility pickups and hidden surf pickups are documented in the item table.'
+      ],
+      link: 'areas/cherrygrovecity.html'
+    },
+    {
+      id: 'route-30',
+      displayId: 5,
+      name: 'Route 30',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Early route sheet with mapped time-of-day encounters, rod tables, headbutt groups, trainers, and pickups.',
+      tags: ['Route', 'Early Game', 'Story'],
+      counts: {
+        encounters: 'Walking + Fishing + Headbutt',
+        trainers: 'Joey + Albert',
+        items: '9 mapped'
+      },
+      notes: [
+        'Morning/day/night walking tables are fully mapped.',
+        'Old Rod and Good Rod pools are mapped, plus two headbutt groups.',
+        'Youngster Joey and Youngster Albert are documented in the trainer section.'
+      ],
+      link: 'areas/route30.html'
+    },
+    {
+      id: 'route-31',
+      displayId: 6,
+      name: 'Route 31',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Pre-gym route sheet with full encounter mapping, key optional fights, and route utility items.',
+      tags: ['Route', 'Pre-Gym', 'Optional'],
+      counts: {
+        encounters: 'Walking + Fishing + Headbutt',
+        trainers: 'Mikey + Kelsie',
+        items: '6 mapped'
+      },
+      notes: [
+        'Morning/day/night walking tables are fully mapped.',
+        'Old Rod and Good Rod pools are mapped, plus two headbutt groups.',
+        'Bug Catcher Mikey and Battle Girl Kelsie are documented; Kelsie includes the Silver Coin reward.'
+      ],
+      link: 'areas/route31.html'
+    },
+    {
+      id: 'route-46',
+      displayId: 7,
+      name: 'Route 46',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Upper-route sheet with mapped morning/day/night pools plus headbutt groups for early progression planning.',
+      tags: ['Route', 'Encounters', 'Headbutt'],
+      counts: {
+        encounters: 'Walking + Headbutt',
+        trainers: 'None',
+        items: '4 mapped'
+      },
+      notes: [
+        'Walking tables are mapped at Lv 4-7 with time variants.',
+        'Headbutt Group A/B are mapped with separate level bands.',
+        'Fishing and static/gift sections are intentionally empty right now.'
+      ],
+      link: 'areas/route46.html'
+    },
+    {
+      id: 'dark-cave',
+      displayId: 8,
+      name: 'Dark Cave (West entrance)',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Cave entry sheet with walking, Old Rod, and Rock Smash pools mapped for early-route access checks.',
+      tags: ['Dungeon', 'Encounters', 'Rock Smash'],
+      counts: {
+        encounters: 'Walking + Old Rod + Rock Smash',
+        trainers: 'None',
+        items: '17 mapped'
+      },
+      notes: [
+        'Walking table is mapped at Lv 6-9.',
+        'Old Rod and Rock Smash tables are included for cave-specific routing.',
+        'Surfing and static/gift sections are intentionally empty right now.'
+      ],
+      link: 'areas/dark-cave.html'
     },
     {
       id: 'violet-city',
-      displayId: 3,
+      displayId: 9,
       name: 'Violet City',
       type: 'City',
       biome: 'Urban',
-      chapter: 'Chapter 1',
-      status: 'Planned',
-      summary: 'Hub-town slot for shops, NPC gifts, gym access, and branching documentation links.',
-      tags: ['City', 'Hub', 'Story'],
+      chapter: 'Chapter 1 · Pre-Falkner',
+      status: 'Live',
+      summary: 'Hub-city reference with mapped Old Rod and gift encounter data for pre-gym planning.',
+      tags: ['City', 'Fishing', 'Gift'],
       counts: {
-        encounters: 'Local gifts',
-        trainers: 'Gym path',
-        items: 'Shops and NPCs'
+        encounters: 'Old Rod + Gift',
+        trainers: 'None',
+        items: '10 mapped'
       },
       notes: [
-        'Use city sheets to track vendors, move tutors, and important NPC rewards.',
-        'This is the best place to link back into Progression and TrainerDex.',
-        'Once the hub is finished, it can anchor Chapter 1 navigation.'
+        'Old Rod pool is mapped at Lv 5-7.',
+        'Gift encounter entry is listed directly in the area sheet.',
+        'Walking and surfing are intentionally empty for city routing.'
       ],
-      link: ''
+      link: 'areas/violetcity.html'
+    },
+    {
+      id: 'violet-gym',
+      displayId: 10,
+      name: 'Violet Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 1 · Falkner',
+      status: 'Live',
+      summary: 'Badge 1 gym sheet with the mapped gym trainers already grouped in one place and no wild encounter clutter.',
+      tags: ['Gym', 'Boss', 'Story'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Abe, Rod, Falkner',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Bird Keeper Abe, Bird Keeper Rod, and Falkner are already listed there.',
+        'The page is meant for gym notes, restrictions, and reward tracking.',
+        'Use it as the chapter boss anchor once the gym route is finalized.'
+      ],
+      link: 'areas/violetgym.html'
+    },
+    {
+      id: 'route-32',
+      displayId: 11,
+      name: 'Route 32',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Southbound route sheet for the post-Falkner stretch into Union Cave and Azalea progression.',
+      tags: ['Route', 'Chapter 2', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Core transition route for the Chapter 2 flow.',
+        'Use this sheet as the anchor for encounter and trainer pacing into the cave segment.'
+      ],
+      link: 'areas/route32.html'
+    },
+    {
+      id: 'ruins-of-alph',
+      displayId: 12,
+      name: 'Ruins of Alph',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Optional side-area sheet for ruins content, puzzle/event notes, and encounter planning.',
+      tags: ['Dungeon', 'Chapter 2', 'Optional'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Keep this area linked to Chapter 2 even if progress is optional.',
+        'Document puzzle/event unlocks alongside any local encounters.'
+      ],
+      link: 'areas/ruins-of-alph.html'
+    },
+    {
+      id: 'union-cave',
+      displayId: 13,
+      name: 'Union Cave',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Main cave progression sheet connecting Route 32 to Route 33 and Azalea.',
+      tags: ['Dungeon', 'Chapter 2', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Treat this as one of the main chapter gating locations.',
+        'Track floor/sub-area differences here once encounter tables are locked.'
+      ],
+      link: 'areas/union-cave.html'
+    },
+    {
+      id: 'route-33',
+      displayId: 14,
+      name: 'Route 33',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Short connector route between Union Cave and Azalea Town.',
+      tags: ['Route', 'Chapter 2', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for the bridge segment right before Azalea.',
+        'Keep trainer/item notes concise so the route stays fast to scan.'
+      ],
+      link: 'areas/route33.html'
+    },
+    {
+      id: 'azalea-town',
+      displayId: 15,
+      name: 'Azalea Town',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Chapter hub town sheet for events, shops, and chapter-level progression notes.',
+      tags: ['City', 'Chapter 2', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the chapter checkpoint page.',
+        'Capture key event state and rewards as content gets finalized.'
+      ],
+      link: 'areas/azaleatown.html'
+    },
+    {
+      id: 'slowpoke-well',
+      displayId: 16,
+      name: 'Slowpoke Well',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 2',
+      status: 'Live',
+      summary: 'Story dungeon sheet for the Azalea segment with room for encounter and event-specific notes.',
+      tags: ['Dungeon', 'Chapter 2', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Main Chapter 2 story location tied to Azalea progression.',
+        'Track floor/state changes here as soon as the final scripts are settled.'
+      ],
+      link: 'areas/slowpokewell.html'
+    },
+    {
+      id: 'ilex-forest',
+      displayId: 17,
+      name: 'Ilex Forest',
+      type: 'Dungeon',
+      biome: 'Forest',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Forest progression sheet between Azalea and Goldenrod with room for encounters, trainers, and key event notes.',
+      tags: ['Dungeon', 'Forest', 'Chapter 3'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the first major location in Chapter 3.',
+        'Track event interactions and route-through options once data is finalized.'
+      ],
+      link: 'areas/ilexforest.html'
+    },
+    {
+      id: 'route-34',
+      displayId: 18,
+      name: 'Route 34',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Connector route sheet from Ilex Forest into Goldenrod City.',
+      tags: ['Route', 'Chapter 3', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for early Chapter 3 trainer and encounter pacing.',
+        'Keep progression-critical notes concise for faster planning.'
+      ],
+      link: 'areas/route34.html'
+    },
+    {
+      id: 'goldenrod-city',
+      displayId: 19,
+      name: 'Goldenrod City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Major hub-city sheet for story beats, utility unlocks, and chapter checkpoint planning.',
+      tags: ['City', 'Chapter 3', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the central Chapter 3 reference page.',
+        'Track key shops, rewards, and event states as they lock in.'
+      ],
+      link: 'areas/goldenrodcity.html'
+    },
+    {
+      id: 'route-35',
+      displayId: 20,
+      name: 'Route 35',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Northbound route sheet out of Goldenrod toward National Park.',
+      tags: ['Route', 'Chapter 3', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for the first half of the Goldenrod-to-Ecruteak path.',
+        'Map encounter pacing alongside trainer spikes for better route balance.'
+      ],
+      link: 'areas/route35.html'
+    },
+    {
+      id: 'route-36',
+      displayId: 21,
+      name: 'Route 36',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Progression route sheet with event gating and connection into National Park / Route 37 pathing.',
+      tags: ['Route', 'Chapter 3', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for route-specific story gates and unlock checks.',
+        'Keep alternate path notes visible for planning and QA.'
+      ],
+      link: 'areas/route36.html'
+    },
+    {
+      id: 'national-park',
+      displayId: 22,
+      name: 'National Park',
+      type: 'Dungeon',
+      biome: 'Forest',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Park-area sheet for local encounters, side content, and event-specific chapter notes.',
+      tags: ['Dungeon', 'Park', 'Chapter 3'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as a side-content anchor within Chapter 3 routing.',
+        'Track park-only encounters and item paths separately from route sheets.'
+      ],
+      link: 'areas/nationalpark.html'
+    },
+    {
+      id: 'route-37',
+      displayId: 23,
+      name: 'Route 37',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Final approach route into Ecruteak with chapter-transition encounter and trainer notes.',
+      tags: ['Route', 'Chapter 3', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for the last connector before Ecruteak.',
+        'Capture pacing shifts as the chapter transitions into tower content.'
+      ],
+      link: 'areas/route37.html'
+    },
+    {
+      id: 'ecruteak-city',
+      displayId: 24,
+      name: 'Ecruteak City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'City hub sheet for chapter progression, event state, and tower access planning.',
+      tags: ['City', 'Chapter 3', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the chapter checkpoint once Ecruteak content opens.',
+        'Track city event flow alongside Burned/Bell Tower access.'
+      ],
+      link: 'areas/ecruteakcity.html'
+    },
+    {
+      id: 'burned-tower',
+      displayId: 25,
+      name: 'Burned Tower',
+      type: 'Tower',
+      biome: 'Spiritual',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Tower-dungeon sheet for mid-chapter story encounters and event flags.',
+      tags: ['Tower', 'Chapter 3', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page to document internal floors and event triggers.',
+        'Keep it paired with Bell Tower notes for clearer progression tracking.'
+      ],
+      link: 'areas/burnedtower.html'
+    },
+    {
+      id: 'bell-tower',
+      displayId: 26,
+      name: 'Bell Tower',
+      type: 'Tower',
+      biome: 'Spiritual',
+      chapter: 'Chapter 3',
+      status: 'Live',
+      summary: 'Tower sheet for late Chapter 3 progression and tower-specific encounter/event planning.',
+      tags: ['Tower', 'Chapter 3', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for Bell Tower progression and event state documentation.',
+        'Track floor-based differences in encounters and item routing once mapped.'
+      ],
+      link: 'areas/belltower.html'
+    },
+    {
+      id: 'route-38',
+      displayId: 27,
+      name: 'Route 38',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Westbound route sheet in the Olivine/Cianwood chapter path.',
+      tags: ['Route', 'Chapter 4', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'First route segment in the Chapter 4 sequence.',
+        'Use this page to map route trainer pacing and encounter spread.'
+      ],
+      link: 'areas/route38.html'
+    },
+    {
+      id: 'route-39',
+      displayId: 28,
+      name: 'Route 39',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Connector route leading into Olivine City and chapter hub content.',
+      tags: ['Route', 'Chapter 4', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the approach route into Olivine City.',
+        'Keep trainer and item notes aligned with city progression gates.'
+      ],
+      link: 'areas/route39.html'
+    },
+    {
+      id: 'olivine-city',
+      displayId: 29,
+      name: 'Olivine City',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Primary coastal hub sheet for Chapter 4 progression and routing decisions.',
+      tags: ['City', 'Chapter 4', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the central city reference for the chapter.',
+        'Track major unlocks and branch routing from here.'
+      ],
+      link: 'areas/olivinecity.html'
+    },
+    {
+      id: 'olivine-lighthouse',
+      displayId: 30,
+      name: 'Olivine Lighthouse',
+      type: 'Tower',
+      biome: 'Indoor',
+      chapter: 'Chapter 4',
+      status: 'Planned',
+      summary: 'Lighthouse progression sheet for tower-floor routing and trainer/event notes.',
+      tags: ['Tower', 'Chapter 4', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Separate lighthouse sheet is planned but not created yet.',
+        'Add floor-specific notes and progression checks once the page exists.'
+      ]
+    },
+    {
+      id: 'route-40',
+      displayId: 31,
+      name: 'Route 40',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Sea route sheet connecting Olivine-side progression toward Cianwood.',
+      tags: ['Route', 'Chapter 4', 'Surfing'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for coastal encounter tables and water-route trainer checks.',
+        'Keep routing notes aligned with Route 41 and Whirl Islands progression.'
+      ],
+      link: 'areas/route40.html'
+    },
+    {
+      id: 'route-41',
+      displayId: 32,
+      name: 'Route 41',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Open-water route sheet between Olivine-side sea routes and Cianwood progression.',
+      tags: ['Route', 'Chapter 4', 'Surfing'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the late-water segment in the chapter route chain.',
+        'Document water encounter spread and optional trainer forks here.'
+      ],
+      link: 'areas/route41.html'
+    },
+    {
+      id: 'whirl-islands',
+      displayId: 33,
+      name: 'Whirl Islands',
+      type: 'Dungeon',
+      biome: 'Coastal',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Island dungeon sheet for cave-routing and water-adjacent chapter content.',
+      tags: ['Dungeon', 'Chapter 4', 'Coastal'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for internal island routing and floor mapping.',
+        'Track encounter and item differences by island section as needed.'
+      ],
+      link: 'areas/whirlislands.html'
+    },
+    {
+      id: 'cianwood-city',
+      displayId: 34,
+      name: 'Cianwood City',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 4',
+      status: 'Live',
+      summary: 'Chapter endpoint city sheet for Cianwood-side progression and event notes.',
+      tags: ['City', 'Chapter 4', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the Cianwood hub page for Chapter 4.',
+        'Track city utilities, events, and rewards tied to chapter flow.'
+      ],
+      link: 'areas/cianwoodcity.html'
+    },
+    {
+      id: 'cianwood-gym',
+      displayId: 35,
+      name: 'Cianwood City Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 4',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Cianwood trainer line and boss documentation.',
+      tags: ['Gym', 'Chapter 4', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Separate Cianwood Gym page is planned but not created yet.',
+        'Add full gym roster and reward notes when the page is created.'
+      ]
+    },
+    {
+      id: 'olivine-gym',
+      displayId: 36,
+      name: 'Olivine City Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 4',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Olivine trainer line and boss documentation.',
+      tags: ['Gym', 'Chapter 4', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Separate Olivine Gym page is planned but not created yet.',
+        'Add full gym roster and reward notes when the page is created.'
+      ]
+    },
+    {
+      id: 'cliff-edge-gate',
+      displayId: 37,
+      name: 'Cliff Edge Gate',
+      type: 'Dungeon',
+      biome: 'Indoor',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Gate transition sheet for the Safari-side chapter path and route handoff.',
+      tags: ['Dungeon', 'Chapter 5', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the entry checkpoint for the Chapter 5 route chain.',
+        'Track gate-specific trainer or event conditions here.'
+      ],
+      link: 'areas/cliffedgegate.html'
+    },
+    {
+      id: 'route-47',
+      displayId: 38,
+      name: 'Route 47',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Main route sheet on the Cliff Edge Gate side of Chapter 5 progression.',
+      tags: ['Route', 'Chapter 5', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this for route encounter and trainer pacing in the mid-chapter segment.',
+        'Keep transition notes aligned with Cliff Cave and Route 48.'
+      ],
+      link: 'areas/route47.html'
+    },
+    {
+      id: 'cliff-cave',
+      displayId: 39,
+      name: 'Cliff Cave',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Cave progression sheet tied to the Route 47/48 branch of Chapter 5.',
+      tags: ['Dungeon', 'Chapter 5', 'Cave'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for floor-based cave mapping and route-through notes.',
+        'Track cave-only encounter and item differences by section.'
+      ],
+      link: 'areas/cliffcave.html'
+    },
+    {
+      id: 'route-48',
+      displayId: 40,
+      name: 'Route 48',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Follow-up route sheet after Cliff Cave for late Chapter 5 progression.',
+      tags: ['Route', 'Chapter 5', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route to track pacing and access conditions after cave progression.',
+        'Keep it synchronized with Safari Zone gate routing decisions.'
+      ],
+      link: 'areas/route48.html'
+    },
+    {
+      id: 'safari-zone-gate',
+      displayId: 41,
+      name: 'Safari Zone Gate',
+      type: 'Dungeon',
+      biome: 'Indoor',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Gate hub sheet for Safari Zone access rules and chapter routing notes.',
+      tags: ['Dungeon', 'Chapter 5', 'Gate'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this for gate restrictions, unlock states, and handoff logic.',
+        'Keep Safari-specific notes split cleanly from the zone interior page.'
+      ],
+      link: 'areas/safarizonegate.html'
+    },
+    {
+      id: 'safari-zone',
+      displayId: 42,
+      name: 'Safari Zone',
+      type: 'Dungeon',
+      biome: 'Savanna',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Safari interior sheet for zone encounters, area partitions, and item routing.',
+      tags: ['Dungeon', 'Chapter 5', 'Safari'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page to split encounter pools by safari section if needed.',
+        'Track item pathing and zone-only mechanics here.'
+      ],
+      link: 'areas/safarizone.html'
+    },
+    {
+      id: 'route-42',
+      displayId: 43,
+      name: 'Route 42',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Eastbound route sheet in the Lake of Rage and Mt. Mortar chapter corridor.',
+      tags: ['Route', 'Chapter 5', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route page to track the chapter pivot toward mountain/lake content.',
+        'Capture progression checks and side-branch notes directly in this sheet.'
+      ],
+      link: 'areas/route42.html'
+    },
+    {
+      id: 'mt-mortar',
+      displayId: 44,
+      name: 'Mt. Mortar',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Mountain cave sheet for floor mapping, encounters, and chapter side progression.',
+      tags: ['Dungeon', 'Chapter 5', 'Cave'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for sub-area and floor-level cave detail.',
+        'Track optional branches separately from the main route flow.'
+      ],
+      link: 'areas/mtmortar.html'
+    },
+    {
+      id: 'lake-of-rage',
+      displayId: 45,
+      name: 'Lake of Rage',
+      type: 'Dungeon',
+      biome: 'Coastal',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Lake-area sheet for water encounter planning and chapter event tracking.',
+      tags: ['Dungeon', 'Chapter 5', 'Water'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the lake event and encounter anchor for Chapter 5.',
+        'Track special encounter conditions and rewards here.'
+      ],
+      link: 'areas/lakeofrage.html'
+    },
+    {
+      id: 'route-43',
+      displayId: 46,
+      name: 'Route 43',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Connector route sheet tied to Lake of Rage progression and Rocket sequence setup.',
+      tags: ['Route', 'Chapter 5', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the route bridge into Rocket Hideout content.',
+        'Keep progression and trainer escalation notes visible for balance checks.'
+      ],
+      link: 'areas/route43.html'
+    },
+    {
+      id: 'rocket-hideout',
+      displayId: 47,
+      name: 'Rocket Hideout',
+      type: 'Dungeon',
+      biome: 'Indoor',
+      chapter: 'Chapter 5',
+      status: 'Live',
+      summary: 'Story dungeon sheet for Rocket Hideout battles, progression flags, and rewards.',
+      tags: ['Dungeon', 'Chapter 5', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for hideout floor/event sequencing and trainer rosters.',
+        'Track key story flags and reward handoffs here.'
+      ],
+      link: 'areas/rockethideout.html'
+    },
+    {
+      id: 'route-44',
+      displayId: 48,
+      name: 'Route 44',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Eastbound route sheet leading into Ice Path and Blackthorn progression.',
+      tags: ['Route', 'Chapter 6', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route to track chapter entry pacing toward Blackthorn.',
+        'Keep encounter and trainer notes synchronized with Ice Path progression.'
+      ],
+      link: 'areas/route44.html'
+    },
+    {
+      id: 'ice-path',
+      displayId: 49,
+      name: 'Ice Path',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Ice-cave progression sheet for route gating, floor layout, and encounter mapping.',
+      tags: ['Dungeon', 'Chapter 6', 'Cave'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for floor-by-floor cave notes and route gating.',
+        'Track puzzle/movement constraints alongside encounter data.'
+      ],
+      link: 'areas/icepath.html'
+    },
+    {
+      id: 'blackthorn-city',
+      displayId: 50,
+      name: 'Blackthorn City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Chapter hub-city sheet for Blackthorn progression, events, and route handoffs.',
+      tags: ['City', 'Chapter 6', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the city anchor for Chapter 6.',
+        'Track key event flow and unlock dependencies from this page.'
+      ],
+      link: 'areas/blackthorncity.html'
+    },
+    {
+      id: 'dragons-den',
+      displayId: 51,
+      name: "Dragon's Den",
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Dungeon sheet for Dragon’s Den progression, encounters, and key event checks.',
+      tags: ['Dungeon', 'Chapter 6', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for den-area progression and event sequencing.',
+        'Track encounter pools and reward/event flags in one place.'
+      ],
+      link: 'areas/dragonsden.html'
+    },
+    {
+      id: 'route-45',
+      displayId: 52,
+      name: 'Route 45',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Highland route sheet tied to Blackthorn-side chapter progression.',
+      tags: ['Route', 'Chapter 6', 'Encounters'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route for Chapter 6 encounter and trainer pacing checks.',
+        'Keep terrain-specific route notes visible for balance passes.'
+      ],
+      link: 'areas/route45.html'
+    },
+    {
+      id: 'route-27',
+      displayId: 53,
+      name: 'Route 27',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Late-chapter route sheet on the approach toward Tohjo and Route 26 progression.',
+      tags: ['Route', 'Chapter 6', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for the route bridge toward the league-side path.',
+        'Track progression conditions and optional trainer branches here.'
+      ],
+      link: 'areas/route27.html'
+    },
+    {
+      id: 'tohjo-falls',
+      displayId: 54,
+      name: 'Tohjo Falls',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Transition dungeon sheet connecting Route 27 and Route 26 progression.',
+      tags: ['Dungeon', 'Chapter 6', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for cave transition checks and event linkage.',
+        'Track encounter and item differences between entry/exit sides.'
+      ],
+      link: 'areas/tohjofalls.html'
+    },
+    {
+      id: 'route-26',
+      displayId: 55,
+      name: 'Route 26',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 6',
+      status: 'Live',
+      summary: 'Final route sheet in the Chapter 6 chain before later-game transitions.',
+      tags: ['Route', 'Chapter 6', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the final route anchor for Chapter 6 progression.',
+        'Track trainer escalation and resource checks ahead of next chapter goals.'
+      ],
+      link: 'areas/route26.html'
+    },
+    {
+      id: 'victory-road',
+      displayId: 56,
+      name: 'Victory Road',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 7',
+      status: 'Live',
+      summary: 'League approach dungeon sheet for final chapter route checks, encounters, and trainer pacing.',
+      tags: ['Dungeon', 'Chapter 7', 'Story'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this page for pre-league cave progression and floor-specific notes.',
+        'Track final route resources and trainer escalation before Indigo Plateau.'
+      ],
+      link: 'areas/victoryroad.html'
+    },
+    {
+      id: 'indigo-plateau',
+      displayId: 57,
+      name: 'Indigo Plateau',
+      type: 'City',
+      biome: 'Indoor',
+      chapter: 'Chapter 7',
+      status: 'Live',
+      summary: 'League hub sheet for final prep, event flow, and chapter-end progression notes.',
+      tags: ['City', 'Chapter 7', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the chapter checkpoint before Elite Four fights.',
+        'Track league prep details, rules, and reward flow here.'
+      ],
+      link: 'areas/indigoplateau.html'
+    },
+    {
+      id: 'elite-four',
+      displayId: 58,
+      name: 'Elite Four',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 7',
+      status: 'Planned',
+      summary: 'League battle block for Elite Four rosters, order, and final gauntlet notes.',
+      tags: ['Gym', 'Chapter 7', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Dedicated Elite Four area sheet is planned but not created yet.',
+        'Add roster order, teams, and chapter-end rewards when the sheet exists.'
+      ]
+    },
+    {
+      id: 'mewtwo-side-quest',
+      displayId: 59,
+      name: 'Mewtwo Side Quest',
+      type: 'Dungeon',
+      biome: 'Mixed',
+      chapter: 'Interlude',
+      status: 'Planned',
+      summary: 'Interlude side quest marker for Mewtwo-related progression notes.',
+      tags: ['Interlude', 'Side Quest', 'Legendary'],
+      counts: {
+        encounters: 'Special',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'No fixed area sheet yet; this card exists to keep the quest visible in roadmap planning.',
+        'When location flow is finalized, add a dedicated area sheet and link it here.'
+      ]
+    },
+    {
+      id: 'vermilion-city',
+      displayId: 60,
+      name: 'Vermilion City',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 8',
+      status: 'Live',
+      summary: 'Kanto chapter city-hub sheet for progression routing, events, and utility planning.',
+      tags: ['City', 'Chapter 8', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the Chapter 8 anchor city for Kanto progression.',
+        'Track city events and branch routing to nearby gyms/routes here.'
+      ],
+      link: 'areas/vermillioncity.html'
+    },
+    {
+      id: 'vermilion-gym',
+      displayId: 61,
+      name: 'Vermilion Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 8',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Vermilion trainers, leader team, and reward notes.',
+      tags: ['Gym', 'Chapter 8', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Dedicated Vermilion Gym page is planned but not created yet.',
+        'Add trainer roster and reward details once the sheet exists.'
+      ]
+    },
+    {
+      id: 'route-6',
+      displayId: 62,
+      name: 'Route 6',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 8',
+      status: 'Live',
+      summary: 'Route sheet connecting Vermilion and Saffron chapter progression.',
+      tags: ['Route', 'Chapter 8', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route page for chapter transition pacing between city hubs.',
+        'Track encounter spread and trainer checks for this connector route.'
+      ],
+      link: 'areas/route6.html'
+    },
+    {
+      id: 'saffron-city',
+      displayId: 63,
+      name: 'Saffron City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 8',
+      status: 'Live',
+      summary: 'Central Kanto city-hub sheet for Chapter 8 progression and event routing.',
+      tags: ['City', 'Chapter 8', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the mid-chapter city checkpoint in Kanto.',
+        'Track cross-city event dependencies and unlocks from this page.'
+      ],
+      link: 'areas/saffroncity.html'
+    },
+    {
+      id: 'saffron-gym',
+      displayId: 64,
+      name: 'Saffron Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 8',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Saffron trainer line, leader battle, and rewards.',
+      tags: ['Gym', 'Chapter 8', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Dedicated Saffron Gym page is planned but not created yet.',
+        'Add full trainer and boss documentation when the page is created.'
+      ]
+    },
+    {
+      id: 'route-7',
+      displayId: 65,
+      name: 'Route 7',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 8',
+      status: 'Live',
+      summary: 'Short connector route sheet between Saffron and Celadon progression.',
+      tags: ['Route', 'Chapter 8', 'Transition'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this route as the handoff segment into Celadon content.',
+        'Keep route notes concise since this is primarily a transition map.'
+      ],
+      link: 'areas/route7.html'
+    },
+    {
+      id: 'celadon-city',
+      displayId: 66,
+      name: 'Celadon City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 8',
+      status: 'Live',
+      summary: 'Late-chapter city hub sheet for Celadon progression, events, and local planning.',
+      tags: ['City', 'Chapter 8', 'Hub'],
+      counts: {
+        encounters: 'Pending map',
+        trainers: 'Pending map',
+        items: 'Pending map'
+      },
+      notes: [
+        'Use this as the Celadon checkpoint for Chapter 8.',
+        'Track city-specific event flow, rewards, and branch routes here.'
+      ],
+      link: 'areas/celadoncity.html'
+    },
+    {
+      id: 'celadon-gym',
+      displayId: 67,
+      name: 'Celadon Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 8',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Celadon trainer roster, leader team, and reward notes.',
+      tags: ['Gym', 'Chapter 8', 'Boss'],
+      counts: {
+        encounters: 'None',
+        trainers: 'Pending map',
+        items: 'Reward notes'
+      },
+      notes: [
+        'Dedicated Celadon Gym page is planned but not created yet.',
+        'Add trainer data and reward details once the gym sheet exists.'
+      ]
+    },
+    {
+      id: 'route-16',
+      displayId: 68,
+      name: 'Route 16',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'West-Kanto route sheet for Chapter 9 progression and encounter routing.',
+      tags: ['Route', 'Chapter 9', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route as the opening segment of Chapter 9.',
+        'Track trainer pacing and encounter spread here.'
+      ],
+      link: 'areas/route16.html'
+    },
+    {
+      id: 'route-17',
+      displayId: 69,
+      name: 'Route 17',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Chapter 9 cycling-route segment for progression checks and encounter planning.',
+      tags: ['Route', 'Chapter 9', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for route-specific pacing and access notes.',
+        'Keep transition detail aligned with Route 16 and Route 18.'
+      ],
+      link: 'areas/route17.html'
+    },
+    {
+      id: 'route-18',
+      displayId: 70,
+      name: 'Route 18',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Connector route sheet leading into Fuchsia-side Chapter 9 content.',
+      tags: ['Route', 'Chapter 9', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the handoff route into Fuchsia City.',
+        'Track progression pacing and trainer escalation.'
+      ],
+      link: 'areas/route18.html'
+    },
+    {
+      id: 'fuchsia-city',
+      displayId: 71,
+      name: 'Fuchsia City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Chapter 9 city hub for Kanto south-side progression, events, and route branching.',
+      tags: ['City', 'Chapter 9', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this city page as the chapter anchor around Fuchsia content.',
+        'Track city-level unlocks and event flow here.'
+      ],
+      link: 'areas/fuschiacity.html'
+    },
+    {
+      id: 'fuchsia-gym',
+      displayId: 72,
+      name: 'Fuchsia Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 9',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Fuchsia trainer line, boss team, and reward notes.',
+      tags: ['Gym', 'Chapter 9', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'Dedicated Fuchsia Gym page is planned but not created yet.',
+        'Add the gym roster and rewards when the sheet exists.'
+      ]
+    },
+    {
+      id: 'route-15',
+      displayId: 73,
+      name: 'Route 15',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Eastward route sheet in the Fuchsia chapter chain.',
+      tags: ['Route', 'Chapter 9', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route for chapter progression and route balancing.',
+        'Track encounter and trainer pacing with adjacent route sheets.'
+      ],
+      link: 'areas/route15.html'
+    },
+    {
+      id: 'route-14',
+      displayId: 74,
+      name: 'Route 14',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Chapter 9 route segment for transition and encounter mapping.',
+      tags: ['Route', 'Chapter 9', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page to keep route progression continuity.',
+        'Track any route-specific trainers or side pickups.'
+      ],
+      link: 'areas/route14.html'
+    },
+    {
+      id: 'route-13',
+      displayId: 75,
+      name: 'Route 13',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Route sheet in the mid-chapter Kanto path toward east-side hubs.',
+      tags: ['Route', 'Chapter 9', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this for encounter table and route-trainer planning.',
+        'Keep route pacing aligned with adjacent chapter segments.'
+      ],
+      link: 'areas/route13.html'
+    },
+    {
+      id: 'route-12',
+      displayId: 76,
+      name: 'Route 12',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Water-adjacent route sheet in the Chapter 9 progression corridor.',
+      tags: ['Route', 'Chapter 9', 'Water'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route page for water-route pacing and encounter planning.',
+        'Track transitions to city and utility locations.'
+      ],
+      link: 'areas/route12.html'
+    },
+    {
+      id: 'route-8',
+      displayId: 77,
+      name: 'Route 8',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Connector route page for central Kanto chapter routing.',
+      tags: ['Route', 'Chapter 9', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route as part of the Chapter 9 city-to-city network.',
+        'Track progression checks and route pressure points.'
+      ],
+      link: 'areas/route8.html'
+    },
+    {
+      id: 'route-5',
+      displayId: 78,
+      name: 'Route 5',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Short connector route in the Chapter 9 Kanto progression web.',
+      tags: ['Route', 'Chapter 9', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for route handoff and lightweight progression notes.',
+        'Keep notes concise since this is a connector segment.'
+      ],
+      link: 'areas/route5.html'
+    },
+    {
+      id: 'route-9',
+      displayId: 79,
+      name: 'Route 9',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Route sheet leading into Route 10 and Power Plant progression.',
+      tags: ['Route', 'Chapter 9', 'Story'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route to stage progression into eastern Kanto objectives.',
+        'Track encounter and trainer pacing against the Power Plant path.'
+      ],
+      link: 'areas/route9.html'
+    },
+    {
+      id: 'route-10',
+      displayId: 80,
+      name: 'Route 10',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Key route sheet tied to Power Plant chapter objectives.',
+      tags: ['Route', 'Chapter 9', 'Story'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the immediate route context for Power Plant content.',
+        'Track chapter progression dependencies from this location.'
+      ],
+      link: 'areas/route10.html'
+    },
+    {
+      id: 'power-plant',
+      displayId: 81,
+      name: 'Power Plant',
+      type: 'Dungeon',
+      biome: 'Indoor',
+      chapter: 'Chapter 9',
+      status: 'Live',
+      summary: 'Story utility location sheet for Power Plant objectives and event flow.',
+      tags: ['Dungeon', 'Chapter 9', 'Story'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for Power Plant event state and progression notes.',
+        'Track related route dependencies and rewards here.'
+      ],
+      link: 'areas/powerplant.html'
+    },
+    {
+      id: 'interlude-giratina',
+      displayId: 82,
+      name: 'Interlude Giratina',
+      type: 'Dungeon',
+      biome: 'Mixed',
+      chapter: 'Interlude 2',
+      status: 'Planned',
+      summary: 'Interlude marker for Giratina-focused side progression between chapter arcs.',
+      tags: ['Interlude', 'Side Quest', 'Legendary'],
+      counts: { encounters: 'Special', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'No fixed area sheet yet; this entry keeps the Giratina interlude in roadmap scope.',
+        'Add dedicated area documentation once the quest path is finalized.'
+      ]
+    },
+    {
+      id: 'route-24',
+      displayId: 83,
+      name: 'Route 24',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Chapter 10 route sheet in the Cerulean progression chain.',
+      tags: ['Route', 'Chapter 10', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route page for chapter pacing and trainer routing.',
+        'Track encounter spread alongside Route 25 and Cerulean entries.'
+      ],
+      link: 'areas/route24.html'
+    },
+    {
+      id: 'route-25',
+      displayId: 84,
+      name: 'Route 25',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Companion route sheet to Route 24 within the Cerulean chapter segment.',
+      tags: ['Route', 'Chapter 10', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the paired route page for Cerulean-side mapping.',
+        'Keep trainer pacing aligned across both routes.'
+      ],
+      link: 'areas/route25.html'
+    },
+    {
+      id: 'cerulean-city',
+      displayId: 85,
+      name: 'Cerulean City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'City-hub sheet for Chapter 10 progression and event routing in Cerulean.',
+      tags: ['City', 'Chapter 10', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the central city checkpoint for Chapter 10.',
+        'Track event flow and route dependencies here.'
+      ],
+      link: 'areas/ceruleancity.html'
+    },
+    {
+      id: 'cerulean-gym',
+      displayId: 86,
+      name: 'Cerulean Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 10',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Cerulean trainer roster, boss team, and rewards.',
+      tags: ['Gym', 'Chapter 10', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'Dedicated Cerulean Gym page is planned but not created yet.',
+        'Add full gym data when the area sheet exists.'
+      ]
+    },
+    {
+      id: 'rock-tunnel',
+      displayId: 87,
+      name: 'Rock Tunnel',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Cave-route sheet for Rock Tunnel progression and encounter planning.',
+      tags: ['Dungeon', 'Chapter 10', 'Cave'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for tunnel floor/segment mapping.',
+        'Track cave-specific progression checks and resources.'
+      ],
+      link: 'areas/rocktunnel.html'
+    },
+    {
+      id: 'route-4',
+      displayId: 88,
+      name: 'Route 4',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Route sheet connecting chapter progression around Rock Tunnel and city hubs.',
+      tags: ['Route', 'Chapter 10', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route for chapter routing continuity and trainer pacing.',
+        'Keep encounter mapping aligned with nearby cave and city entries.'
+      ],
+      link: 'areas/route4.html'
+    },
+    {
+      id: 'route-11',
+      displayId: 89,
+      name: 'Route 11',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Route sheet used in the Chapter 10 Kanto progression loop.',
+      tags: ['Route', 'Chapter 10', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for route trainer/encounter planning within Chapter 10.',
+        'Track handoffs between chapter route segments.'
+      ],
+      link: 'areas/route11.html'
+    },
+    {
+      id: 'diggers-cave',
+      displayId: 90,
+      name: 'Diggers Cave',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Cave transition sheet (Diggers Cave) for chapter routing and encounter notes.',
+      tags: ['Dungeon', 'Chapter 10', 'Cave'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'This entry maps to the current Diglett Cave area sheet filename.',
+        'Use it for cave-specific progression and resource tracking.'
+      ],
+      link: 'areas/diglettcave.html'
+    },
+    {
+      id: 'pewter-city',
+      displayId: 91,
+      name: 'Pewter City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 10',
+      status: 'Live',
+      summary: 'Chapter 10 city hub sheet for Pewter progression and event notes.',
+      tags: ['City', 'Chapter 10', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the city checkpoint for late Chapter 10 routing.',
+        'Track city events, shops, and reward dependencies.'
+      ],
+      link: 'areas/pewtercity.html'
+    },
+    {
+      id: 'pewter-gym',
+      displayId: 92,
+      name: 'Pewter Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 10',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Pewter trainer roster, boss team, and reward notes.',
+      tags: ['Gym', 'Chapter 10', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'Dedicated Pewter Gym page is planned but not created yet.',
+        'Add gym trainer and reward data once the sheet is created.'
+      ]
+    },
+    {
+      id: 'route-3',
+      displayId: 93,
+      name: 'Route 3',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Chapter 11 route sheet tied to Mt. Moon progression.',
+      tags: ['Route', 'Chapter 11', 'Encounters'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route for chapter entry pacing and encounter mapping.',
+        'Track progression continuity with Mt. Moon.'
+      ],
+      link: 'areas/route3.html'
+    },
+    {
+      id: 'mt-moon',
+      displayId: 94,
+      name: 'Mt. Moon',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Cave sheet for Mt. Moon progression, encounter routing, and item planning.',
+      tags: ['Dungeon', 'Chapter 11', 'Cave'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for floor-by-floor cave documentation.',
+        'Track chapter progression checks and cave-specific resources.'
+      ],
+      link: 'areas/mtmoon.html'
+    },
+    {
+      id: 'viridian-forest',
+      displayId: 95,
+      name: 'Viridian Forest',
+      type: 'Dungeon',
+      biome: 'Forest',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Forest-route sheet for Chapter 11 progression and encounter mapping.',
+      tags: ['Dungeon', 'Chapter 11', 'Forest'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the forest progression anchor for Chapter 11.',
+        'Track encounter and route-flow details across forest segments.'
+      ],
+      link: 'areas/viridianforest.html'
+    },
+    {
+      id: 'route-2',
+      displayId: 96,
+      name: 'Route 2',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Route connector sheet between forest and city chapter segments.',
+      tags: ['Route', 'Chapter 11', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as a transition route page in Chapter 11.',
+        'Keep route pacing and encounter continuity aligned.'
+      ],
+      link: 'areas/route2.html'
+    },
+    {
+      id: 'viridian-city',
+      displayId: 97,
+      name: 'Viridian City',
+      type: 'City',
+      biome: 'Urban',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'City-hub sheet for Chapter 11 progression and branch routing.',
+      tags: ['City', 'Chapter 11', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this city as a central checkpoint for late chapter flow.',
+        'Track event progression and route dependencies here.'
+      ],
+      link: 'areas/viridiancity.html'
+    },
+    {
+      id: 'route-1',
+      displayId: 98,
+      name: 'Route 1',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Route sheet linking Viridian and Pallet-side chapter progression.',
+      tags: ['Route', 'Chapter 11', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route page for chapter connector pacing.',
+        'Track trainer and encounter pressure for this segment.'
+      ],
+      link: 'areas/route1.html'
+    },
+    {
+      id: 'pallet-town',
+      displayId: 99,
+      name: 'Pallet Town',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Town-hub sheet for chapter progression around Pallet-side content.',
+      tags: ['City', 'Chapter 11', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this page for Pallet event and progression tracking.',
+        'Keep route and city handoff notes consolidated here.'
+      ],
+      link: 'areas/pallettown.html'
+    },
+    {
+      id: 'route-21',
+      displayId: 100,
+      name: 'Route 21',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Water-route sheet for Cinnabar-side progression in Chapter 11.',
+      tags: ['Route', 'Chapter 11', 'Water'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the route bridge into Cinnabar content.',
+        'Track water-route pacing and encounter tables here.'
+      ],
+      link: 'areas/route21.html'
+    },
+    {
+      id: 'cinnabar-island',
+      displayId: 101,
+      name: 'Cinnabar Island',
+      type: 'City',
+      biome: 'Coastal',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Island hub sheet for Cinnabar progression, events, and chapter-end routing.',
+      tags: ['City', 'Chapter 11', 'Hub'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the Cinnabar chapter anchor.',
+        'Track event state, rewards, and route dependencies.'
+      ],
+      link: 'areas/cinnabarisland.html'
+    },
+    {
+      id: 'route-20',
+      displayId: 102,
+      name: 'Route 20',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Chapter 11',
+      status: 'Live',
+      summary: 'Sea-route sheet adjacent to Cinnabar chapter progression.',
+      tags: ['Route', 'Chapter 11', 'Water'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route page for water encounter and trainer planning.',
+        'Track transitions with Cinnabar and nearby route nodes.'
+      ],
+      link: 'areas/route20.html'
+    },
+    {
+      id: 'cinnabar-gym',
+      displayId: 103,
+      name: 'Cinnabar Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 11',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Cinnabar trainer line, boss team, and rewards.',
+      tags: ['Gym', 'Chapter 11', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'Dedicated Cinnabar Gym page is planned but not created yet.',
+        'Add full gym details when the area sheet is available.'
+      ]
+    },
+    {
+      id: 'viridian-gym',
+      displayId: 104,
+      name: 'Viridian Gym',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Chapter 11',
+      status: 'Planned',
+      summary: 'Gym sheet placeholder for Viridian trainer roster, leader battle, and rewards.',
+      tags: ['Gym', 'Chapter 11', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'Dedicated Viridian Gym page is planned but not created yet.',
+        'Add trainer and reward details once the sheet exists.'
+      ]
+    },
+    {
+      id: 'route-19',
+      displayId: 105,
+      name: 'Route 19',
+      type: 'Route',
+      biome: 'Coastal',
+      chapter: 'Interlude 3',
+      status: 'Live',
+      summary: 'Interlude route sheet for post-chapter progression and optional routing.',
+      tags: ['Route', 'Interlude 3', 'Water'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route entry as part of Interlude 3 mapping.',
+        'Track interlude pacing and encounter planning here.'
+      ],
+      link: 'areas/route19.html'
+    },
+    {
+      id: 'route-22',
+      displayId: 106,
+      name: 'Route 22',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Interlude 3',
+      status: 'Live',
+      summary: 'Interlude route sheet for side progression and challenge setup.',
+      tags: ['Route', 'Interlude 3', 'Transition'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as a connector route in the Interlude 3 block.',
+        'Track optional progression and trainer notes.'
+      ],
+      link: 'areas/route22.html'
+    },
+    {
+      id: 'route-28',
+      displayId: 107,
+      name: 'Route 28',
+      type: 'Route',
+      biome: 'Grassland',
+      chapter: 'Interlude 3',
+      status: 'Live',
+      summary: 'Route sheet tied to Mt. Silver interlude progression.',
+      tags: ['Route', 'Interlude 3', 'Story'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this route for pre-Mt. Silver pacing and resource checks.',
+        'Track route transition details for interlude completion.'
+      ],
+      link: 'areas/route28.html'
+    },
+    {
+      id: 'mt-silver',
+      displayId: 108,
+      name: 'Mt. Silver',
+      type: 'Dungeon',
+      biome: 'Cave',
+      chapter: 'Interlude 3',
+      status: 'Live',
+      summary: 'Late-game mountain sheet for interlude progression and high-end challenge planning.',
+      tags: ['Dungeon', 'Interlude 3', 'Story'],
+      counts: { encounters: 'Pending map', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'Use this as the core destination of Interlude 3.',
+        'Track major challenge flow, rewards, and encounter mapping.'
+      ],
+      link: 'areas/mtsilver.html'
+    },
+    {
+      id: 'finale-red',
+      displayId: 109,
+      name: 'Red',
+      type: 'Gym',
+      biome: 'Indoor',
+      chapter: 'Finale',
+      status: 'Planned',
+      summary: 'Finale battle marker for the Red encounter and endgame challenge notes.',
+      tags: ['Finale', 'Boss'],
+      counts: { encounters: 'None', trainers: 'Pending map', items: 'Reward notes' },
+      notes: [
+        'No dedicated finale area sheet yet; this keeps the Red fight visible in roadmap flow.',
+        'Add full team and reward data when finale documentation is ready.'
+      ]
+    },
+    {
+      id: 'prologue-mewtwo',
+      displayId: 110,
+      name: 'Mewtwo',
+      type: 'Dungeon',
+      biome: 'Mixed',
+      chapter: 'Prologue',
+      status: 'Planned',
+      summary: 'Prologue marker for the opening Mewtwo thread before main chapter progression.',
+      tags: ['Prologue', 'Legendary', 'Story'],
+      counts: { encounters: 'Special', trainers: 'Pending map', items: 'Pending map' },
+      notes: [
+        'No fixed prologue area sheet yet; this card keeps Mewtwo in the roadmap.',
+        'Link a dedicated sheet once prologue flow and location are finalized.'
+      ]
     }
   ];
+
+  const AREA_SHEET_FILES = [
+    'azaleatown',
+    'belltower',
+    'blackthorncity',
+    'burnedtower',
+    'celadoncity',
+    'ceruleancity',
+    'cherrygrovecity',
+    'cianwoodcity',
+    'cinnabarisland',
+    'cliffcave',
+    'cliffedgegate',
+    'dark-cave',
+    'diglettcave',
+    'dragonsden',
+    'ecruteakcity',
+    'egg-tables',
+    'fuschiacity',
+    'goldenrodcity',
+    'icepath',
+    'ilexforest',
+    'indigoplateau',
+    'lakeofrage',
+    'mtmoon',
+    'mtmortar',
+    'mtsilver',
+    'nationalpark',
+    'newbarktown',
+    'olivinecity',
+    'pallettown',
+    'pewtercity',
+    'powerplant',
+    'rockethideout',
+    'rocktunnel',
+    'route1',
+    'route10',
+    'route11',
+    'route12',
+    'route13',
+    'route14',
+    'route15',
+    'route16',
+    'route17',
+    'route18',
+    'route19',
+    'route2',
+    'route20',
+    'route21',
+    'route22',
+    'route24',
+    'route25',
+    'route26',
+    'route27',
+    'route28',
+    'route29',
+    'route3',
+    'route30',
+    'route31',
+    'route32',
+    'route33',
+    'route34',
+    'route35',
+    'route36',
+    'route37',
+    'route38',
+    'route39',
+    'route4',
+    'route40',
+    'route41',
+    'route42',
+    'route43',
+    'route44',
+    'route45',
+    'route46',
+    'route47',
+    'route48',
+    'route5',
+    'route6',
+    'route7',
+    'route8',
+    'route9',
+    'ruins-of-alph',
+    'safarizone',
+    'safarizonegate',
+    'saffroncity',
+    'slowpokewell',
+    'sproutower',
+    'tohjofalls',
+    'union-cave',
+    'vermillioncity',
+    'victoryroad',
+    'violetcity',
+    'violetgym',
+    'viridiancity',
+    'viridianforest',
+    'whirlislands',
+  ];
+
+  const AREA_NAME_OVERRIDES = {
+    azaleatown: 'Azalea Town',
+    belltower: 'Bell Tower',
+    blackthorncity: 'Blackthorn City',
+    burnedtower: 'Burned Tower',
+    celadoncity: 'Celadon City',
+    ceruleancity: 'Cerulean City',
+    cherrygrovecity: 'Cherrygrove City',
+    cianwoodcity: 'Cianwood City',
+    cinnabarisland: 'Cinnabar Island',
+    cliffcave: 'Cliff Cave',
+    cliffedgegate: 'Cliff Edge Gate',
+    diglettcave: 'Diglett Cave',
+    dragonsden: "Dragon's Den",
+    ecruteakcity: 'Ecruteak City',
+    'egg-tables': 'Egg Tables',
+    fuschiacity: 'Fuschia City',
+    goldenrodcity: 'Goldenrod City',
+    icepath: 'Ice Path',
+    ilexforest: 'Ilex Forest',
+    indigoplateau: 'Indigo Plateau',
+    lakeofrage: 'Lake of Rage',
+    mtmoon: 'Mt Moon',
+    mtmortar: 'Mt Mortar',
+    mtsilver: 'Mt Silver',
+    nationalpark: 'National Park',
+    newbarktown: 'New Bark Town',
+    olivinecity: 'Olivine City',
+    pallettown: 'Pallet Town',
+    pewtercity: 'Pewter City',
+    powerplant: 'Power Plant',
+    rockethideout: 'Rocket Hideout',
+    rocktunnel: 'Rock Tunnel',
+    safarizone: 'Safari Zone',
+    safarizonegate: 'Safari Zone Gate',
+    saffroncity: 'Saffron City',
+    slowpokewell: 'Slowpoke Well',
+    sproutower: 'Sprout Tower',
+    tohjofalls: 'Tohjo Falls',
+    vermillioncity: 'Vermillion City',
+    victoryroad: 'Victory Road',
+    violetcity: 'Violet City',
+    violetgym: 'Violet Gym',
+    viridiancity: 'Viridian City',
+    viridianforest: 'Viridian Forest',
+    whirlislands: 'Whirl Islands'
+  };
+
+  function getAreaSlugFromLink(linkValue) {
+    const match = String(linkValue || '').match(/areas\/([a-z0-9-]+)\.html$/i);
+    return match ? match[1].toLowerCase() : '';
+  }
+
+  function formatAreaNameFromSlug(slug) {
+    if (AREA_NAME_OVERRIDES[slug]) {
+      return AREA_NAME_OVERRIDES[slug];
+    }
+
+    const routeMatch = slug.match(/^route(\d+)$/i);
+    if (routeMatch) {
+      return `Route ${routeMatch[1]}`;
+    }
+
+    return slug
+      .replace(/-/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .map(part => part ? part.charAt(0).toUpperCase() + part.slice(1) : '')
+      .join(' ')
+      .replace(/\bOf\b/g, 'of');
+  }
+
+  function inferAreaTypeFromSlug(slug) {
+    if (/^route\d+$/i.test(slug)) {
+      return 'Route';
+    }
+    if (slug.endsWith('city') || slug.endsWith('town')) {
+      return 'City';
+    }
+    if (slug.endsWith('gym')) {
+      return 'Gym';
+    }
+    if (slug.includes('tower')) {
+      return 'Tower';
+    }
+    return 'Dungeon';
+  }
+
+  function inferAreaBiomeFromSlug(slug, type) {
+    if (type === 'City') {
+      return 'Urban';
+    }
+    if (type === 'Gym') {
+      return 'Indoor';
+    }
+    if (type === 'Tower') {
+      return 'Spiritual';
+    }
+    if (type === 'Route') {
+      if (slug.includes('island') || slug.includes('coast') || slug.includes('whirl')) {
+        return 'Coastal';
+      }
+      return 'Grassland';
+    }
+
+    if (slug.includes('forest') || slug.includes('park')) {
+      return 'Forest';
+    }
+    if (slug.includes('island') || slug.includes('whirl')) {
+      return 'Coastal';
+    }
+    if (slug.includes('safari')) {
+      return 'Savanna';
+    }
+    if (
+      slug.includes('cave') ||
+      slug.includes('tunnel') ||
+      slug.includes('den') ||
+      slug.includes('falls') ||
+      slug.includes('path') ||
+      slug.startsWith('mt')
+    ) {
+      return 'Cave';
+    }
+    return 'Mixed';
+  }
+
+  function ensureAllAreaSheetsLinked() {
+    const linkedSlugs = new Set();
+
+    AREADEX_SOURCE.forEach(area => {
+      const slug = getAreaSlugFromLink(area.link);
+      if (slug) {
+        linkedSlugs.add(slug);
+      }
+      if (!area.id) {
+        area.id = slug || String(area.name || '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+      }
+      if (!area.link && slug) {
+        area.link = `areas/${slug}.html`;
+      }
+    });
+
+    AREA_SHEET_FILES.forEach(slug => {
+      if (linkedSlugs.has(slug)) {
+        return;
+      }
+
+      const type = inferAreaTypeFromSlug(slug);
+      AREADEX_SOURCE.push({
+        id: slug,
+        name: formatAreaNameFromSlug(slug),
+        type,
+        biome: inferAreaBiomeFromSlug(slug, type),
+        chapter: 'Backlog',
+        status: 'Live',
+        summary: 'Area sheet is linked. Fill encounters, trainers, and items as this location gets mapped.',
+        tags: [type, 'Mapped'],
+        counts: {
+          encounters: 'Pending map',
+          trainers: 'Pending map',
+          items: 'Pending map'
+        },
+        notes: [
+          'Linked automatically from the area sheet file list.',
+          'Open the area sheet to add local encounters, trainer fights, and item pickups.'
+        ],
+        link: `areas/${slug}.html`
+      });
+    });
+
+    AREADEX_SOURCE.forEach((area, index) => {
+      area.displayId = index + 1;
+    });
+  }
+
+  ensureAllAreaSheetsLinked();
 
   const TYPE_CLASSES = {
     All: 'all',
     Route: 'route',
     City: 'city',
+    Gym: 'gym',
     Tower: 'tower',
     Dungeon: 'dungeon'
   };

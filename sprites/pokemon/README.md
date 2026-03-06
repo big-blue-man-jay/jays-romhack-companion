@@ -14,22 +14,17 @@ Use the same slug format as the Pokémon's name in `pokemon.json`, e.g.:
 - `iron-leaves-shiny.png`
 - `walking-wake.png`
 
+Special case: Paldean Tauros form pages use `*-breed` names internally, but
+`tauros-paldea-aqua.png`, `tauros-paldea-blaze.png`, and
+`tauros-paldea-combat.png` are also accepted automatically.
+
+The loader also supports common short-form aliases used by sprite packs
+(`-f`, `-lowkey`, `-rapidstrike`, etc.) so files can follow either Pokédex
+slugs or Showdown-style shorthand.
+
 ## Registering sprites
 
-After adding files here, open `tools/generate_pokemon_pages.py` and add the names to the
-registry sets near the top of the file:
-
-```python
-CUSTOM_SPRITES: set = {
-    'iron-leaves',
-    'walking-wake',
-    # ...
-}
-
-CUSTOM_SPRITES_SHINY: set = {
-    'iron-leaves',   # only if you also added iron-leaves-shiny.png
-}
-```
+No manual registry step is required. The generator auto-detects all `.png` files in this folder.
 
 Then re-run the generator:
 ```

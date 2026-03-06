@@ -244,6 +244,26 @@
     align-items: flex-start;
   }
 
+  .mechanic-visual {
+    width: 76px;
+    min-width: 76px;
+    height: 76px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .mechanic-visual img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+
   .mechanic-main { flex: 1; }
 
   .mechanic-name-row {
@@ -284,6 +304,25 @@
   }
 
   .mechanic-desc:last-child { margin-bottom: 0; }
+
+  .mechanic-list {
+    list-style: none;
+    margin: 0 0 10px;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 8px;
+  }
+
+  .mechanic-list li {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+  }
 
   .mechanic-note {
     display: inline-flex;
@@ -336,6 +375,8 @@
   body.light .mechanic-tag-quality { background: rgba(0,0,0,0.03); border-color: #E7D8C1; color: #7A6D5C; }
   body.light .mechanic-note { background: rgba(0,0,0,0.02); border-color: #E7D8C1; }
   body.light .mechanic-note-label { color: #C9A86A; }
+  body.light .mechanic-visual { background: #EDE0CC; border-color: #E7D8C1; }
+  body.light .mechanic-list li { background: rgba(0,0,0,0.02); border-color: #E7D8C1; }
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
@@ -373,6 +414,7 @@
   <div class="menu-section-title">Jump To</div>
   <a href="#cat-battle" class="menu-link" onclick="closeMenu()">Battle</a>
   <a href="#cat-progression" class="menu-link" onclick="closeMenu()">Progression</a>
+  <a href="#cat-sidequests" class="menu-link" onclick="closeMenu()">Sidequests</a>
   <a href="#cat-catching" class="menu-link" onclick="closeMenu()">Catching</a>
   <a href="#cat-quality" class="menu-link" onclick="closeMenu()">Quality of Life</a>
   <a href="#cat-misc" class="menu-link" onclick="closeMenu()">Miscellaneous</a>
@@ -396,25 +438,6 @@
     <div class="category-header">
       <span class="category-title">Battle</span>
       <div class="category-line"></div>
-    </div>
-
-    <!-- MECHANIC CARD — duplicate this block to add a new mechanic -->
-    <div class="mechanic-card">
-      <div class="mechanic-card-inner">
-        <div class="mechanic-main">
-          <div class="mechanic-name-row">
-            <span class="mechanic-name">[Mechanic Name]</span>
-            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
-          </div>
-          <p class="mechanic-desc">
-            [Short explanation of what this mechanic does and how it differs from vanilla. Keep it player-facing and practical — tell them what to expect, not the technical implementation.]
-          </p>
-          <div class="mechanic-note">
-            <span class="mechanic-note-label">Note:</span>
-            [Any edge case, exception, or extra detail worth calling out.]
-          </div>
-        </div>
-      </div>
     </div>
 
     <div class="mechanic-card">
@@ -469,6 +492,9 @@
 
     <div class="mechanic-card">
       <div class="mechanic-card-inner">
+        <div class="mechanic-visual">
+          <img src="sprites/items/silver_coin.png" alt="Silver Coin">
+        </div>
         <div class="mechanic-main">
           <div class="mechanic-name-row">
             <span class="mechanic-name">Silver Coin System</span>
@@ -517,11 +543,266 @@
 
   </div>
 
+  <!-- ── SIDEQUESTS ── -->
+  <div class="category" id="cat-sidequests">
+    <div class="category-header">
+      <span class="category-title">Sidequests</span>
+      <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Legendary and Mythical Distribution</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Legendary and Mythical encounters are distributed across three encounter formats so each one has a clear role in progression and routing.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Statics:</strong> fixed map encounters tied to a specific location and trigger state.</li>
+            <li><strong>Roamers:</strong> moving encounters that rotate between routes/maps and must be tracked down.</li>
+            <li><strong>Quests:</strong> multi-step sidequest chains that end in a special encounter or reward battle.</li>
+          </ul>
+          <p class="mechanic-desc">
+            <strong>Roamer unlock:</strong> Roamers are enabled after defeating all 8 Johto Gyms.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Legendary Birds:</strong> Articuno / Zapdos / Moltres</li>
+            <li><strong>Legendary Beasts:</strong> Raikou / Entei / Suicune</li>
+            <li><strong>Lake Guardians:</strong> Uxie / Mesprit / Azelf</li>
+            <li><strong>Swords of Justice:</strong> Cobalion / Terrakion / Virizion</li>
+            <li><strong>Forces of Nature:</strong> Tornadus / Thundurus / Landorus / Eternamours</li>
+          </ul>
+          <p class="mechanic-desc">
+            <strong>Dedicated quest chains:</strong> some groups are handled as full sidequest arcs instead of roaming encounters.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Ultra Beast sidequest:</strong> all Ultra Beasts (Nihilego, Buzzwole, Pheromosa, Xurkitree, Celesteela, Kartana, Guzzlord, Poipole, Naganadel, Stakataka, Blacephalon). Unlocks after Kanto Gym 3.</li>
+            <li><strong>Regi sidequest:</strong> all Regis (Regirock, Regice, Registeel, Regigigas, Regieleki, Regidrago). Unlocks after Johto Gym 6.</li>
+            <li><strong>Weather Trio quest:</strong> Groudon at Mt. Mortar, Kyogre at Whirl Islands (deeper chamber below/behind Lugia's area), and Rayquaza at Mt. Silver summit (highest peak chamber).</li>
+            <li><strong>Eon Twins acquisition:</strong> Latias / Latios are received as Steven's gift (ORAS-style).</li>
+            <li><strong>Creation Trio Rift questline:</strong> Dialga requires 3 rifts before its encounter, Palkia requires 3 rifts before its encounter, Giratina requires 1 final rift before its encounter, and once Dialga + Palkia + Giratina are all in the player's party, Arceus unlocks at a separate location.</li>
+            <li><strong>Tao Trio questline:</strong> Burned Tower for an N encounter + battle (with Reshiram on his team), Seafoam Islands for Kyurem (deep chamber), then Zekrom later at one chosen location: Goldenrod Radio Tower (modern power/ideals vibe), Dragon's Den (dragon shrine vibe), or a custom Ideals Shrine map.</li>
+            <li><strong>Flower Festival questline:</strong> National Park sidequest chain: catch multiple Flabebe colors for the Festival Catalog, deliver Scatterbug data for the Vivillon exhibit, enter a Festival Ball-only bug contest where the smallest catch wins a joke reward, then trigger a static Xerneas encounter at the shrine after the contest. Contest entry rule: player may enter with only 2 Pokemon in party.</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Rule:</span>
+            Each Legendary/Mythical should be assigned to exactly one of these categories for clean documentation.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Yveltal Questline: Lavender Mourning Rite</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            A four-step Lavender sidequest themed around mourning rituals, silence, and respect for the life/death cycle before a static Yveltal encounter.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Step 1 - Prepare the Rite:</strong> show 1 Ghost-type, 1 Normal-type, and 1 Dark-type (or Psychic-type). Reward: Rite Balls x10 (or Dusk Balls) and rite unlock.</li>
+            <li><strong>Step 2 - Quiet Contest (Cry Volume):</strong> limited-time, limited-ball event where only Pokemon caught in Rite Balls count. Each catch has a Quietness score (1-5), and highest quietness wins. Entry rule: player may enter with only 2 Pokemon in party.</li>
+            <li><strong>Step 3 - Three Candles, Three Battles:</strong> candle battles represent Grief (Ghost-focused), Fear (Dark-focused), and Acceptance (mixed / bulky / status).</li>
+            <li><strong>Step 4 - Yveltal Appears:</strong> after the third candle battle, Yveltal appears at the ritual site as a static encounter.</li>
+          </ul>
+          <p class="mechanic-desc">
+            <strong>Contest reward options:</strong> Mourner's Ribbon (cosmetic), Silencer Charm (temporary lower wild encounter rate at night), or Dusty Bell (flavor key item).
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Rule:</span>
+            Quiet Contest results do not change Yveltal availability or stats. The contest reward is flavor/side reward only.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Alola Questline: Star Child, Guardians, and Ultra Beasts</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            A long-form arc where the player carries a Cosmog Egg, clears four Guardian setpieces with Tapu allies, then unlocks full Ultra Beast capture content.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Step 1 - Scientist Gift:</strong> the Cosmog Egg is recovered after falling from the sky, then entrusted to the player by a scientist together with the Anomaly Scanner key item. Guardian/UB setpieces only trigger while the egg line is in party.</li>
+            <li><strong>Step 2 - Guardian Setpieces:</strong> Viridian Forest, Power Plant, Tohjo Falls, and Saffron City each run as Player + Tapu vs 2 Ultra Beasts. UBs retreat after battle and are not catchable in this phase.</li>
+            <li><strong>Step 3 - Tapu Rewards:</strong> each setpiece grants one Tapu as a gift Pokemon (Tapus are not catch battles).</li>
+            <li><strong>Step 4 - Egg Progression:</strong> after obtaining 2 Tapus, the Cosmog Egg hatches into Cosmog. After obtaining all 4 Tapus, Cosmog evolves into Cosmoem.</li>
+            <li><strong>Step 5 - UB Capture Unlock:</strong> after all 4 Tapu flags are set, scientist upgrades the scanner into Wormhole Stabilizer (or equivalent Solgaleo/Lunala gate), and Ultra Beasts become catchable through controlled quest encounters.</li>
+            <li><strong>Step 6 - UB Finale:</strong> Necrozma is the final encounter of the Ultra Beast quest chain.</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Rule:</span>
+            Before stabilization, UB setpieces are story encounters only. Catch access starts only after the full Tapu milestone.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Johto Resonance Arc: Rusted Relics and Eternatus</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            A Johto-centered crisis arc where old tower traditions and modern infrastructure both react to the same growing anomaly.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Act 1 - The Towers React:</strong> revisiting Ecruteak triggers a Burned Tower pulse and a single autonomous Bell Tower bell ring. Objective is to consult both an elder/monk and a Goldenrod Radio Tower engineer.</li>
+            <li><strong>Act 2 - Two Relics, Two Traditions:</strong> Rusted Sword is sealed in Bell Tower behind a short worthiness gauntlet, and Rusted Shield is sealed in Burned Tower behind a charred-switch/brazier puzzle.</li>
+            <li><strong>Act 3 - The Heroes Answer:</strong> Sword at Bell Tower courtyard triggers Zacian (static/catchable), and Shield in Burned Tower deep chamber triggers Zamazenta (static/catchable), framed as foreign guardians answering Johto's sacred call.</li>
+            <li><strong>Act 4 - Hidden Core:</strong> the anomaly source is below Goldenrod Radio Tower (sealed sublevel / basement chamber) with emergency lockdown progression, corrupted signal rooms, 2-3 battles, and a final Eternatus encounter.</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Story tone:</span>
+            Bell Tower carries the holy protector motif, Burned Tower carries disaster-defense ruins, and Goldenrod represents modern amplification where the foreign core finally surfaces.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Paradox Lineage Conversions (Planned)</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Planned lineage links for Paradox encounters/evolutions. Intended to pair with quest or relic-item unlock gates.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Donphan line:</strong> Donphan -> Great Tusk / Iron Treads</li>
+            <li><strong>Volcarona line:</strong> Volcarona -> Slither Wing / Iron Moth</li>
+            <li><strong>Magneton line:</strong> Magneton -> Sandy Shocks (no canon future Magneton Paradox form)</li>
+            <li><strong>Misdreavus line:</strong> Misdreavus -> Flutter Mane</li>
+            <li><strong>Amoonguss line:</strong> Amoonguss -> Brute Bonnet</li>
+            <li><strong>Jigglypuff line:</strong> Jigglypuff -> Scream Tail</li>
+            <li><strong>Hariyama line:</strong> Hariyama -> Iron Hands</li>
+            <li><strong>Delibird line:</strong> Delibird -> Iron Bundle</li>
+            <li><strong>Hydreigon line:</strong> Hydreigon -> Iron Jugulis</li>
+            <li><strong>Tyranitar line:</strong> Tyranitar -> Iron Thorns</li>
+            <li><strong>Salamence line:</strong> Salamence -> Roaring Moon</li>
+            <li><strong>Gardevoir/Gallade line:</strong> Gardevoir/Gallade -> Iron Valiant</li>
+            <li><strong>Cyclizar line:</strong> Cyclizar -> Koraidon / Miraidon</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Design note:</span>
+            Box-legend treatment can share the same relic-item framework used for other Paradox unlocks.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Ogerpon Questline: The Masked Cave</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            A mask-gated cave quest that culminates in a multi-phase Ogerpon boss sequence before the catch resolution.
+          </p>
+          <ul class="mechanic-list">
+            <li><strong>Step 1 - Sealed Cave:</strong> cave door checks inventory for three masks. If one or more are missing, access is denied with a missing-mask message. Optional visual: each engraving glows if its mask is already owned.</li>
+            <li><strong>Step 2 - Loyal Three Rewards:</strong> each mask is obtained after a Loyal Three boss (or mini-quest + boss): Okidogi -> Mask A, Munkidori -> Mask B, Fezandipiti -> Mask C.</li>
+            <li><strong>Step 3 - Four-Stage Ogerpon Battle:</strong> scripted gauntlet of Base form, then Mask 1 revive, Mask 2 revive, and Mask 3 revive. Recommended flow includes forced heal windows between phases for pacing control.</li>
+            <li><strong>Step 4 - Catch Resolution:</strong> after phase 4, either run a dedicated catch battle as phase 5 or transition directly into a catch state from the final phase.</li>
+            <li><strong>Step 5 - Post-Fight State:</strong> cave calms, and mask items become recognized for future form-change use (or remain as story relics if locked).</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Balance note:</span>
+            Difficulty can be tuned per phase by changing moveset role/ability profile and by deciding whether phase breaks restore the player's team.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── CATCHING ── -->
   <div class="category" id="cat-catching">
     <div class="category-header">
       <span class="category-title">Catching</span>
       <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Apricorn Lure System (Planned)</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Apricorns will be craftable into consumable Lures. A Lure does not force one species;
+            it reweights encounter odds toward a chosen lure group. This keeps routing deterministic
+            without making rare targets guaranteed.
+          </p>
+          <p class="mechanic-desc">
+            Rules lock: one active lure at a time, duration is encounter-based (not step-based),
+            and it works on walking, surfing, and fishing tables. Fishing still respects Old/Good/Super
+            Rod pools before lure weighting is applied.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Locked tuning target:</span>
+            Each targeted species can rise up to ~30% per table, non-target species keep at least 1%,
+            and if multiple targets are present they share boost proportionally. Example target:
+            Abra can move from 1% toward 30% instead of becoming guaranteed.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Colored Eggs / Easter Eggs (Planned)</span>
+            <span class="mechanic-tag mechanic-tag-catch">Catching</span>
+            <span class="mechanic-tag mechanic-tag-prog">Progression</span>
+          </div>
+          <p class="mechanic-desc">
+            Breeding and reward eggs will be split into 10 color pools based on the Pokedex body color
+            field. Each egg source can point to one color table instead of a mixed species table.
+          </p>
+          <ul class="mechanic-list">
+            <li>Black</li>
+            <li>Blue</li>
+            <li>Brown</li>
+            <li>Gray</li>
+            <li>Green</li>
+            <li>Pink</li>
+            <li>Purple</li>
+            <li>Red</li>
+            <li>White</li>
+            <li>Yellow</li>
+          </ul>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Design intent:</span>
+            Egg pools stay thematic and routeable while still leaving room for rarity tuning inside each
+            color table.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="mechanic-card">
@@ -547,6 +828,30 @@
     <div class="category-header">
       <span class="category-title">Quality of Life</span>
       <div class="category-line"></div>
+    </div>
+
+    <div class="mechanic-card">
+      <div class="mechanic-card-inner">
+        <div class="mechanic-main">
+          <div class="mechanic-name-row">
+            <span class="mechanic-name">Reusable Items</span>
+            <span class="mechanic-tag mechanic-tag-quality">Quality of Life</span>
+            <span class="mechanic-tag mechanic-tag-battle">Battle</span>
+          </div>
+          <p class="mechanic-desc">
+            Item economy is tuned around planning, not one-time losses. Berries, TMs, and HMs are all reusable,
+            so key tools stay available for future battles and routes instead of being burned after one use.
+          </p>
+          <p class="mechanic-desc">
+            Held items are treated as reusable equipment as well. If an item is consumed or triggered in battle,
+            it returns to your inventory after the fight so your core sets remain intact.
+          </p>
+          <div class="mechanic-note">
+            <span class="mechanic-note-label">Rule summary:</span>
+            Berries, TMs, HMs, and held items are permanent resources in this hack.
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="mechanic-card">

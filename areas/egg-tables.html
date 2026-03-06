@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Egg Tables — Jay's Romhack Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #161A1F;
+    --surface: #20262D;
+    --surface2: #272E37;
+    --border: #313943;
+    --text: #E9EDF1;
+    --text-muted: #AAB2BA;
+    --accent: #8E9CAA;
+    --main: #AEB8C2;
+    --highlight: #C8D2DB;
+    --line: #2A313A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .page-header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .romhack-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 10px; }
+
+  .menu-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .menu-btn:hover { border-color: var(--main); color: var(--main); }
+  .menu-icon { display: flex; flex-direction: column; gap: 3px; }
+  .menu-icon span { display: block; width: 14px; height: 1.5px; background: currentColor; border-radius: 1px; }
+
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .toggle-track {
+    width: 32px;
+    height: 18px;
+    background: var(--border);
+    border-radius: 9px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .toggle-track.active { background: var(--main); }
+  .toggle-thumb {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+  }
+  .toggle-track.active .toggle-thumb { transform: translateX(14px); }
+  .theme-label { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .menu-overlay {
+    position: fixed;
+    top: 72px;
+    right: 32px;
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    z-index: 200;
+    display: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .menu-overlay.open { display: block; }
+  .menu-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .menu-section-title:first-child { margin-top: 0; }
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .menu-link:hover { background: rgba(255,255,255,0.06); color: var(--accent); }
+  .menu-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+  .location-hero {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 32px 0;
+  }
+
+  .location-hero-inner {
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .location-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 24px;
+    color: var(--text);
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .biome-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .biome-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .page-body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 32px 80px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .section-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .section-body { padding: 16px; }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 720px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  th {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.02);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  td.code {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--highlight);
+  }
+
+  .note {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  .egg-box-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .egg-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.02);
+    padding: 10px;
+  }
+
+  .egg-box-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--highlight);
+    margin-bottom: 8px;
+  }
+
+  .egg-box-slots {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .egg-slot {
+    height: 24px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  body.light {
+    --bg: #FCF8F1;
+    --surface: #F5EBDD;
+    --surface2: #EDE0CC;
+    --border: #E7D8C1;
+    --text: #4A4032;
+    --text-muted: #7A6D5C;
+    --accent: #C9A86A;
+    --main: #D8BE8A;
+    --highlight: #A07030;
+    --line: #E1D2BA;
+  }
+
+  body.light .menu-link:hover { background: rgba(0,0,0,0.05); color: #C9A86A; }
+  body.light .egg-box { background: rgba(0,0,0,0.02); }
+
+  @media (max-width: 1260px) {
+    .egg-box-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 1020px) {
+    .egg-box-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 800px) {
+    .egg-box-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 560px) {
+    .egg-box-grid { grid-template-columns: 1fr; }
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="romhack-title">Jay's Romhack</span>
+  <div class="header-right">
+    <div class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-track" id="toggleTrack"><div class="toggle-thumb"></div></div>
+      <span class="theme-label" id="themeLabel">Dark</span>
+    </div>
+    <div class="menu-btn" onclick="toggleMenu()">
+      <div class="menu-icon"><span></span><span></span><span></span></div>
+      Menu
+    </div>
+  </div>
+</header>
+
+<div class="menu-overlay" id="menuOverlay">
+  <div class="menu-section-title">Navigation</div>
+  <a href="../index.html" class="menu-link">Home</a>
+  <a href="../areadex.html" class="menu-link">Area Sheets</a>
+  <a href="../pokedex.html" class="menu-link">Pokedex</a>
+  <a href="../trainerdex.html" class="menu-link">TrainerDex</a>
+  <a href="../itemdex.html" class="menu-link">ItemDex</a>
+  <a href="../progression.html" class="menu-link">Progression</a>
+  <a href="../mechanics.html" class="menu-link">Mechanics</a>
+  <a href="../calculator.html" class="menu-link">Battle Calculator</a>
+  <a href="../tracker.html" class="menu-link">Nuzlocke Tracker</a>
+  <div class="menu-divider"></div>
+  <div class="menu-section-title">Jump To</div>
+  <a href="#section-egg-boxes" class="menu-link" onclick="closeMenu()">Egg Boxes</a>
+  <a href="#section-source-map" class="menu-link" onclick="closeMenu()">Source Map</a>
+</div>
+
+<div class="location-hero">
+  <div class="location-hero-inner">
+    <div class="location-name">Egg Tables</div>
+    <div class="biome-tags">
+      <span class="biome-tag">Documentation</span>
+      <span class="biome-tag">Global</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="section" id="section-egg-boxes">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Egg Box Layout
+    </div>
+    <div class="section-body">
+      <div class="egg-box-grid" id="eggBoxGrid"></div>
+      <div class="note">10 boxes total (5 x 2) with 20 slots in each box.</div>
+    </div>
+  </div>
+
+  <div class="section" id="section-source-map">
+    <div class="section-header">
+      <div class="section-dot"></div>
+      Source Mapping
+    </div>
+    <div class="section-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 280px;">Source</th>
+              <th style="width: 220px;">Assigned Pool</th>
+              <th>Design Rule</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Daycare Generated Egg</td><td class="code">[set per ruleset]</td><td>Default breeding output.</td></tr>
+            <tr><td>Story Reward Egg</td><td class="code">[set per NPC]</td><td>One-time gift pool assignment.</td></tr>
+            <tr><td>Shop / Silver Coin Egg</td><td class="code">[set per item]</td><td>Economy-tuned egg source.</td></tr>
+            <tr><td>Event Egg</td><td class="code">[set per event]</td><td>Seasonal or chapter-limited entries.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">When balancing starts, keep species in exactly one primary pool unless an exception is documented here.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const track = document.getElementById('toggleTrack');
+  const label = document.getElementById('themeLabel');
+  const menu = document.getElementById('menuOverlay');
+
+  function toggleTheme() {
+    document.body.classList.toggle('light');
+    const isLight = document.body.classList.contains('light');
+    track.classList.toggle('active', isLight);
+    label.textContent = isLight ? 'Light' : 'Dark';
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+  }
+
+  function toggleMenu() {
+    menu.classList.toggle('open');
+  }
+
+  function closeMenu() {
+    menu.classList.remove('open');
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.menu-btn') && !e.target.closest('.menu-overlay')) closeMenu();
+  });
+
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+    track.classList.add('active');
+    label.textContent = 'Light';
+  }
+
+  function renderEggBoxes() {
+    const grid = document.getElementById('eggBoxGrid');
+    if (!grid) return;
+
+    const colorBoxes = [
+      'Black',
+      'Blue',
+      'Brown',
+      'Gray',
+      'Green',
+      'Pink',
+      'Purple',
+      'Red',
+      'White',
+      'Yellow'
+    ];
+
+    const fragment = document.createDocumentFragment();
+    for (const colorName of colorBoxes) {
+      const card = document.createElement('div');
+      card.className = 'egg-box';
+
+      const title = document.createElement('div');
+      title.className = 'egg-box-title';
+      title.textContent = colorName;
+      card.appendChild(title);
+
+      const slots = document.createElement('div');
+      slots.className = 'egg-box-slots';
+
+      for (let slot = 1; slot <= 20; slot++) {
+        const slotCell = document.createElement('div');
+        slotCell.className = 'egg-slot';
+        slotCell.textContent = String(slot).padStart(2, '0');
+        slots.appendChild(slotCell);
+      }
+
+      card.appendChild(slots);
+      fragment.appendChild(card);
+    }
+
+    grid.appendChild(fragment);
+  }
+
+  renderEggBoxes();
+</script>
+
+</body>
+</html>

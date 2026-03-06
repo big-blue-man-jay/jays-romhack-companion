@@ -1,0 +1,543 @@
+Abra
+Absol
+Aerodactyl
+Aipom
+Alomomola
+Amaura
+Anorith
+Applin
+Arceus
+Archaludon
+Archen
+Arctovish
+Arctozolt
+Aron
+Arrokuda
+Articuno
+Audino
+Axew
+Azelf
+Azurill
+Bagon
+Baltoy
+Barboach
+Basculin (Red Striped)
+Beldum
+Bellsprout
+Bergmite
+Bidoof
+Binacle
+Blacephalon
+Blipbug
+Blitzle
+Bombirdier
+Bonsly
+Bouffalant
+Bounsweet
+Bramblin
+Bronzor
+Brute Bonnet
+Bruxish
+Budew
+Buizel
+Bulbasaur
+Buneary
+Bunnelby
+Burmy
+Buzzwole
+Cacnea
+Calyrex
+Capsakid
+Carbink
+Carnivine
+Carvanha
+Castform
+Caterpie
+Celebi
+Celesteela
+Cetoddle
+Charcadet
+Charmander
+Chatot
+Cherubi
+Chespin
+Chewtle
+Chi Yu
+Chien Pao
+Chikorita
+Chimchar
+Chinchou
+Chingling
+Clamperl
+Clauncher
+Cleffa
+Clobbopus
+Cobalion
+Combee
+Comfey
+Corphish
+Corsola
+Cosmog
+Cottonee
+Crabrawler
+Cramorant
+Cranidos
+Cresselia
+Croagunk
+Cryogonal
+Cubchoo
+Cubone
+Cufant
+Cutiefly
+Cyclizar
+Cyndaquil
+Darkrai
+Darumaka
+Dedenne
+Deerling
+Deino
+Delibird
+Deoxys
+Dewpider
+Dhelmise
+Dialga
+Diancie
+Diglett
+Ditto
+Doduo
+Dondozo
+Dracovish
+Dracozolt
+Drampa
+Dratini
+Dreepy
+Drifloon
+Drilbur
+Drowzee
+Druddigon
+Ducklett
+Dunsparce
+Duraludon
+Durant
+Duskull
+Dwebble
+Eevee
+Eiscue (Noice)
+Ekans
+Electrike
+Elekid
+Elgyem
+Emolga
+Enamorus (Incarnate Forme)
+Entei
+Espurr
+Eternatus
+Exeggcute
+Falinks
+Farfetchd
+Feebas
+Fennekin
+Ferroseed
+Fezandipiti
+Fidough
+Finizen
+Finneon
+Flabebe
+Flamigo
+Fletchling
+Flittle
+Flutter Mane
+Fomantis
+Foongus
+Frigibax
+Frillish
+Froakie
+Fuecoco
+Furfrou
+Gastly
+Genesect
+Geodude
+Gible
+Gimmighoul
+Girafarig
+Giratina (Altered)
+Glameow
+Glastrier
+Gligar
+Glimmet
+Goldeen
+Golett
+Goomy
+Gossifleur
+Gothita
+Gouging Fire
+Great Tusk
+Greavard
+Grimer
+Grookey
+Groudon
+Growlithe
+Grubbin
+Gulpin
+Guzzlord
+Happiny
+Hatenna
+Hawlucha
+Heatmor
+Heatran
+Helioptile
+Heracross
+Hippopotas
+Ho Oh
+Honedge
+Hoopa
+Hoothoot
+Hoppip
+Horsea
+Houndour
+Igglybuff
+Illumise
+Impidimp
+Indeedee (Male)
+Inkay
+Iron Boulder
+Iron Bundle
+Iron Crown
+Iron Hands
+Iron Jugulis
+Iron Leaves
+Iron Moth
+Iron Thorns
+Iron Treads
+Iron Valiant
+Jangmo O
+Jirachi
+Joltik
+Kabuto
+Kangaskhan
+Karrablast
+Kartana
+Kecleon
+Keldeo (Ordinary)
+Klawf
+Klefki
+Klink
+Koffing
+Komala
+Koraidon
+Krabby
+Kricketot
+Kubfu
+Kyogre
+Kyurem
+Landorus (Incarnate Forme)
+Lapras
+Larvesta
+Larvitar
+Latias
+Latios
+Lechonk
+Ledyba
+Lickitung
+Lileep
+Lillipup
+Litleo
+Litten
+Litwick
+Lotad
+Lugia
+Lunatone
+Luvdisc
+Machop
+Magby
+Magearna
+Magikarp
+Magnemite
+Makuhita
+Manaphy
+Mankey
+Mantyke
+Maractus
+Mareanie
+Mareep
+Marshadow
+Maschiff
+Mawile
+Meditite
+Melmetal
+Meloetta (Aria Forme)
+Meltan
+Meowth
+Mesprit
+Mew
+Mewtwo
+Mienfoo
+Milcery
+Miltank
+Mime Jr
+Mimikyu (Disguised)
+Minccino
+Minun
+Miraidon
+Misdreavus
+Moltres
+Morelull
+Morpeko (Full Belly Mode)
+Mudbray
+Mudkip
+Munchlax
+Munkidori
+Munna
+Murkrow
+Nacli
+Natu
+Necrozma
+Nickit
+Nidoran F
+Nidoran M
+Nihilego
+Nincada
+Noibat
+Nosepass
+Numel
+Nymble
+Oddish
+Ogerpon
+Okidogi
+Omanyte
+Onix
+Oranguru
+Oricorio (Baile)
+Orthworm
+Oshawott
+Pachirisu
+Palkia
+Pancham
+Panpour
+Pansage
+Pansear
+Paras
+Passimian
+Patrat
+Pawmi
+Pawniard
+Pecharunt
+Petilil
+Phanpy
+Phantump
+Pheromosa
+Phione
+Pichu
+Pidgey
+Pidove
+Pikipek
+Pincurchin
+Pineco
+Pinsir
+Piplup
+Plusle
+Poipole
+Poliwag
+Poltchageist
+Ponyta
+Poochyena
+Popplio
+Porygon
+Psyduck
+Pumpkaboo (Average)
+Purrloin
+Pyukumuku
+Quaxly
+Qwilfish
+Raging Bolt
+Raikou
+Ralts
+Rattata
+Rayquaza
+Regice
+Regidrago
+Regieleki
+Regigigas
+Regirock
+Registeel
+Relicanth
+Rellor
+Remoraid
+Reshiram
+Rhyhorn
+Riolu
+Roaring Moon
+Rockruff
+Roggenrola
+Rolycoly
+Rookidee
+Rotom
+Rowlet
+Rufflet
+Sableye
+Salandit
+Sandile
+Sandshrew
+Sandy Shocks
+Sandygast
+Sawk
+Scatterbug
+Scorbunny
+Scraggy
+Scream Tail
+Scyther
+Seedot
+Seel
+Sentret
+Seviper
+Sewaddle
+Shaymin (Land)
+Shellder
+Shellos
+Shelmet
+Shieldon
+Shinx
+Shroodle
+Shroomish
+Shuckle
+Shuppet
+Sigilyph
+Silicobra
+Sinistcha
+Sinistea
+Sizzlipede
+Skarmory
+Skiddo
+Skitty
+Skorupi
+Skrelp
+Skwovet
+Slakoth
+Slither Wing
+Slowpoke
+Slugma
+Smeargle
+Smoliv
+Smoochum
+Sneasel
+Snivy
+Snom
+Snorunt
+Snover
+Snubbull
+Sobble
+Solosis
+Solrock
+Spearow
+Spectrier
+Spheal
+Spinarak
+Spinda
+Spiritomb
+Spoink
+Sprigatito
+Spritzee
+Squawkabilly (Green Plumage)
+Squirtle
+Stakataka
+Stantler
+Starly
+Staryu
+Stonjourner
+Stufful
+Stunfisk
+Stunky
+Suicune
+Sunkern
+Surskit
+Swablu
+Swinub
+Swirlix
+Tadbulb
+Taillow
+Tandemaus
+Tangela
+Tapu Bulu
+Tapu Fini
+Tapu Koko
+Tapu Lele
+Tarountula
+Tatsugiri (Curly)
+Tauros
+Teddiursa
+Tentacool
+Tepig
+Terapagos
+Terrakion
+Throh
+Thundurus (Incarnate Forme)
+Timburr
+Ting Lu
+Tinkatink
+Tirtouga
+Toedscool
+Togedemaru
+Togepi
+Torchic
+Torkoal
+Tornadus (Incarnate Forme)
+Totodile
+Toxel
+Trapinch
+Treecko
+Tropius
+Trubbish
+Turtonator
+Turtwig
+Tympole
+Tynamo
+Type Null
+Tyrogue
+Tyrunt
+Unown
+Uxie
+Vanillite
+Varoom
+Veluza
+Venipede
+Venonat
+Victini
+Virizion
+Volbeat
+Volcanion
+Voltorb
+Vullaby
+Vulpix
+Wailmer
+Walking Wake
+Wattrel
+Weedle
+Whismur
+Wiglett
+Wimpod
+Wingull
+Wishiwashi (Solo)
+Wo Chien
+Woobat
+Wooloo
+Wooper
+Wurmple
+Wynaut
+Xerneas
+Xurkitree
+Yamask
+Yamper
+Yanma
+Yungoos
+Yveltal
+Zacian
+Zamazenta
+Zangoose
+Zapdos
+Zarude
+Zekrom
+Zeraora
+Zigzagoon
+Zorua
+Zubat
+Zygarde (50)

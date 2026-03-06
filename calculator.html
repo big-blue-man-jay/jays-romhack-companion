@@ -198,8 +198,6 @@
   .export-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
   .export-btn-copy{padding:7px 18px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;background:rgba(174,184,194,.1);border:1px solid var(--main);color:var(--main);transition:background .15s}
   .export-btn-copy:hover{background:rgba(174,184,194,.2)}
-  .export-btn-pokepast{padding:7px 18px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;background:rgba(120,200,124,.08);border:1px solid rgba(120,200,124,.4);color:var(--green);transition:all .15s}
-  .export-btn-pokepast:hover{background:rgba(120,200,124,.18);border-color:var(--green)}
   .export-btn-cancel{padding:7px 16px;border-radius:6px;font-family:'DM Mono',monospace;font-size:11px;cursor:pointer;background:transparent;border:1px solid var(--border);color:var(--text-muted);transition:all .15s}
   .export-btn-cancel:hover{border-color:var(--main);color:var(--main)}
   .export-toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 18px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text);z-index:700;transition:transform .25s,opacity .25s;opacity:0;pointer-events:none;white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.4)}
@@ -260,8 +258,10 @@
   .hp-pct{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-muted)}
   .hp-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px}
   .hp-fill{height:100%;border-radius:4px;background:#5CB85C;transition:width .3s}
-  .hp-input-row{display:flex;align-items:center;gap:8px}
+  .hp-input-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .hp-input-group{display:flex;align-items:center;gap:8px}
   .hp-input{width:64px;background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:4px 6px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;text-align:right}
+  .hp-input-pct-field{width:58px}
   .hp-sep{color:var(--text-muted);font-family:'DM Mono',monospace;font-size:11px}
 
   /* ── MOVE SLOTS ── */
@@ -273,6 +273,8 @@
   .move-slot-left{display:flex;flex-direction:column;gap:4px;min-width:0}
   .move-slot-name{font-family:'DM Mono',monospace;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .move-slot-tags{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+  .move-mod-btn{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.6px;padding:2px 5px;border-radius:3px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text-muted);cursor:pointer;transition:all .15s;white-space:nowrap}
+  .move-mod-btn:hover{border-color:rgba(174,184,194,.45);color:var(--main)}
   .move-type-badge{font-family:'DM Mono',monospace;font-size:9px;padding:1px 6px;border-radius:3px;color:white;font-weight:500}
   .move-cat-img{height:14px;width:auto;display:block;cursor:pointer;border-radius:2px;opacity:.85;transition:opacity .15s;image-rendering:pixelated}
   .move-cat-img:hover{opacity:1}
@@ -660,7 +662,7 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
           <button class="export-drop-item" onclick="saveActiveToBox('att');togglePanelExport('att')">Save to Team Box</button>
           <hr class="export-drop-sep">
           <button class="export-drop-item" onclick="copyPanelShowdown('att');togglePanelExport('att')">Copy Showdown</button>
-          <button class="export-drop-item" onclick="openPanelExportModal('att');togglePanelExport('att')">View / Poképaste</button>
+          <button class="export-drop-item" onclick="openPanelExportModal('att');togglePanelExport('att')">View Showdown</button>
         </div>
       </div>
     </div>
@@ -683,7 +685,7 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
     <div class="setting-field"><span class="setting-label">Nature</span><select class="setting-select" id="att-nature" onchange="onSettingChange('att')"></select></div>
     <div class="setting-field full"><span class="setting-label">Ability</span><select class="setting-select" id="att-ability" onchange="recalcAll()"></select></div>
     <div class="setting-field full"><span class="setting-label">Item</span><select class="setting-select" id="att-item" onchange="recalcAll()"></select></div>
-    <div class="setting-field full"><span class="setting-label">Status</span><select class="setting-select" id="att-status" onchange="recalcAll()"><option value="Healthy">Healthy</option><option value="Burned">Burned</option><option value="Paralysed">Paralysed</option><option value="Poisoned">Poisoned</option><option value="Frozen">Frozen</option><option value="Asleep">Asleep</option></select></div>
+    <div class="setting-field full"><span class="setting-label">Status</span><select class="setting-select" id="att-status" onchange="recalcAll()"><option value="">Healthy</option><option value="brn">Burned</option><option value="par">Paralysed</option><option value="psn">Poisoned</option><option value="tox">Badly Poisoned</option><option value="frz">Frozen</option><option value="slp">Asleep</option></select></div>
   </div>
 
   <div class="stats-section">
@@ -743,7 +745,17 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
   <div class="hp-section">
     <div class="hp-header"><span class="hp-label">Current HP</span><span class="hp-pct" id="att-hp-pct">100%</span></div>
     <div class="hp-bar"><div class="hp-fill" id="att-hp-bar" style="width:100%"></div></div>
-    <div class="hp-input-row"><input class="hp-input" id="att-curr-hp" type="number" value="301" onchange="onHpChange('att')"/><span class="hp-sep">/</span><span class="hp-sep" id="att-max-hp">301</span></div>
+    <div class="hp-input-row">
+      <div class="hp-input-group">
+        <input class="hp-input" id="att-curr-hp" type="number" value="301" onchange="onHpChange('att')"/>
+        <span class="hp-sep">/</span>
+        <span class="hp-sep" id="att-max-hp">301</span>
+      </div>
+      <div class="hp-input-group">
+        <input class="hp-input hp-input-pct-field" id="att-curr-hp-pct-input" type="number" value="100" min="0" max="100" step="0.1" onchange="onHpPercentChange('att')"/>
+        <span class="hp-sep">%</span>
+      </div>
+    </div>
   </div>
 
   <div class="move-slots">
@@ -827,11 +839,11 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
       <div>
         <div class="hazard-side-label">Attacker side</div>
         <div class="field-btn-grid">
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Reflect</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Light Screen</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Aurora Veil</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Tailwind</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Stealth Rock</div>
+          <div class="field-btn screen-btn" data-side="att" onclick="toggleMulti(this,'screens')">Reflect</div>
+          <div class="field-btn screen-btn" data-side="att" onclick="toggleMulti(this,'screens')">Light Screen</div>
+          <div class="field-btn screen-btn" data-side="att" onclick="toggleMulti(this,'screens')">Aurora Veil</div>
+          <div class="field-btn screen-btn" data-side="att" onclick="toggleMulti(this,'screens')">Tailwind</div>
+          <div class="field-btn screen-btn" data-side="att" onclick="toggleMulti(this,'screens')">Stealth Rock</div>
         </div>
         <div class="spikes-row">
           <span class="spikes-label">Spikes</span>
@@ -846,11 +858,11 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
       <div>
         <div class="hazard-side-label">Defender side</div>
         <div class="field-btn-grid">
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Reflect</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Light Screen</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Aurora Veil</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Tailwind</div>
-          <div class="field-btn screen-btn" onclick="toggleMulti(this,'screens')">Stealth Rock</div>
+          <div class="field-btn screen-btn" data-side="def" onclick="toggleMulti(this,'screens')">Reflect</div>
+          <div class="field-btn screen-btn" data-side="def" onclick="toggleMulti(this,'screens')">Light Screen</div>
+          <div class="field-btn screen-btn" data-side="def" onclick="toggleMulti(this,'screens')">Aurora Veil</div>
+          <div class="field-btn screen-btn" data-side="def" onclick="toggleMulti(this,'screens')">Tailwind</div>
+          <div class="field-btn screen-btn" data-side="def" onclick="toggleMulti(this,'screens')">Stealth Rock</div>
         </div>
         <div class="spikes-row">
           <span class="spikes-label">Spikes</span>
@@ -873,31 +885,31 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
       <div>
         <div class="hazard-side-label">Attacker</div>
         <div class="field-btn-grid">
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Foresight</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Power Trick</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Leech Seed</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Salt Cure</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Switching Out</div>
+          <div class="field-btn cmove-btn" data-side="att" onclick="toggleMulti(this,'cmove')">Foresight</div>
+          <div class="field-btn cmove-btn" data-side="att" onclick="toggleMulti(this,'cmove')">Power Trick</div>
+          <div class="field-btn cmove-btn" data-side="att" onclick="toggleMulti(this,'cmove')">Leech Seed</div>
+          <div class="field-btn cmove-btn" data-side="att" onclick="toggleMulti(this,'cmove')">Salt Cure</div>
+          <div class="field-btn cmove-btn" data-side="att" onclick="toggleMulti(this,'cmove')">Switching Out</div>
         </div>
       </div>
       <div>
         <div class="hazard-side-label">Defender</div>
         <div class="field-btn-grid">
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Foresight</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Power Trick</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Leech Seed</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Salt Cure</div>
-          <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Switching Out</div>
+          <div class="field-btn cmove-btn" data-side="def" onclick="toggleMulti(this,'cmove')">Foresight</div>
+          <div class="field-btn cmove-btn" data-side="def" onclick="toggleMulti(this,'cmove')">Power Trick</div>
+          <div class="field-btn cmove-btn" data-side="def" onclick="toggleMulti(this,'cmove')">Leech Seed</div>
+          <div class="field-btn cmove-btn" data-side="def" onclick="toggleMulti(this,'cmove')">Salt Cure</div>
+          <div class="field-btn cmove-btn" data-side="def" onclick="toggleMulti(this,'cmove')">Switching Out</div>
         </div>
       </div>
     </div>
     <div class="field-global">
       <div class="hazard-side-label">Global</div>
       <div class="field-btn-grid">
-        <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Gravity</div>
-        <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Trick Room</div>
-        <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Wonder Room</div>
-        <div class="field-btn cmove-btn" onclick="toggleMulti(this,'cmove')">Magic Room</div>
+        <div class="field-btn cmove-btn" data-side="global" onclick="toggleMulti(this,'cmove')">Gravity</div>
+        <div class="field-btn cmove-btn" data-side="global" onclick="toggleMulti(this,'cmove')">Trick Room</div>
+        <div class="field-btn cmove-btn" data-side="global" onclick="toggleMulti(this,'cmove')">Wonder Room</div>
+        <div class="field-btn cmove-btn" data-side="global" onclick="toggleMulti(this,'cmove')">Magic Room</div>
       </div>
     </div>
     <div class="field-desc c-cond" id="cmove-desc"></div>
@@ -910,21 +922,21 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
       <div>
         <div class="hazard-side-label">Attacker</div>
         <div class="field-btn-grid">
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Flower Gift</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Battery</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Steely Spirit</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Friend Guard</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Power Spot</div>
+          <div class="field-btn cabil-btn" data-side="att" onclick="toggleMulti(this,'cabil')">Flower Gift</div>
+          <div class="field-btn cabil-btn" data-side="att" onclick="toggleMulti(this,'cabil')">Battery</div>
+          <div class="field-btn cabil-btn" data-side="att" onclick="toggleMulti(this,'cabil')">Steely Spirit</div>
+          <div class="field-btn cabil-btn" data-side="att" onclick="toggleMulti(this,'cabil')">Friend Guard</div>
+          <div class="field-btn cabil-btn" data-side="att" onclick="toggleMulti(this,'cabil')">Power Spot</div>
         </div>
       </div>
       <div>
         <div class="hazard-side-label">Defender</div>
         <div class="field-btn-grid">
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Flower Gift</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Battery</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Steely Spirit</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Friend Guard</div>
-          <div class="field-btn cabil-btn" onclick="toggleMulti(this,'cabil')">Power Spot</div>
+          <div class="field-btn cabil-btn" data-side="def" onclick="toggleMulti(this,'cabil')">Flower Gift</div>
+          <div class="field-btn cabil-btn" data-side="def" onclick="toggleMulti(this,'cabil')">Battery</div>
+          <div class="field-btn cabil-btn" data-side="def" onclick="toggleMulti(this,'cabil')">Steely Spirit</div>
+          <div class="field-btn cabil-btn" data-side="def" onclick="toggleMulti(this,'cabil')">Friend Guard</div>
+          <div class="field-btn cabil-btn" data-side="def" onclick="toggleMulti(this,'cabil')">Power Spot</div>
         </div>
       </div>
     </div>
@@ -954,7 +966,7 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
           <button class="export-drop-item" onclick="saveActiveToBox('def');togglePanelExport('def')">Save to NPC Box</button>
           <hr class="export-drop-sep">
           <button class="export-drop-item" onclick="copyPanelShowdown('def');togglePanelExport('def')">Copy Showdown</button>
-          <button class="export-drop-item" onclick="openPanelExportModal('def');togglePanelExport('def')">View / Poképaste</button>
+          <button class="export-drop-item" onclick="openPanelExportModal('def');togglePanelExport('def')">View Showdown</button>
         </div>
       </div>
     </div>
@@ -1047,7 +1059,17 @@ const ABIL_DISP={"adaptability":"Adaptability","aerilate":"Aerilate","aftermath"
   <div class="hp-section">
     <div class="hp-header"><span class="hp-label">Current HP</span><span class="hp-pct" id="def-hp-pct">100%</span></div>
     <div class="hp-bar"><div class="hp-fill" id="def-hp-bar" style="width:100%"></div></div>
-    <div class="hp-input-row"><input class="hp-input" id="def-curr-hp" type="number" value="441" onchange="onHpChange('def')"/><span class="hp-sep">/</span><span class="hp-sep" id="def-max-hp">441</span></div>
+    <div class="hp-input-row">
+      <div class="hp-input-group">
+        <input class="hp-input" id="def-curr-hp" type="number" value="441" onchange="onHpChange('def')"/>
+        <span class="hp-sep">/</span>
+        <span class="hp-sep" id="def-max-hp">441</span>
+      </div>
+      <div class="hp-input-group">
+        <input class="hp-input hp-input-pct-field" id="def-curr-hp-pct-input" type="number" value="100" min="0" max="100" step="0.1" onchange="onHpPercentChange('def')"/>
+        <span class="hp-sep">%</span>
+      </div>
+    </div>
   </div>
 
   <div class="move-slots">
@@ -1562,6 +1584,145 @@ function selectMove(el) {
   setTimeout(() => b.classList.remove('flash'), 300);
 }
 
+const VARIABLE_MULTI_HIT_MOVES = new Set([
+  'arm-thrust','bone-rush','bullet-seed','fury-attack','fury-swipes',
+  'icicle-spear','pin-missile','rock-blast','scale-shot','tail-slap','water-shuriken'
+]);
+const FIXED_MULTI_HIT_MOVES = {
+  'double-hit': 2,
+  'double-kick': 2,
+  'double-slap': 2,
+  'dragon-darts': 2,
+  'dual-wingbeat': 2,
+  'twin-beam': 2,
+  'tachyon-cutter': 2,
+  'surging-strikes': 3,
+  'triple-dive': 3,
+  'triple-kick': 3
+};
+const ROLLING_POWER_MOVES = new Set(['rollout','ice-ball']);
+
+function _clampMoveMod(value, min, max, fallback) {
+  const num = parseInt(value, 10);
+  if (!Number.isFinite(num)) return fallback;
+  return Math.max(min, Math.min(max, num));
+}
+
+function getMoveBasePower(slot) {
+  return Math.max(0, parseInt(slot?.dataset?.baseBp, 10) || 0);
+}
+
+function getRolloutTurn(slot) {
+  return _clampMoveMod(slot?.dataset?.rollTurn, 1, 5, 1);
+}
+
+function getMoveHitCount(slot, slug) {
+  if (VARIABLE_MULTI_HIT_MOVES.has(slug)) {
+    return _clampMoveMod(slot?.dataset?.hitCount, 2, 5, 2);
+  }
+  return FIXED_MULTI_HIT_MOVES[slug] || 1;
+}
+
+function getEffectiveMoveBasePower(slot, slug) {
+  const base = getMoveBasePower(slot);
+  if (!base) return 0;
+  if (ROLLING_POWER_MOVES.has(slug)) {
+    return base * Math.pow(2, getRolloutTurn(slot) - 1);
+  }
+  return base;
+}
+
+function getMovePowerLabel(slot, slug) {
+  const base = getMoveBasePower(slot);
+  if (!base) return '— BP';
+  const hits = getMoveHitCount(slot, slug);
+  if (ROLLING_POWER_MOVES.has(slug)) {
+    return `${getEffectiveMoveBasePower(slot, slug)} BP`;
+  }
+  if (hits > 1) {
+    return `${base} BP ×${hits}`;
+  }
+  return `${base} BP`;
+}
+
+function getMoveDisplayLabel(slot, moveName, slug) {
+  if (!moveName) return '';
+  if (ROLLING_POWER_MOVES.has(slug)) {
+    return `${moveName} (Turn ${getRolloutTurn(slot)})`;
+  }
+  const hits = getMoveHitCount(slot, slug);
+  if (hits > 1) {
+    return `${moveName} (${hits} hits)`;
+  }
+  return moveName;
+}
+
+function cycleMoveMod(slot, mode) {
+  if (!slot) return;
+  if (mode === 'rollout') {
+    slot.dataset.rollTurn = String(getRolloutTurn(slot) >= 5 ? 1 : getRolloutTurn(slot) + 1);
+  } else if (mode === 'hits') {
+    const current = _clampMoveMod(slot.dataset.hitCount, 2, 5, 2);
+    slot.dataset.hitCount = String(current >= 5 ? 2 : current + 1);
+  }
+  refreshMoveSlotUi(slot);
+  if (typeof recalcAll === 'function') recalcAll();
+}
+
+function refreshMoveSlotUi(slot) {
+  if (!slot) return;
+  const slug = slot.dataset.move || '';
+  const tags = slot.querySelector('.move-slot-tags');
+  const pwrEl = slot.querySelector('.move-pwr');
+
+  if (tags) {
+    tags.querySelectorAll('.move-mod-btn').forEach(btn => btn.remove());
+    let btn = null;
+    if (ROLLING_POWER_MOVES.has(slug)) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'move-mod-btn';
+      btn.textContent = `Turn ${getRolloutTurn(slot)}`;
+      btn.title = 'Cycle Rollout turn';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cycleMoveMod(slot, 'rollout');
+      });
+    } else if (VARIABLE_MULTI_HIT_MOVES.has(slug)) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'move-mod-btn';
+      btn.textContent = `${getMoveHitCount(slot, slug)} Hits`;
+      btn.title = 'Cycle number of hits';
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        cycleMoveMod(slot, 'hits');
+      });
+    }
+    if (btn) tags.appendChild(btn);
+  }
+
+  if (pwrEl) pwrEl.textContent = getMovePowerLabel(slot, slug);
+}
+
+function initMoveSlotControls() {
+  document.querySelectorAll('.move-slot').forEach(slot => {
+    if (!slot.dataset.baseBp) {
+      const bpText = slot.querySelector('.move-pwr')?.textContent || '';
+      slot.dataset.baseBp = String(parseInt(bpText, 10) || 0);
+    }
+    refreshMoveSlotUi(slot);
+  });
+}
+
+document.addEventListener('click', function(e) {
+  const critBtn = e.target.closest('.crit-toggle');
+  if (!critBtn) return;
+  setTimeout(() => {
+    if (typeof recalcAll === 'function') recalcAll();
+  }, 0);
+}, true);
+
 // ── Format ──
 let currentFormat = 'singles';
 function setFormat(fmt) {
@@ -1711,11 +1872,13 @@ function pickExcl(el) {
   setDesc(g === 'weather' ? 'weather-desc' : 'terrain-desc', map[el.textContent] || null);
   if (g === 'weather' && !wbOverride)
     setWbType(WB_TYPES[el.textContent] || 'Normal', false);
+  recalcAll();
 }
 
 function toggleMulti(el, group) {
   el.classList.toggle('active');
   refreshMultiDesc(group);
+  recalcAll();
 }
 
 function refreshMultiDesc(group) {
@@ -1726,14 +1889,22 @@ function refreshMultiDesc(group) {
 
   if (group === 'screens') {
     document.querySelectorAll('.screen-btn.active').forEach(b => {
-      const d = getScreenDesc(b.textContent.trim()); if (d) seen.add(d);
+      const d = getScreenDesc(b.textContent.trim());
+      if (!d) return;
+      const side = b.dataset.side === 'att' ? 'Attacker side — ' : 'Defender side — ';
+      seen.add(side + d);
     });
     if (spikes.att > 0) seen.add('Attacker side — ' + SPIKES_INFO[spikes.att]);
     if (spikes.def > 0) seen.add('Defender side — ' + SPIKES_INFO[spikes.def]);
     setDesc('screens-desc', seen.size ? [...seen].join('<br>') : null, true);
   } else {
     document.querySelectorAll(CLS[group] + '.active').forEach(b => {
-      const d = MAP[group][b.textContent.trim()]; if (d) seen.add(d);
+      const d = MAP[group][b.textContent.trim()];
+      if (!d) return;
+      const side = b.dataset.side;
+      if (side === 'att') seen.add('Attacker — ' + d);
+      else if (side === 'def') seen.add('Defender — ' + d);
+      else seen.add(d);
     });
     setDesc(IDS[group], seen.size ? [...seen].join('<br>') : null, true);
   }
@@ -1744,12 +1915,79 @@ function setSpikes(el, side) {
   el.classList.add('active');
   spikes[side] = parseInt(el.textContent);
   refreshMultiDesc('screens');
+  recalcAll();
 }
 
 function setDesc(id, html, isHtml) {
   const div = document.getElementById(id);
   if (html) { if (isHtml) div.innerHTML = html; else div.textContent = html; div.classList.add('show'); }
   else { div.innerHTML = ''; div.classList.remove('show'); }
+}
+
+function normalizeStatus(value) {
+  const raw = (value || '').toString().trim();
+  if (!raw) return '';
+  const key = raw.toLowerCase();
+  const map = {
+    'healthy': '',
+    'burned': 'brn',
+    'brn': 'brn',
+    'paralysed': 'par',
+    'paralyzed': 'par',
+    'par': 'par',
+    'poisoned': 'psn',
+    'psn': 'psn',
+    'badly poisoned': 'tox',
+    'tox': 'tox',
+    'frozen': 'frz',
+    'frz': 'frz',
+    'asleep': 'slp',
+    'slp': 'slp',
+  };
+  return map[key] ?? key;
+}
+
+function hasFieldToggle(selector, label, side) {
+  let query = `${selector}.active`;
+  if (side) query += `[data-side="${side}"]`;
+  return [...document.querySelectorAll(query)]
+    .some(btn => btn.textContent.trim() === label);
+}
+
+function getSpikesFraction(layers) {
+  if (layers >= 3) return 0.25;
+  if (layers === 2) return 1 / 6;
+  if (layers === 1) return 1 / 8;
+  return 0;
+}
+
+function isGroundedForEntryHazards(type1, type2, ability, gravity) {
+  if (gravity) return true;
+  if (type1 === 'Flying' || type2 === 'Flying') return false;
+  const ab = (ability || '').toLowerCase().replace(/\s/g,'-');
+  if (ab === 'levitate') return false;
+  return true;
+}
+
+function getEntryHazardChip(side, type1, type2, ability, item, maxHp, gravity, magicRoom) {
+  if (!maxHp || maxHp <= 0) return 0;
+
+  const ab = (ability || '').toLowerCase().replace(/\s/g,'-');
+  const heldItem = magicRoom ? '— None —' : (item || '— None —');
+  if (ab === 'magic-guard') return 0;
+  if (heldItem === 'Heavy-Duty Boots') return 0;
+
+  let chip = 0;
+  if (hasFieldToggle('.screen-btn', 'Stealth Rock', side)) {
+    chip += Math.floor(maxHp * typeEff('Rock', type1, type2) / 8);
+  }
+
+  const spikeLayers = spikes[side] || 0;
+  if (spikeLayers > 0 && isGroundedForEntryHazards(type1, type2, ability, gravity)) {
+    chip += Math.floor(maxHp * getSpikesFraction(spikeLayers));
+  }
+
+  return Math.max(0, chip);
 }
 
 // ── Init ──
@@ -2020,6 +2258,26 @@ function typeEff(attType, defType1, defType2) {
   return e1 * e2;
 }
 
+function typeEffWithFields(attType, defType1, defType2, opts) {
+  const useForesight = !!opts?.foresight;
+  const useGravity = !!opts?.gravity;
+  function mult(at, dt) {
+    if (!EFF_MAP[at]) return 1;
+    const v = EFF_MAP[at][dt];
+    if (v === 0) {
+      if (useForesight && dt === 'Ghost' && (at === 'Normal' || at === 'Fighting')) return 1;
+      if (useGravity && at === 'Ground' && dt === 'Flying') return 1;
+      return 0;
+    }
+    if (v === 'h') return 0.5;
+    if (v === 2)   return 2;
+    return 1;
+  }
+  const e1 = mult(attType, defType1);
+  const e2 = defType2 ? mult(attType, defType2) : 1;
+  return e1 * e2;
+}
+
 // ── Stat formula ─────────────────────────────────────────────────────────────
 function computeStat(base, iv, ev, level, natureMult, isHP) {
   iv  = Math.max(0, Math.min(31,  parseInt(iv)  || 0));
@@ -2058,7 +2316,7 @@ const ITEM_LIST = [
   '— None —','Choice Band','Choice Specs','Choice Scarf',
   'Life Orb','Expert Belt','Assault Vest',
   'Eviolite','Leftovers','Black Sludge','Rocky Helmet',
-  'Focus Sash','Air Balloon','Shed Shell',
+  'Focus Sash','Air Balloon','Shed Shell','Heavy-Duty Boots',
   'Flame Plate','Splash Plate','Meadow Plate','Zap Plate',
   'Icicle Plate','Fist Plate','Toxic Plate','Earth Plate',
   'Sky Plate','Mind Plate','Insect Plate','Stone Plate',
@@ -2099,7 +2357,7 @@ function buildAbilitySelect(side, slug) {
 }
 
 // ── Item multiplier ───────────────────────────────────────────────────────
-function itemMult(item, isAtt, attType, moveCat, moveType, defType1, defType2) {
+function itemMult(item, isAtt, attType, moveCat, moveType, defType1, defType2, effOverride) {
   if (!item || item === '— None —') return 1;
   // Choice Band / Specs (only applies to relevant stat for the attacker)
   if (isAtt) {
@@ -2121,7 +2379,7 @@ function itemMult(item, isAtt, attType, moveCat, moveType, defType1, defType2) {
     };
     if (TYPE_ITEMS[item] && TYPE_ITEMS[item] === moveType) return 1.2;
     if (item === 'Expert Belt') {
-      const eff = typeEff(moveType, defType1, defType2);
+      const eff = (effOverride !== undefined) ? effOverride : typeEff(moveType, defType1, defType2);
       if (eff > 1) return 1.2;
     }
     if (item === 'Weakness Policy') return 2.0; // user must activate manually via stage
@@ -2196,10 +2454,12 @@ function terrainMult(terrain, moveType) {
 }
 
 // ── Screen modifier ───────────────────────────────────────────────────────
-function screenMult(moveCat) {
+function screenMult(moveCat, defendingSide) {
   const isDoubles = currentFormat === 'doubles';
   const base = isDoubles ? 0.6667 : 0.5;
-  const reflect = document.querySelectorAll('.screen-btn.active');
+  const reflect = defendingSide
+    ? document.querySelectorAll(`.screen-btn.active[data-side="${defendingSide}"]`)
+    : document.querySelectorAll('.screen-btn.active');
   let hasReflect = false, hasLightScreen = false, hasAuroraVeil = false;
   reflect.forEach(b => {
     const t = b.textContent.trim();
@@ -2211,6 +2471,11 @@ function screenMult(moveCat) {
   if (moveCat === 'Physical' && hasReflect) return base;
   if (moveCat === 'Special'  && hasLightScreen) return base;
   return 1;
+}
+
+function scaleRollsByHits(rolls, hits) {
+  if (!rolls || !rolls.length || !Number.isFinite(hits) || hits <= 1) return rolls;
+  return rolls.map(r => r * hits);
 }
 
 // ── STAB modifier ─────────────────────────────────────────────────────────
@@ -2411,6 +2676,7 @@ function loadPokemon(side, slug) {
 
   // Recompute stats with current IVs/EVs/nature
   updateBaseStats(side);
+  resetCurrentHpToMax(side);
   return true;
 }
 
@@ -2463,17 +2729,46 @@ function updateHpBar(side, curr, max) {
   const pct = max > 0 ? Math.max(0, Math.min(100, curr / max * 100)) : 0;
   const barEl = document.getElementById(side + '-hp-bar');
   const pctEl = document.getElementById(side + '-hp-pct');
+  const pctInputEl = document.getElementById(side + '-curr-hp-pct-input');
   if (barEl) {
     barEl.style.width = pct + '%';
     barEl.style.background = pct > 50 ? 'var(--hp-green)' : pct > 20 ? 'var(--hp-yellow)' : 'var(--hp-red)';
   }
   if (pctEl) pctEl.textContent = pct.toFixed(1) + '%';
+  if (pctInputEl) pctInputEl.value = formatHpPercentInput(pct);
+}
+
+function formatHpPercentInput(pct) {
+  const rounded = Math.round((Number(pct) || 0) * 10) / 10;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+}
+
+function setCurrentHp(side, curr) {
+  const currEl = document.getElementById(side + '-curr-hp');
+  const max = parseInt(document.getElementById(side + '-max-hp')?.textContent) || 1;
+  const normalized = Math.max(0, Math.min(max, Number.isFinite(curr) ? Math.round(curr) : 0));
+  if (currEl) currEl.value = normalized;
+  updateHpBar(side, normalized, max);
+  return normalized;
+}
+
+function resetCurrentHpToMax(side) {
+  const max = parseInt(document.getElementById(side + '-max-hp')?.textContent) || 1;
+  setCurrentHp(side, max);
 }
 
 function onHpChange(side) {
-  const curr = parseInt(document.getElementById(side + '-curr-hp')?.value) || 0;
-  const max  = parseInt(document.getElementById(side + '-max-hp')?.textContent) || 1;
-  updateHpBar(side, curr, max);
+  setCurrentHp(side, parseInt(document.getElementById(side + '-curr-hp')?.value));
+  // Multiscale / shadow shield break check
+  recalcAll();
+}
+
+function onHpPercentChange(side) {
+  const max = parseInt(document.getElementById(side + '-max-hp')?.textContent) || 1;
+  const pctRaw = parseFloat(document.getElementById(side + '-curr-hp-pct-input')?.value);
+  const pct = Math.max(0, Math.min(100, Number.isFinite(pctRaw) ? pctRaw : 0));
+  const curr = Math.round(max * pct / 100);
+  setCurrentHp(side, curr);
   // Multiscale / shadow shield break check
   recalcAll();
 }
@@ -2518,21 +2813,63 @@ function recalcAll() {
 
   const attAbility = document.getElementById('att-ability')?.value || '';
   const defAbility = document.getElementById('def-ability')?.value || '';
-  const attItem    = document.getElementById('att-item')?.value    || '— None —';
-  const defItem    = document.getElementById('def-item')?.value    || '— None —';
-  const attStatus  = document.getElementById('att-status')?.value  || '';
+  const attItemRaw = document.getElementById('att-item')?.value    || '— None —';
+  const defItemRaw = document.getElementById('def-item')?.value    || '— None —';
+  const attStatus  = normalizeStatus(document.getElementById('att-status')?.value || '');
+  const defStatus  = normalizeStatus(document.getElementById('def-status')?.value || '');
   const attLevel   = parseInt(document.getElementById('att-level')?.value) || 100;
 
-  const currDefHp  = parseInt(document.getElementById('def-curr-hp')?.value) || 1;
+  const globalField = {
+    gravity: hasFieldToggle('.cmove-btn', 'Gravity', 'global'),
+    wonderRoom: hasFieldToggle('.cmove-btn', 'Wonder Room', 'global'),
+    magicRoom: hasFieldToggle('.cmove-btn', 'Magic Room', 'global'),
+  };
+  const sideMoveField = {
+    att: {
+      foresight: hasFieldToggle('.cmove-btn', 'Foresight', 'att'),
+      powerTrick: hasFieldToggle('.cmove-btn', 'Power Trick', 'att'),
+    },
+    def: {
+      foresight: hasFieldToggle('.cmove-btn', 'Foresight', 'def'),
+      powerTrick: hasFieldToggle('.cmove-btn', 'Power Trick', 'def'),
+    },
+  };
+  const sideAbilityField = {
+    att: {
+      flowerGift: hasFieldToggle('.cabil-btn', 'Flower Gift', 'att'),
+      battery: hasFieldToggle('.cabil-btn', 'Battery', 'att'),
+      steelySpirit: hasFieldToggle('.cabil-btn', 'Steely Spirit', 'att'),
+      friendGuard: hasFieldToggle('.cabil-btn', 'Friend Guard', 'att'),
+      powerSpot: hasFieldToggle('.cabil-btn', 'Power Spot', 'att'),
+    },
+    def: {
+      flowerGift: hasFieldToggle('.cabil-btn', 'Flower Gift', 'def'),
+      battery: hasFieldToggle('.cabil-btn', 'Battery', 'def'),
+      steelySpirit: hasFieldToggle('.cabil-btn', 'Steely Spirit', 'def'),
+      friendGuard: hasFieldToggle('.cabil-btn', 'Friend Guard', 'def'),
+      powerSpot: hasFieldToggle('.cabil-btn', 'Power Spot', 'def'),
+    },
+  };
+  const attItem = globalField.magicRoom ? '— None —' : attItemRaw;
+  const defItem = globalField.magicRoom ? '— None —' : defItemRaw;
+
+  const currDefHpBase = parseInt(document.getElementById('def-curr-hp')?.value) || 1;
   const maxDefHp   = parseInt(document.getElementById('def-max-hp')?.textContent) || 1;
+  const defEntryChip = getEntryHazardChip('def', defType1, defType2, defAbility, defItem, maxDefHp, globalField.gravity, globalField.magicRoom);
+  const currDefHp  = Math.max(1, currDefHpBase - defEntryChip);
 
   // Defender: Eviolite multiplies Def and SpD; handled in per-move logic
   const defEviolite = (defItem === 'Eviolite');
 
   // Attacker's current staged stats
   function getStagedStat(side, stat) {
-    const base = BASE[side][stat] || 1;
-    const stage = STAGES[side][stat] || 0;
+    let actualStat = stat;
+    if (sideMoveField[side]?.powerTrick) {
+      if (stat === 'atk') actualStat = 'def';
+      else if (stat === 'def') actualStat = 'atk';
+    }
+    const base = BASE[side][actualStat] || 1;
+    const stage = STAGES[side][actualStat] || 0;
     return stage !== 0 ? Math.round(base * stageMult(stage)) : base;
   }
 
@@ -2549,22 +2886,23 @@ function recalcAll() {
     const moveType = slot.querySelector('.move-type-badge')?.textContent?.trim() || 'Normal';
     const catImg   = slot.querySelector('.move-cat-img');
     const moveCat  = catImg ? catImg.alt : 'Special'; // Physical / Special / Status
-    const bpText   = slot.querySelector('.move-pwr')?.textContent?.replace(' BP','').replace('—','') || '';
-    const rawBP    = parseInt(bpText) || 0;
+    const moveSlug = slot.dataset.move || '';
+    const rawBP    = getMoveBasePower(slot);
     const isCrit   = slot.querySelector('.crit-toggle')?.classList.contains('active') || false;
     const pctEl    = slot.querySelector('.move-result-pct');
     const koEl     = slot.querySelector('.move-result-ko');
     const moveName = slot.querySelector('.move-slot-name')?.textContent || '';
+    const moveLabel = getMoveDisplayLabel(slot, moveName, moveSlug);
 
     // Status moves — no damage
     if (moveCat === 'Status' || rawBP === 0) {
       if (pctEl) pctEl.textContent = '—';
       if (koEl)  koEl.textContent  = 'Status';
-      _rollCache[slotIdx] = { rolls: null, effMult: null, moveName, moveType, currDefHp, maxDefHp };
+      _rollCache[slotIdx] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp, maxDefHp };
       return;
     }
 
-    let bp = rawBP;
+    let bp = getEffectiveMoveBasePower(slot, moveSlug);
     // Technician: moves with base power ≤ 60 get x1.5
     const attAbLow = attAbility.toLowerCase().replace(/\s/g,'-');
     if (attAbLow === 'technician' && bp <= 60) bp = Math.floor(bp * 1.5);
@@ -2576,23 +2914,35 @@ function recalcAll() {
     const atkStat = moveCat === 'Physical'
       ? getStagedStat('att','atk') * (defEviolite ? 1 : 1)  // eviolite only affects def
       : getStagedStat('att','spa');
-    let defStat = moveCat === 'Physical'
-      ? getStagedStat('def','def') * (defEviolite ? 1.5 : 1)
-      : getStagedStat('def','spd') * (defEviolite ? 1.5 : 1);
+    let defStatKey = moveCat === 'Physical' ? 'def' : 'spd';
+    if (globalField.wonderRoom) defStatKey = defStatKey === 'def' ? 'spd' : 'def';
+    let defStat = getStagedStat('def', defStatKey) * (defEviolite ? 1.5 : 1);
     // Sand boosts Rock SpDef
     if (weather === 'Sand' && (defType1 === 'Rock' || defType2 === 'Rock') && moveCat === 'Special') {
       defStat = Math.floor(defStat * 1.5);
     }
+    if (sideAbilityField.def.flowerGift && weather === 'Sun' && moveCat === 'Special') {
+      defStat = Math.floor(defStat * 1.5);
+    }
     // Crit ignores def boosts (neg stages) and att drops
-    const critAtkStat = isCrit ? Math.max(atkStat, BASE.att[moveCat === 'Physical' ? 'atk' : 'spa']) : atkStat;
-    const critDefStat = isCrit ? Math.min(defStat, BASE.def[moveCat === 'Physical' ? 'def' : 'spd'] * (defEviolite ? 1.5 : 1)) : defStat;
+    const critAtkBaseKey = (moveCat === 'Physical' && sideMoveField.att.powerTrick) ? 'def' : (moveCat === 'Physical' ? 'atk' : 'spa');
+    let critDefBaseKey = defStatKey;
+    if (sideMoveField.def.powerTrick) {
+      if (critDefBaseKey === 'atk') critDefBaseKey = 'def';
+      else if (critDefBaseKey === 'def') critDefBaseKey = 'atk';
+    }
+    const critAtkStat = isCrit ? Math.max(atkStat, BASE.att[critAtkBaseKey]) : atkStat;
+    const critDefStat = isCrit ? Math.min(defStat, BASE.def[critDefBaseKey] * (defEviolite ? 1.5 : 1)) : defStat;
 
     // Type effectiveness
-    const effMult = typeEff(moveType, defType1, defType2);
+    const effMult = typeEffWithFields(moveType, defType1, defType2, {
+      foresight: sideMoveField.def.foresight,
+      gravity: globalField.gravity,
+    });
     if (effMult === 0) {
       if (pctEl) pctEl.textContent = '—';
       if (koEl)  koEl.textContent  = 'Immune';
-      _rollCache[slotIdx] = { rolls: null, effMult: 0, moveName, moveType, currDefHp, maxDefHp };
+      _rollCache[slotIdx] = { rolls: null, effMult: 0, moveName, moveLabel, moveType, currDefHp, maxDefHp };
       return;
     }
 
@@ -2602,6 +2952,10 @@ function recalcAll() {
     if (attAbLow === 'gorilla-tactics' && moveCat === 'Physical') attAbMult = 1.5;
     if (attAbLow === 'transistor' && moveType === 'Electric') attAbMult = 1.5;
     if ((attAbLow === "dragon's-maw" || attAbLow === 'dragons-maw') && moveType === 'Dragon') attAbMult = 1.5;
+    if (sideAbilityField.att.flowerGift && weather === 'Sun' && moveCat === 'Physical') attAbMult *= 1.5;
+    if (sideAbilityField.att.battery && moveCat === 'Special') attAbMult *= 1.3;
+    if (sideAbilityField.att.steelySpirit && moveType === 'Steel') attAbMult *= 1.5;
+    if (sideAbilityField.att.powerSpot) attAbMult *= 1.3;
 
     // Defender ability multiplier
     let defAbMult = 1;
@@ -2610,26 +2964,28 @@ function recalcAll() {
     if ((defAbLow === 'ice-scales') && moveCat === 'Special') defAbMult *= 0.5;
     if ((defAbLow === 'thick-fat') && (moveType === 'Fire' || moveType === 'Ice')) defAbMult *= 0.5;
     if ((defAbLow === 'filter' || defAbLow === 'solid-rock' || defAbLow === 'prism-armor') && effMult > 1) defAbMult *= 0.75;
+    if (sideAbilityField.def.friendGuard) defAbMult *= 0.75;
     // Immunity abilities
     const IMMUNE_ABS = {
       'water-absorb':'Water','dry-skin':'Water','flash-fire':'Fire','storm-drain':'Water',
       'lightning-rod':'Electric','volt-absorb':'Electric','motor-drive':'Electric',
       'sap-sipper':'Grass',
     };
-    const levitateTypes = new Set(['Ground']);
-    if (defAbLow === 'levitate' && moveType === 'Ground') {
+    if (defAbLow === 'levitate' && moveType === 'Ground' && !globalField.gravity) {
       if (pctEl) pctEl.textContent = '—';
       if (koEl)  koEl.textContent  = 'Immune';
+      _rollCache[slotIdx] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp, maxDefHp };
       return;
     }
     if (IMMUNE_ABS[defAbLow] && IMMUNE_ABS[defAbLow] === moveType) {
       if (pctEl) pctEl.textContent = '—';
       if (koEl)  koEl.textContent  = 'Immune';
+      _rollCache[slotIdx] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp, maxDefHp };
       return;
     }
 
     // Attacker item multiplier
-    const attItemMult = itemMult(attItem, true, attType1, moveCat, moveType, defType1, defType2);
+    const attItemMult = itemMult(attItem, true, attType1, moveCat, moveType, defType1, defType2, effMult);
 
     // Burn debuff
     const burnDebuff = (attStatus === 'brn' && moveCat === 'Physical' && attAbLow !== 'guts') ? 0.5 : 1;
@@ -2639,13 +2995,13 @@ function recalcAll() {
     const terrainM = terrainMult(terrain, moveType);
     const stabM    = stabMult(moveType, attType1, attType2, attAbility);
     const critMult = isCrit ? 1.5 : 1;
-    const screenM  = isCrit ? 1 : screenMult(moveCat);
+    const screenM  = isCrit ? 1 : screenMult(moveCat, 'def');
     const spreadM  = isSpread() ? 0.75 : 1;
 
     // Combined other multiplier (outside the main roll chain)
     const otherMult = attAbMult * attItemMult * defAbMult * terrainM;
 
-    const rolls = calcRolls(attLevel, bp,
+    const perHitRolls = calcRolls(attLevel, bp,
       critAtkStat, critDefStat,
       {
         spread:     spreadM,
@@ -2658,19 +3014,23 @@ function recalcAll() {
         otherMult:  otherMult,
       }
     );
+    const totalHits = getMoveHitCount(slot, moveSlug);
+    const rolls = scaleRollsByHits(perHitRolls, totalHits);
 
     const { pct, ko } = computeKO(rolls, currDefHp, maxDefHp);
     if (pctEl) pctEl.textContent = pct;
     if (koEl)  koEl.textContent  = ko;
-    _rollCache[slotIdx] = { rolls, effMult, moveName, moveType, currDefHp, maxDefHp };
+    _rollCache[slotIdx] = { rolls, effMult, moveName, moveLabel, moveType, currDefHp, maxDefHp };
   });
 
   // ── DEF → ATT damage (so defender moves show in calc banner when selected) ──
   const defPanel = document.getElementById('defPanel');
   if (defPanel) {
     const defLevel   = parseInt(document.getElementById('def-level')?.value) || 100;
-    const currAttHp  = parseInt(document.getElementById('att-curr-hp')?.value) || 1;
+    const currAttHpBase  = parseInt(document.getElementById('att-curr-hp')?.value) || 1;
     const maxAttHp   = parseInt(document.getElementById('att-max-hp')?.textContent) || 1;
+    const attEntryChip = getEntryHazardChip('att', attType1, attType2, attAbility, attItem, maxAttHp, globalField.gravity, globalField.magicRoom);
+    const currAttHp  = Math.max(1, currAttHpBase - attEntryChip);
     const attEviolite2 = (attItem === 'Eviolite');
 
     // For DEF-as-attacker: DEF's ability/item are "attacker" side; ATT's ability/item are "defender"
@@ -2679,8 +3039,13 @@ function recalcAll() {
     const hasMultiscale2 = defAtFullHp2 && (attAbLow2 === 'multiscale' || attAbLow2 === 'shadow-shield');
 
     function getStagedStat2(side, stat) {
-      const base  = BASE[side][stat] || 1;
-      const stage = STAGES[side][stat] || 0;
+      let actualStat = stat;
+      if (sideMoveField[side]?.powerTrick) {
+        if (stat === 'atk') actualStat = 'def';
+        else if (stat === 'def') actualStat = 'atk';
+      }
+      const base  = BASE[side][actualStat] || 1;
+      const stage = STAGES[side][actualStat] || 0;
       return stage !== 0 ? Math.round(base * stageMult(stage)) : base;
     }
 
@@ -2688,23 +3053,24 @@ function recalcAll() {
       const moveType = slot.querySelector('.move-type-badge')?.textContent?.trim() || 'Normal';
       const catImg   = slot.querySelector('.move-cat-img');
       const moveCat  = catImg ? catImg.alt : 'Special';
-      const bpText   = slot.querySelector('.move-pwr')?.textContent?.replace(' BP','').replace('—','') || '';
-      const rawBP    = parseInt(bpText) || 0;
+      const moveSlug = slot.dataset.move || '';
+      const rawBP    = getMoveBasePower(slot);
       const isCrit   = slot.querySelector('.crit-toggle')?.classList.contains('active') || false;
       const pctEl    = slot.querySelector('.move-result-pct');
       const koEl     = slot.querySelector('.move-result-ko');
       const moveName = slot.querySelector('.move-slot-name')?.textContent || '';
+      const moveLabel = getMoveDisplayLabel(slot, moveName, moveSlug);
 
       const cacheKey = 'def-' + slotIdx;
 
       if (moveCat === 'Status' || rawBP === 0) {
         if (pctEl) pctEl.textContent = '—';
         if (koEl)  koEl.textContent  = 'Status';
-        _rollCache[cacheKey] = { rolls: null, effMult: null, moveName, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
+        _rollCache[cacheKey] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
         return;
       }
 
-      let bp = rawBP;
+      let bp = getEffectiveMoveBasePower(slot, moveSlug);
       const defAbLow2 = defAbility.toLowerCase().replace(/\s/g,'-');
       if (defAbLow2 === 'technician' && bp <= 60) bp = Math.floor(bp * 1.5);
       if (isHelpingHand()) bp = Math.floor(bp * 1.5);
@@ -2713,28 +3079,43 @@ function recalcAll() {
       const atkStat2 = moveCat === 'Physical'
         ? getStagedStat2('def','atk')
         : getStagedStat2('def','spa');
-      let defStat2 = moveCat === 'Physical'
-        ? getStagedStat2('att','def') * (attEviolite2 ? 1.5 : 1)
-        : getStagedStat2('att','spd') * (attEviolite2 ? 1.5 : 1);
+      let defStatKey2 = moveCat === 'Physical' ? 'def' : 'spd';
+      if (globalField.wonderRoom) defStatKey2 = defStatKey2 === 'def' ? 'spd' : 'def';
+      let defStat2 = getStagedStat2('att', defStatKey2) * (attEviolite2 ? 1.5 : 1);
       // Sand boosts Rock SpDef (ATT is now defender)
       if (weather === 'Sand' && (attType1 === 'Rock' || attType2 === 'Rock') && moveCat === 'Special') {
         defStat2 = Math.floor(defStat2 * 1.5);
       }
-      const critAtkStat2 = isCrit ? Math.max(atkStat2, BASE.def[moveCat === 'Physical' ? 'atk' : 'spa']) : atkStat2;
-      const critDefStat2 = isCrit ? Math.min(defStat2, BASE.att[moveCat === 'Physical' ? 'def' : 'spd'] * (attEviolite2 ? 1.5 : 1)) : defStat2;
+      if (sideAbilityField.att.flowerGift && weather === 'Sun' && moveCat === 'Special') {
+        defStat2 = Math.floor(defStat2 * 1.5);
+      }
+      const critAtkBaseKey2 = (moveCat === 'Physical' && sideMoveField.def.powerTrick) ? 'def' : (moveCat === 'Physical' ? 'atk' : 'spa');
+      let critDefBaseKey2 = defStatKey2;
+      if (sideMoveField.att.powerTrick) {
+        if (critDefBaseKey2 === 'atk') critDefBaseKey2 = 'def';
+        else if (critDefBaseKey2 === 'def') critDefBaseKey2 = 'atk';
+      }
+      const critAtkStat2 = isCrit ? Math.max(atkStat2, BASE.def[critAtkBaseKey2]) : atkStat2;
+      const critDefStat2 = isCrit ? Math.min(defStat2, BASE.att[critDefBaseKey2] * (attEviolite2 ? 1.5 : 1)) : defStat2;
 
       // Type effectiveness: move vs ATT types
-      const effMult2 = typeEff(moveType, attType1, attType2);
+      const effMult2 = typeEffWithFields(moveType, attType1, attType2, {
+        foresight: sideMoveField.att.foresight,
+        gravity: globalField.gravity,
+      });
       if (effMult2 === 0) {
         if (pctEl) pctEl.textContent = '—';
         if (koEl)  koEl.textContent  = 'Immune';
-        _rollCache[cacheKey] = { rolls: null, effMult: 0, moveName, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
+        _rollCache[cacheKey] = { rolls: null, effMult: 0, moveName, moveLabel, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
         return;
       }
 
       // Defender (ATT) ability immunities
-      if (attAbLow2 === 'levitate' && moveType === 'Ground') {
-        if (pctEl) pctEl.textContent = '—'; if (koEl) koEl.textContent = 'Immune'; return;
+      if (attAbLow2 === 'levitate' && moveType === 'Ground' && !globalField.gravity) {
+        if (pctEl) pctEl.textContent = '—';
+        if (koEl) koEl.textContent = 'Immune';
+        _rollCache[cacheKey] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
+        return;
       }
       const IMMUNE_ABS2 = {
         'water-absorb':'Water','dry-skin':'Water','flash-fire':'Fire','storm-drain':'Water',
@@ -2742,7 +3123,10 @@ function recalcAll() {
         'sap-sipper':'Grass',
       };
       if (IMMUNE_ABS2[attAbLow2] && IMMUNE_ABS2[attAbLow2] === moveType) {
-        if (pctEl) pctEl.textContent = '—'; if (koEl) koEl.textContent = 'Immune'; return;
+        if (pctEl) pctEl.textContent = '—';
+        if (koEl) koEl.textContent = 'Immune';
+        _rollCache[cacheKey] = { rolls: null, effMult: null, moveName, moveLabel, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
+        return;
       }
 
       // DEF (attacker) ability multiplier
@@ -2751,6 +3135,10 @@ function recalcAll() {
       if (defAbLow2 === 'gorilla-tactics' && moveCat === 'Physical') attAbMult2 = 1.5;
       if (defAbLow2 === 'transistor' && moveType === 'Electric') attAbMult2 = 1.5;
       if ((defAbLow2 === "dragon's-maw" || defAbLow2 === 'dragons-maw') && moveType === 'Dragon') attAbMult2 = 1.5;
+      if (sideAbilityField.def.flowerGift && weather === 'Sun' && moveCat === 'Physical') attAbMult2 *= 1.5;
+      if (sideAbilityField.def.battery && moveCat === 'Special') attAbMult2 *= 1.3;
+      if (sideAbilityField.def.steelySpirit && moveType === 'Steel') attAbMult2 *= 1.5;
+      if (sideAbilityField.def.powerSpot) attAbMult2 *= 1.3;
 
       // ATT (defender) ability multiplier
       let defAbMult2 = 1;
@@ -2759,22 +3147,22 @@ function recalcAll() {
       if (attAbLow2 === 'ice-scales' && moveCat === 'Special') defAbMult2 *= 0.5;
       if (attAbLow2 === 'thick-fat' && (moveType === 'Fire' || moveType === 'Ice')) defAbMult2 *= 0.5;
       if ((attAbLow2 === 'filter' || attAbLow2 === 'solid-rock' || attAbLow2 === 'prism-armor') && effMult2 > 1) defAbMult2 *= 0.75;
+      if (sideAbilityField.att.friendGuard) defAbMult2 *= 0.75;
 
       // DEF item mult (DEF is now attacker)
-      const defItemMult2 = itemMult(defItem, true, defType1, moveCat, moveType, attType1, attType2);
+      const defItemMult2 = itemMult(defItem, true, defType1, moveCat, moveType, attType1, attType2, effMult2);
 
-      const defStatus   = document.getElementById('def-status')?.value || '';
       const burnDebuff2 = (defStatus === 'brn' && moveCat === 'Physical' && defAbLow2 !== 'guts') ? 0.5 : 1;
 
       const weatherM2 = weatherMult(weather, moveType);
       const terrainM2 = terrainMult(terrain, moveType);
       const stabM2    = stabMult(moveType, defType1, defType2, defAbility);
       const critMult2 = isCrit ? 1.5 : 1;
-      const screenM2  = isCrit ? 1 : screenMult(moveCat);
+      const screenM2  = isCrit ? 1 : screenMult(moveCat, 'att');
       const spreadM2  = isSpread() ? 0.75 : 1;
       const otherMult2 = attAbMult2 * defItemMult2 * defAbMult2 * terrainM2;
 
-      const rolls2 = calcRolls(defLevel, bp,
+      const perHitRolls2 = calcRolls(defLevel, bp,
         critAtkStat2, critDefStat2,
         {
           spread: spreadM2, weather: weatherM2, glaive: critMult2,
@@ -2782,11 +3170,13 @@ function recalcAll() {
           screen: screenM2, otherMult: otherMult2,
         }
       );
+      const totalHits2 = getMoveHitCount(slot, moveSlug);
+      const rolls2 = scaleRollsByHits(perHitRolls2, totalHits2);
 
       const { pct: pct2, ko: ko2 } = computeKO(rolls2, currAttHp, maxAttHp);
       if (pctEl) pctEl.textContent = pct2;
       if (koEl)  koEl.textContent  = ko2;
-      _rollCache[cacheKey] = { rolls: rolls2, effMult: effMult2, moveName, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
+      _rollCache[cacheKey] = { rolls: rolls2, effMult: effMult2, moveName, moveLabel, moveType, currDefHp: currAttHp, maxDefHp: maxAttHp };
     });
   }
 
@@ -2822,7 +3212,7 @@ function updateActiveBanner() {
 
   const pct      = active.querySelector('.move-result-pct')?.textContent || '—';
   const koRaw    = active.querySelector('.move-result-ko')?.textContent  || '—';
-  const moveName = active.querySelector('.move-slot-name')?.textContent  || '';
+  const moveName = cached?.moveLabel || active.querySelector('.move-slot-name')?.textContent || '';
   const moveCat  = active.querySelector('.move-cat-img')?.alt || 'Special';
 
   // Swap name assignments based on which side is "attacking" in banner
@@ -3075,6 +3465,7 @@ function _resolveMoveSlug(moveName) {
 function _setMoveSlotFallback(slot, moveName) {
   if (!slot) return;
   slot.dataset.move = '';
+  slot.dataset.baseBp = '0';
   const nameEl = slot.querySelector('.move-slot-name');
   if (nameEl) nameEl.textContent = moveName || '—';
 
@@ -3097,6 +3488,7 @@ function _setMoveSlotFallback(slot, moveName) {
 
   const critBtn = slot.querySelector('.crit-toggle');
   if (critBtn) critBtn.classList.remove('active');
+  refreshMoveSlotUi(slot);
 }
 
 function _applyImportedMoves(side, moves) {
@@ -3191,6 +3583,8 @@ function applyImportData(data) {
   }
 
   onSettingChange(side);
+  resetCurrentHpToMax(side);
+  recalcAll();
   return true;
 }
 
@@ -3546,6 +3940,7 @@ function _applyMoveEdit(slot, slug, skipRecalc) {
 
   // data-move attribute
   slot.dataset.move = slug;
+  slot.dataset.baseBp = String(parseInt(md.bp, 10) || 0);
 
   // Move name
   const nameEl = slot.querySelector('.move-slot-name');
@@ -3574,6 +3969,7 @@ function _applyMoveEdit(slot, slug, skipRecalc) {
   // Base power
   const pwrEl = slot.querySelector('.move-pwr');
   if (pwrEl) pwrEl.textContent = md.bp ? `${md.bp} BP` : '— BP';
+  refreshMoveSlotUi(slot);
 
   if (!skipRecalc) recalcAll();
 }
@@ -3749,36 +4145,6 @@ function copyExportText() {
   });
 }
 
-// Open Poképaste: POST to pokepast.es/create or fall back to pre-filled URL
-async function tryPostPokepast() {
-  const ta  = document.getElementById('exportTextarea');
-  const txt = ta?.value?.trim();
-  if (!txt) return;
-  showExportToast('Opening Poképaste…');
-  try {
-    // pokepast.es doesn't support CORS POST from browser, so open their site
-    // with the text pre-filled via a hidden form trick
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = 'https://pokepast.es/create';
-    form.target = '_blank';
-    form.style.display = 'none';
-    const inp = document.createElement('input');
-    inp.type  = 'hidden';
-    inp.name  = 'paste';
-    inp.value = txt;
-    form.appendChild(inp);
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-  } catch(e) {
-    // Fallback: copy + open pokepast.es so user can paste manually
-    try { await navigator.clipboard.writeText(txt); } catch(_) {}
-    window.open('https://pokepast.es/', '_blank');
-    showExportToast('Text copied — paste it at pokepast.es', false, 4000);
-  }
-}
-
 // Show a brief toast notification
 let _toastTimer = null;
 function showExportToast(msg, isErr, duration) {
@@ -3791,6 +4157,27 @@ function showExportToast(msg, isErr, duration) {
   _toastTimer = setTimeout(() => el.classList.remove('show'), duration || 2200);
 }
 
+function consumeAreaSheetImport() {
+  const raw = localStorage.getItem('calc_area_import_payload');
+  if (!raw) return;
+
+  localStorage.removeItem('calc_area_import_payload');
+
+  let payload = null;
+  try {
+    payload = JSON.parse(raw);
+  } catch (err) {
+    return;
+  }
+
+  const roster = Array.isArray(payload?.data) ? payload.data.filter(Boolean) : [];
+  if (!roster.length) return;
+
+  applyImportFull(roster, payload.side === 'att' ? 'att' : 'def');
+  const label = payload.label || 'Area Export';
+  showExportToast(`Imported ${label} to NPC side`, false, 2600);
+}
+
 // ── Init calc engine ──────────────────────────────────────────────────────
 (function initCalc() {
   buildNatureSelects();
@@ -3798,7 +4185,9 @@ function showExportToast(msg, isErr, duration) {
   // Load default Pokémon
   loadPokemon('att', 'blaziken');
   loadPokemon('def', 'dondozo');
+  initMoveSlotControls();
   recalcAll();
+  consumeAreaSheetImport();
 })();
 
 </script>
@@ -3854,7 +4243,6 @@ function showExportToast(msg, isErr, duration) {
       <textarea class="export-textarea" id="exportTextarea" readonly spellcheck="false"></textarea>
       <div class="export-actions">
         <button class="export-btn-cancel" onclick="closeExportModal()">Close</button>
-        <button class="export-btn-pokepast" onclick="tryPostPokepast()">Open in Poképaste</button>
         <button class="export-btn-copy" onclick="copyExportText()">Copy</button>
       </div>
     </div>

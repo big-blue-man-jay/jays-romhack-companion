@@ -1084,14 +1084,14 @@
       <span class="entry-row-action" onclick="openLog('starter', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-newbark" data-chapter="1" data-text="new bark town encounter">
+    <div class="entry-row" data-id="enc-newbark" data-chapter="1" data-text="new bark town encounter" data-area-sheet="areas/newbarktown.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">New Bark Town</span>
       <div class="entry-row-caught" id="caught-enc-newbark"></div>
       <span class="entry-row-action" onclick="openLog('enc-newbark', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-route29" data-chapter="1" data-text="route 29 encounter">
+    <div class="entry-row" data-id="enc-route29" data-chapter="1" data-text="route 29 encounter" data-area-sheet="areas/route29.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Route 29</span>
       <div class="entry-row-caught" id="caught-enc-route29"></div>
@@ -1104,35 +1104,35 @@
       <span class="entry-row-action" onclick="openLog('battle-rival-29', 'battle')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-cherrygrove" data-chapter="1" data-text="cherrygrove city encounter">
+    <div class="entry-row" data-id="enc-cherrygrove" data-chapter="1" data-text="cherrygrove city encounter" data-area-sheet="areas/cherrygrovecity.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Cherrygrove City</span>
       <div class="entry-row-caught" id="caught-enc-cherrygrove"></div>
       <span class="entry-row-action" onclick="openLog('enc-cherrygrove', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-route30" data-chapter="1" data-text="route 30 encounter">
+    <div class="entry-row" data-id="enc-route30" data-chapter="1" data-text="route 30 encounter" data-area-sheet="areas/route30.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Route 30</span>
       <div class="entry-row-caught" id="caught-enc-route30"></div>
       <span class="entry-row-action" onclick="openLog('enc-route30', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-route46" data-chapter="1" data-text="route 46 encounter">
+    <div class="entry-row" data-id="enc-route46" data-chapter="1" data-text="route 46 encounter" data-area-sheet="areas/route46.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Route 46</span>
       <div class="entry-row-caught" id="caught-enc-route46"></div>
       <span class="entry-row-action" onclick="openLog('enc-route46', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-route31" data-chapter="1" data-text="route 31 encounter">
+    <div class="entry-row" data-id="enc-route31" data-chapter="1" data-text="route 31 encounter" data-area-sheet="areas/route31.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Route 31</span>
       <div class="entry-row-caught" id="caught-enc-route31"></div>
       <span class="entry-row-action" onclick="openLog('enc-route31', 'encounter')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-violetcity" data-chapter="1" data-text="violet city encounter">
+    <div class="entry-row" data-id="enc-violetcity" data-chapter="1" data-text="violet city encounter" data-area-sheet="areas/violetcity.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Violet City</span>
       <div class="entry-row-caught" id="caught-enc-violetcity"></div>
@@ -1152,7 +1152,7 @@
       <span class="entry-row-action" onclick="openLog('battle-kelsie', 'battle')">Log</span>
     </div>
 
-    <div class="entry-row" data-id="enc-darkcave" data-chapter="1" data-text="dark cave encounter">
+    <div class="entry-row" data-id="enc-darkcave" data-chapter="1" data-text="dark cave encounter" data-area-sheet="areas/dark-cave.html">
       <span class="entry-type-badge badge-encounter">Encounter</span>
       <span class="entry-row-area">Dark Cave</span>
       <div class="entry-row-caught" id="caught-enc-darkcave"></div>
@@ -1285,9 +1285,36 @@
     return new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
   }
 
+  const REGION_PREFIX_TO_SUFFIX = {
+    alolan: 'alola',
+    galarian: 'galar',
+    hisuian: 'hisui',
+    paldean: 'paldea'
+  };
+
+  function toSpriteSlug(pokemonName) {
+    let slug = String(pokemonName || '').trim().toLowerCase();
+    if (!slug) return '';
+    slug = slug
+      .replace(/♀/g, '-f')
+      .replace(/♂/g, '-m')
+      .replace(/[’']/g, '')
+      .replace(/\./g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    Object.entries(REGION_PREFIX_TO_SUFFIX).forEach(([prefix, suffix]) => {
+      if (slug.startsWith(`${prefix}-`)) {
+        slug = `${slug.slice(prefix.length + 1)}-${suffix}`;
+      }
+    });
+    return slug;
+  }
+
   function getSpriteUrl(pokemonName) {
-    if (!pokemonName) return '';
-    return `https://play.pokemonshowdown.com/sprites/gen5/${pokemonName.toLowerCase().replace(/\s/g, '-')}.png`;
+    const slug = toSpriteSlug(pokemonName);
+    return slug ? `https://play.pokemonshowdown.com/sprites/gen5/${slug}.png` : '';
   }
 
   // ── RENDER ──
@@ -1785,6 +1812,7 @@
     revertBtn.style.display = isEdit ? 'inline-block' : 'none';
 
     clearSuggestions();
+    prepareEncounterSuggestions(entryId);
     document.getElementById('encounterModal').classList.add('open');
     document.body.style.overflow = 'hidden';
     setTimeout(() => document.getElementById('encPokemonInput').focus(), 50);
@@ -1892,7 +1920,7 @@
     completeEntry(entryId, '', true);
   }
 
-  // ── STARTER SUGGESTIONS ──
+  // ── ENCOUNTER SUGGESTIONS ──
   const STARTERS = [
     'Bulbasaur','Charmander','Squirtle',
     'Chikorita','Cyndaquil','Totodile',
@@ -1905,10 +1933,153 @@
     'Sprigatito','Fuecoco','Quaxly'
   ];
 
+  const STARTER_OPTIONS = STARTERS.map(name => ({ name, slug: toSpriteSlug(name) }));
+  const encounterPoolCache = new Map();
+  let activeEncounterOptions = STARTER_OPTIONS;
+  let encounterPoolLoadingEntryId = '';
+  let encounterPoolLoadToken = 0;
+
+  function getEncounterEntryRow(entryId) {
+    return document.querySelector(`.entry-row[data-id="${entryId}"]`);
+  }
+
+  function getEncounterAreaSheetPath(entryId) {
+    return getEncounterEntryRow(entryId)?.dataset.areaSheet || '';
+  }
+
+  function isEncounterPlaceholderName(value) {
+    const text = String(value || '').trim();
+    return !text || text === '—' || /^\[[^\]]+\]$/.test(text);
+  }
+
+  function parseSpeciesSlugFromImage(src) {
+    const match = String(src || '').match(/\/gen5\/([^/?#]+)\.png/i);
+    return match?.[1] ? match[1].toLowerCase() : '';
+  }
+
+  function extractEncounterOptionsFromAreaHtml(htmlText) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(String(htmlText || ''), 'text/html');
+    const options = [];
+    const seen = new Set();
+
+    doc.querySelectorAll('.section-enc .enc-cell-c2').forEach(cell => {
+      const name = (cell.querySelector('.enc-cell-c2-name')?.textContent || '').trim();
+      if (isEncounterPlaceholderName(name)) return;
+
+      const explicit = cell.dataset.species || cell.querySelector('[data-species]')?.dataset.species || '';
+      const imageSrc = cell.querySelector('.enc-sprite')?.getAttribute('src') || '';
+      let slug = toSpriteSlug(explicit);
+      if (!slug) slug = parseSpeciesSlugFromImage(imageSrc);
+      if (!slug) slug = toSpriteSlug(name);
+
+      const key = slug || name.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      options.push({ name, slug });
+    });
+
+    return options;
+  }
+
+  async function ensureEncounterOptions(entryId) {
+    if (entryId === 'starter') return STARTER_OPTIONS;
+    if (encounterPoolCache.has(entryId)) {
+      return encounterPoolCache.get(entryId);
+    }
+
+    const areaPath = getEncounterAreaSheetPath(entryId);
+    if (!areaPath) {
+      encounterPoolCache.set(entryId, []);
+      return [];
+    }
+
+    try {
+      const response = await fetch(areaPath, { cache: 'no-store' });
+      if (!response.ok) throw new Error(`Failed to load ${areaPath} (${response.status})`);
+      const html = await response.text();
+      const options = extractEncounterOptionsFromAreaHtml(html);
+      encounterPoolCache.set(entryId, options);
+      return options;
+    } catch (error) {
+      console.warn('Encounter pool load failed:', areaPath, error);
+      encounterPoolCache.set(entryId, []);
+      return [];
+    }
+  }
+
+  async function prepareEncounterSuggestions(entryId) {
+    const loadToken = ++encounterPoolLoadToken;
+
+    if (entryId === 'starter') {
+      encounterPoolLoadingEntryId = '';
+      activeEncounterOptions = STARTER_OPTIONS;
+      return;
+    }
+
+    encounterPoolLoadingEntryId = entryId;
+    activeEncounterOptions = [];
+    showSuggestions(document.getElementById('encPokemonInput').value.trim());
+
+    const options = await ensureEncounterOptions(entryId);
+    if (loadToken !== encounterPoolLoadToken) return;
+
+    encounterPoolLoadingEntryId = '';
+    activeEncounterOptions = options;
+    if (document.getElementById('encEntryId').value === entryId) {
+      showSuggestions(document.getElementById('encPokemonInput').value.trim());
+    }
+  }
+
+  function normalizeSuggestionSearch(value) {
+    return String(value || '')
+      .toLowerCase()
+      .replace(/[’']/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function renderSuggestions(options) {
+    const list = document.getElementById('encSuggestions');
+    list.innerHTML = '';
+
+    options.forEach(option => {
+      const row = document.createElement('div');
+      row.className = 'suggestion-item';
+      row.onmousedown = (event) => {
+        event.preventDefault();
+        selectSuggestion(option.name);
+      };
+
+      const img = document.createElement('img');
+      img.src = option.slug ? `https://play.pokemonshowdown.com/sprites/gen5/${option.slug}.png` : getSpriteUrl(option.name);
+      img.style.width = '32px';
+      img.style.height = '32px';
+      img.style.imageRendering = 'pixelated';
+      img.style.objectFit = 'contain';
+      img.style.flexShrink = '0';
+      img.onerror = () => { img.style.display = 'none'; };
+
+      row.appendChild(img);
+      row.append(document.createTextNode(option.name));
+      list.appendChild(row);
+    });
+  }
+
+  function showSuggestionMessage(message) {
+    const list = document.getElementById('encSuggestions');
+    list.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'suggestion-item';
+    row.style.pointerEvents = 'none';
+    row.style.opacity = '0.7';
+    row.textContent = message;
+    list.appendChild(row);
+  }
+
   function onPokemonInput() {
     const val     = document.getElementById('encPokemonInput').value.trim();
     const preview = document.getElementById('encSpritePreview');
-    const entryId = document.getElementById('encEntryId').value;
 
     // Sprite preview
     if (val.length > 2) {
@@ -1919,25 +2090,44 @@
       preview.style.display = 'none';
     }
 
-    // Suggestions — starter slot gets starter list, all others get no suggestions
-    if (entryId === 'starter') {
-      showSuggestions(val);
-    } else {
-      clearSuggestions();
-    }
+    showSuggestions(val);
   }
 
   function showSuggestions(val) {
-    const list = document.getElementById('encSuggestions');
-    if (!val) { list.innerHTML = ''; return; }
-    const matches = STARTERS.filter(s => s.toLowerCase().startsWith(val.toLowerCase())).slice(0, 6);
-    list.innerHTML = matches.map(s => {
-      const spriteUrl = getSpriteUrl(s);
-      return `<div class="suggestion-item" onmousedown="selectSuggestion('${s}')">
-        <img src="${spriteUrl}" style="width:32px;height:32px;image-rendering:pixelated;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">
-        ${s}
-      </div>`;
-    }).join('');
+    const entryId = document.getElementById('encEntryId').value;
+    if (!val) {
+      clearSuggestions();
+      return;
+    }
+
+    if (entryId !== 'starter' && encounterPoolLoadingEntryId === entryId) {
+      showSuggestionMessage('Loading encounter pool...');
+      return;
+    }
+
+    const source = entryId === 'starter' ? STARTER_OPTIONS : activeEncounterOptions;
+    if (!source.length) {
+      if (entryId !== 'starter') {
+        showSuggestionMessage('No linked encounters found for this area.');
+      } else {
+        clearSuggestions();
+      }
+      return;
+    }
+
+    const needle = normalizeSuggestionSearch(val);
+    const matches = source.filter(option => {
+      const candidate = normalizeSuggestionSearch(option.name);
+      return entryId === 'starter'
+        ? candidate.startsWith(needle)
+        : candidate.includes(needle);
+    }).slice(0, 8);
+
+    if (!matches.length) {
+      clearSuggestions();
+      return;
+    }
+    renderSuggestions(matches);
   }
 
   function clearSuggestions() {
@@ -1946,8 +2136,8 @@
 
   function selectSuggestion(name) {
     document.getElementById('encPokemonInput').value = name;
-    clearSuggestions();   // close immediately
-    onPokemonInput();     // update sprite preview
+    clearSuggestions();
+    onPokemonInput();
     document.getElementById('encNicknameInput').focus();
   }
 

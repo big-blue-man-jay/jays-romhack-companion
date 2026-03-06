@@ -242,8 +242,8 @@
   <div class="poke-header">
     <button class="shiny-btn" id="shinyBtn" onclick="toggleShiny()" title="Toggle Shiny">✨</button>
     <div class="sprite-wrap">
-      <img class="sprite-img" id="mainSprite" src="https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png" alt="Zygarde (Complete Forme)"
-           data-fallback="https://play.pokemonshowdown.com/sprites/dex/zygarde-complete.png"
+      <img class="sprite-img" id="mainSprite" src="../sprites/pokemon/zygarde.png" alt="Zygarde (Complete Forme)"
+           data-fallback="https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png"
            onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src=this.dataset.fallback}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}">
     </div>
     <div class="poke-info">
@@ -252,7 +252,7 @@
       <div class="poke-types-row"><span class="type-badge" style="background:#7038F8;color:#fff;font-size:12px">Dragon</span> <span class="type-badge" style="background:#E0C068;color:#333;font-size:12px">Ground</span></div>
       
     </div>
-    <div><div class="evo-combined"><div class="family-web"><a href="zygarde-10.html" class="evo-c-node"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/zygarde-10.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/zygarde-10.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-10.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/zygarde-10.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a><a href="zygarde-50.html" class="evo-c-node"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/zygarde-50.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/zygarde-50.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-50.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/zygarde-50.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a><a href="zygarde-complete.html" class="evo-c-node evo-c-cur"><img class="evo-c-spr" src="https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png" data-normal="https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-complete.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/dex/zygarde-complete.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a></div></div></div>
+    <div><div class="evo-combined"><div class="family-web"><a href="zygarde-10.html" class="evo-c-node"><img class="evo-c-spr" src="../sprites/pokemon/zygarde.png" data-normal="../sprites/pokemon/zygarde.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-10.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/gen5/zygarde-10.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a><a href="zygarde-50.html" class="evo-c-node"><img class="evo-c-spr" src="../sprites/pokemon/zygarde.png" data-normal="../sprites/pokemon/zygarde.png" data-shiny="../sprites/pokemon/zygarde-50-shiny.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/gen5/zygarde-50.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a><a href="zygarde-complete.html" class="evo-c-node evo-c-cur"><img class="evo-c-spr" src="../sprites/pokemon/zygarde.png" data-normal="../sprites/pokemon/zygarde.png" data-shiny="https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-complete.png" alt="Zygarde" onerror="if(!this.dataset.tried){this.dataset.tried=1;this.src='https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png'}else{this.onerror=null;this.src='https://play.pokemonshowdown.com/sprites/gen5/substitute.png'}"><span class="evo-c-lbl">Zygarde</span></a></div></div></div>
   </div>
 
   <div class="dex-items-row">
@@ -320,7 +320,7 @@ const MOVE_DATA = {"levelup":[],"egg":[],"tm":[],"tutor":[]};
 // Move details baked in at generation time — works on file:// without a server.
 // If moves.json loads successfully at runtime it will override (more complete data).
 const BAKED_MOVE_DB = {};
-const SPRITE_N = "https://play.pokemonshowdown.com/sprites/gen5/zygarde-complete.png";
+const SPRITE_N = "../sprites/pokemon/zygarde.png";
 const SPRITE_S = "https://play.pokemonshowdown.com/sprites/gen5-shiny/zygarde-complete.png";
 let shiny = false;
 let moveDb = BAKED_MOVE_DB, abilityDb = {};
